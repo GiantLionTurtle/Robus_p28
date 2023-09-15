@@ -3,25 +3,36 @@
 
 ## Nommenclature
 
+### Fichiers
+
+* Commencent par une majuscule
+
+### Gauche / Droite
+
+* Les valeurs qui représentent la gauche dans un tableau viennent avant celles de la droite
+* Les valeurs de la gauche viennent avant celles de la droite dans une signature de fonction
+
 ### Classes
 
-* Commence par une majuscule
+* Commencent par une majuscule
 * Camelback
-* Décrit spécifiquement une abstraction
+* Décrivent spécifiquement une abstraction
+* La première accolade est sur la même ligne que le nom de la classe
 
 Exemples:
 
 * MotorController
-* PathFollower
+* PathFollower 
 
 ### Fonction
 
-* Commence par une majuscule
+* Commencent par une majuscule
 * Camelback
-* Se lit comme
+* Se lisent comme
     * Une action
     * Une transformation
     * Une question
+* La première accolade est sous le nom de la fonction
 
 Exemples:
 
@@ -29,13 +40,18 @@ Exemples:
 * readSensor
 * is_sensorOn
 
-### Variable
+### Boucles et if/else
 
-* Commence par une minuscule
+* La première accolade est sur la même ligne que l'expression
+* Les accolades peuvent être omises pour les if ou l'expression contenue est d'une ligne, si il n'y a pas de else
+
+### Variables
+
+* Commencent par une minuscule
 * Variables au nom descriptif
 * Pas de variable à une lettre (excepté boucles for)
 * Camelback
-* Inclut l'unité si il y a ambiguité
+* Incluent l'unité si il y a ambiguité
 
 Exemples:
 
