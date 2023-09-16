@@ -10,7 +10,7 @@ namespace Drivebase {
 float ticks_to_dist(long long int n_ticks)
 {
 	return static_cast<float>(n_ticks) / static_cast<float>(kTicksPerRotation) // Number of rotations
-			* 2.0f * kPi * kWheelRadius; // Distance per rotation
+			* TWO_PI * kWheelRadius; // Distance per rotation
 }
 
 Desc kinematics(Desc prev, float dist_l, float dist_r, float delta_s)

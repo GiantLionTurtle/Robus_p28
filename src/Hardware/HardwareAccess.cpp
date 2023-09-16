@@ -24,8 +24,9 @@ SensorState readSensors()
 }
 void writeActions(ActionState const& act)
 {
-	MOTOR_SetSpeed(kLeftMotor, act.driveBaseMotor[kLeftMotor]);
-	MOTOR_SetSpeed(kLeftMotor, act.driveBaseMotor[kLeftMotor]);
+	// Library calls to write the action state
+	MOTOR_SetSpeed(kLeftMotor, act.driveBaseMotor.left);
+	MOTOR_SetSpeed(kLeftMotor, act.driveBaseMotor.right);
 }
 
 }

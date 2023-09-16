@@ -11,22 +11,24 @@
 namespace p28 {
 
 /*
-	@struct RobotState_out contains all the output
+	@struct ActionState contains all the output
 	state of the system, it is intended to be computed
 	every loop cycle and be writen to the hardware
-	subsequently
+	subsequently. The values contained in it are meant
+	to be written directly on hardware, these are not
+	SI units
 */
 struct ActionState {
 	// Values go from [-1, 1], not to be confused with the motordrivers
-	float driveBaseMotor[2]; 
+	mt::Vec2 driveBaseMotor; 
 };
 /*
-	@struct RobotState_in contains the sensor state
+	@struct SensorState contains the sensor state
 	of the system, it is intended to be updated every
 	loop cycle
 */
 struct SensorState {
-	mt::iVec2 driveEncoders;
+	mt::iVec2 driveEncoders; // Units are encoder ticks
 
 	bool bumperSwitches[4]; // Could be combined into one int
 };

@@ -185,7 +185,7 @@ inline Vec2_any<T> normalize(Vec2_any<T> const& vec)
 }
 
 } // !mt
-} // !mt
+} // !p28
 
 
 #endif

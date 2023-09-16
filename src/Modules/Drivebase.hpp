@@ -8,6 +8,11 @@ namespace p28 {
 
 namespace Drivebase {
 
+/*
+	@struct Desc describes the position 
+	of the drivebase, it has a position
+	and a heading
+*/
 struct Desc {
 	mt::Vec2 pos { 0.0 }; // Position in m
 	mt::Vec2 front { 0.0, 1.0 }; // Normalized front vector, by default the robot looks toward the y axis

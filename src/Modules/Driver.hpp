@@ -10,8 +10,17 @@
 
 namespace p28 {
 
+/*
+	@struct Driver holds all component drivers
+	(motors, leds, speakers, etc..). It provides
+	a State interface which is used to Drive the robot.
+
+	@note Here Drive means creating an ActionState
+			which can be written to the hardware
+*/
 struct Driver {
-	// Description of a drive
+	// Driver state it contains the state of
+	// every actuator in human readable / SI units
 	struct State {
 		mt::Vec2 wheel_vel; // m / s
 
@@ -19,7 +28,8 @@ struct Driver {
 	};
 	using Command = mt::ValTarg<State>;
 
-	MotorDriver wheels[2]; // Indexed with kRightWheel and kLeftWheel
+	// Indexed with kRightWheel and kLeftWheel
+	MotorDriver wheelMotors[2]; 
 
 	// Create the action state that can be writen to 
 	// the robot from the current driver state and a target driver state

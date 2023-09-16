@@ -11,10 +11,10 @@ Pair<ActionState, Driver> Driver::make_actionState(Command command, float delta_
 	ActionState toDo;
 	Driver newDriver;
 
-	tie(toDo.driveBaseMotor[kLeftMotor], newDriver.wheels[kLeftMotor])
-		= wheels[kLeftMotor].drive({ command.value.wheel_vel.left, command.target.wheel_vel.left }, delta_s);
-	tie(toDo.driveBaseMotor[kRightMotor], newDriver.wheels[kRightMotor])
-	 	= wheels[kRightMotor].drive({ command.value.wheel_vel.right, command.target.wheel_vel.right }, delta_s);
+	tie(toDo.driveBaseMotor[kLeftMotor], newDriver.wheelMotors[kLeftMotor])
+		= wheelMotors[kLeftMotor].drive({ command.value.wheel_vel.left, command.target.wheel_vel.left }, delta_s);
+	tie(toDo.driveBaseMotor[kRightMotor], newDriver.wheelMotors[kRightMotor])
+	 	= wheelMotors[kRightMotor].drive({ command.value.wheel_vel.right, command.target.wheel_vel.right }, delta_s);
 	
 	// Other subsystems add their driving code here
 

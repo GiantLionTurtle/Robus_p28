@@ -12,10 +12,10 @@ Pair<float, MotorDriver> MotorDriver::drive(mt::ValTarg<float> const& valTarg, f
 {
 	Error newError;
 	newError.error = valTarg.target - valTarg.value;
-	newError.error_change = speederror.error - newError.error;
-	newError.error_sum += newError.error * time_s;
+	newError.error_change = velocityError.error - newError.error;
+	newError.error_sum = velocityError.error_sum + newError.error * time_s;
 
-	return { 	pid.get(speederror), 
+	return { 	pid.get(velocityError), 
 				MotorDriver{newError, pid} };
 }
 
