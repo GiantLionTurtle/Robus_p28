@@ -29,4 +29,14 @@ void writeActions(ActionState const& act)
 	MOTOR_SetSpeed(kLeftMotor, act.driveBaseMotor.right);
 }
 
+SensorState operator-(SensorState const& lhs, SensorState rhs)
+{
+	SensorState out;
+	out.driveEncoders = lhs.driveEncoders - rhs.driveEncoders;
+
+	for(int i = 0; i < 4; ++i) {
+		out.bumperSwitches[i] = lhs.bumperSwitches[i] - rhs.bumperSwitches[i];
+	}
+}
+
 }

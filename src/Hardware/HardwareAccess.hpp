@@ -20,7 +20,7 @@ namespace p28 {
 */
 struct ActionState {
 	// Values go from [-1, 1], not to be confused with the motordrivers
-	mt::Vec2 driveBaseMotor; 
+	mt::Vec2 driveBaseMotor { 0.0 }; 
 };
 /*
 	@struct SensorState contains the sensor state
@@ -30,13 +30,16 @@ struct ActionState {
 struct SensorState {
 	mt::iVec2 driveEncoders; // Units are encoder ticks
 
-	bool bumperSwitches[4]; // Could be combined into one int
+	int8_t bumperSwitches[4]; // Could be combined into one int
 };
+
+// Returns the diff of two action states
+SensorState operator-(SensorState const& lhs, SensorState rhs);
 
 void init();
 SensorState readSensors();
 void writeActions(ActionState const& act);
 
-}
+} // !p28
 
 #endif
