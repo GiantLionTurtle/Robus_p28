@@ -48,13 +48,15 @@ struct Robot {
 	Robot_snapshot current; // Snapshot of the current iteration
 	Robot_target target; // Target the robot is trying to reach
 
-	time_t time_ms; // Current time of the iteration
 	float deltaTime_s; // Difference between previous and current iterations
 
 	 // Returns a robot with an updated current and previous snapshot and sensState
 	Robot snapshot() const;
 	// Creates an ActionState and an updated robot
 	Pair<ActionState, Robot> next_action() const;
+
+	// Returns the time of the most recent sensor state
+	time_t time_ms() const;
 
 private:
 	// Create the drive command

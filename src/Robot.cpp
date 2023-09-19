@@ -7,8 +7,7 @@ Robot Robot::snapshot() const
 {
 	SensorState newSensorState = readSensors();
 	Robot_snapshot newSnapshot;
-	time_t new_time = millis();
-	float delta_s = static_cast<float>(new_time - time_ms) / 1000.0f;
+	float delta_s = static_cast<float>(newSensorState.time_ms - time_ms()) / 1000.0f;
 
 	newSnapshot.driverState = Driver::driver_state(sensState, newSensorState, delta_s);
 
@@ -20,7 +19,11 @@ Robot Robot::snapshot() const
 									delta_s);
 	
 	// current becomes previous
-	return Robot { driver, newSensorState, current, newSnapshot, target, new_time, delta_s };
+	return Robot { driver, newSensorState, current, newSnapshot, target, delta_s };
+}
+time_t Robot::time_ms() const
+{
+	return sensState.time_ms;
 }
 Pair<ActionState, Robot> Robot::next_action() const
 {

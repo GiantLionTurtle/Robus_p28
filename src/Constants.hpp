@@ -18,7 +18,7 @@ constexpr int kTicksPerRotation = 100;
 constexpr float kMaxAngVelocity = 0.2;          // rad / s
 constexpr float kMaxVel = 0.4;                  // m / s
 
-using time_t = long long unsigned int;
+using time_t = long unsigned int;
 
 } // !p28
 

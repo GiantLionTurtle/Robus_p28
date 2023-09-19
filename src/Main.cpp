@@ -20,7 +20,7 @@ void loop()
 	robot = robot.snapshot();
 
 	// If time is up to get to the next step in the mission
-	if(robot.target.time <= robot.time_ms || p28::Mission::close_enough(robot.current, robot.target, mission.eps))
+	if(robot.target.time <= robot.time_ms() || p28::Mission::close_enough(robot.current, robot.target, mission.eps))
 		p28::tie(robot.target, mission) = mission.update(robot);
 
 	// The mission gives a certain amount of time 

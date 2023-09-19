@@ -22,6 +22,29 @@ SensorState readSensors()
 	out.bumperSwitches[kRearBumper] 	= ROBUS_IsBumper(kRearBumper);
 	return out;
 }
+void SensorState::print() const
+{
+	Serial.print("Sensor state [");
+	Serial.print(time_ms);
+	Serial.println("]");
+
+	Serial.print("Encoders\t\t[");
+	Serial.print(driveEncoders.left);
+	Serial.print(",  ");
+	Serial.print(driveEncoders.right);
+	Serial.println("]");
+
+	Serial.print("Bumpers\t\t[");
+	Serial.print(bumperSwitches[0]);
+	Serial.print(",  ");
+	Serial.print(bumperSwitches[1]);
+	Serial.print(",  ");
+	Serial.print(bumperSwitches[2]);
+	Serial.print(",  ");
+	Serial.print(bumperSwitches[3]);
+	Serial.println("]");
+}
+
 void writeActions(ActionState const& act)
 {
 	// Library calls to write the action state

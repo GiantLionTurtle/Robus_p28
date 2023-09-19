@@ -2,7 +2,10 @@
 #ifndef P28_HARDWAREACCESS_HPP_
 #define P28_HARDWAREACCESS_HPP_
 
+#define DEBUG_MODE
+
 #include <Utils/Vec.hpp>
+#include <Constants.hpp>
 
 /*
     Here are defined hardware call through LibRobUS
@@ -28,9 +31,13 @@ struct ActionState {
 	loop cycle
 */
 struct SensorState {
+	time_t time_ms;
+
 	mt::iVec2 driveEncoders; // Units are encoder ticks
 
 	int8_t bumperSwitches[4]; // Could be combined into one int
+
+	void print() const;
 };
 
 // Returns the diff of two action states
