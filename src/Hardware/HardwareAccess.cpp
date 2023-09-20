@@ -13,6 +13,7 @@ void init()
 SensorState readSensors()
 {
 	SensorState out;
+	out.time_ms = millis();
 	out.driveEncoders.left 	= ENCODER_Read(kLeftMotor);
 	out.driveEncoders.right	= ENCODER_Read(kRightMotor);
 
@@ -49,7 +50,7 @@ void writeActions(ActionState const& act)
 {
 	// Library calls to write the action state
 	MOTOR_SetSpeed(kLeftMotor, act.driveBaseMotor.left);
-	MOTOR_SetSpeed(kLeftMotor, act.driveBaseMotor.right);
+	MOTOR_SetSpeed(kRightMotor, act.driveBaseMotor.right);
 }
 
 SensorState operator-(SensorState const& lhs, SensorState rhs)

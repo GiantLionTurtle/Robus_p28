@@ -11,12 +11,12 @@ namespace p28 {
 enum kMotorId : uint8_t { kLeftMotor = 0, kRightMotor = 1 };
 enum kBumperId : uint8_t  { kLeftBumper = 0, kRightBumper = 1, kFrontBumper = 2, kRearBumper = 3 };
 
-constexpr float kRobotWidth = 0.2;              // m
+constexpr float kRobotWidth = 0.088;              // m
 constexpr float kRobotWidth_2 = kRobotWidth/2;  // m
-constexpr float kWheelRadius = 0.025;           // m
-constexpr int kTicksPerRotation = 100;
+constexpr float kWheelRadius = 0.0381;           // m
+constexpr int kTicksPerRotation = 3200;
 constexpr float kMaxAngVelocity = 0.2;          // rad / s
-constexpr float kMaxVel = 0.4;                  // m / s
+constexpr float kMaxVel = 1.9;                  // m / s
 
 using time_t = long unsigned int;
 

@@ -33,7 +33,7 @@ struct ActionState {
 struct SensorState {
 	time_t time_ms;
 
-	mt::iVec2 driveEncoders; // Units are encoder ticks
+	mt::i32Vec2 driveEncoders; // Units are encoder ticks
 
 	int8_t bumperSwitches[4]; // Could be combined into one int
 
