@@ -24,8 +24,13 @@ Driver::State Driver::driver_state(SensorState const& prev, SensorState const& c
 {
 	Driver::State out;
 	
-	out.wheel_vel[kLeftMotor] 	= Drivebase::ticks_to_dist(current.driveEncoders.left) / delta_s;
-	out.wheel_vel[kRightMotor] 	= Drivebase::ticks_to_dist(current.driveEncoders.right) / delta_s;
+	// Serial.print("Drive encoder left: ");
+	// Serial.print(current.driveEncoders.left);
+	// Serial.print(",  ");
+	// Serial.println(Drivebase::ticks_to_dist(current.driveEncoders.left));
+
+	out.wheel_vel[kLeftMotor] 	= Drivebase::ticks_to_dist(current.driveEncoders.left - prev.driveEncoders.left) / delta_s;
+	out.wheel_vel[kRightMotor] 	= Drivebase::ticks_to_dist(current.driveEncoders.right - prev.driveEncoders.right) / delta_s;
 	
 	return out;
 }

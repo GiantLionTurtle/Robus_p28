@@ -15,6 +15,9 @@ Pair<float, MotorDriver> MotorDriver::drive(mt::ValTarg<float> const& valTarg, f
 	newError.error_change = velocityError.error - newError.error;
 	newError.error_sum = velocityError.error_sum + newError.error * time_s;
 
+	// Serial.print("Error: ");
+	// Serial.println(newError.error);
+
 	return { 	pid.get(velocityError), 
 				MotorDriver{newError, pid} };
 }

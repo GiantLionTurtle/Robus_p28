@@ -58,6 +58,13 @@ struct Robot {
 	// Returns the time of the most recent sensor state
 	time_t time_ms() const;
 
+	// This function takes over the robot in an attempt to 
+	// Find the ultimate gain of the Ziegler-Nichols pid tuning method
+	// https://en.wikipedia.org/wiki/Ziegler%E2%80%93Nichols_methods
+	// It outputs the time (ms), P parameter of both wheels, speed of both
+	// wheels in csv over serial
+	void Ziegler_Nichols_ultimateGain_drivebase(float p, long unsigned int test_duration_ms);
+
 private:
 	// Create the drive command
 	Driver::Command drive_command() const;

@@ -49,8 +49,8 @@ void SensorState::print() const
 void writeActions(ActionState const& act)
 {
 	// Library calls to write the action state
-	MOTOR_SetSpeed(kLeftMotor, act.driveBaseMotor.left);
-	MOTOR_SetSpeed(kRightMotor, act.driveBaseMotor.right);
+	MOTOR_SetSpeed(kLeftMotor, -act.driveBaseMotor.left);
+	MOTOR_SetSpeed(kRightMotor, -act.driveBaseMotor.right);
 }
 
 SensorState operator-(SensorState const& lhs, SensorState rhs)
@@ -61,6 +61,7 @@ SensorState operator-(SensorState const& lhs, SensorState rhs)
 	for(int i = 0; i < 4; ++i) {
 		out.bumperSwitches[i] = lhs.bumperSwitches[i] - rhs.bumperSwitches[i];
 	}
+	return out;
 }
 
 }

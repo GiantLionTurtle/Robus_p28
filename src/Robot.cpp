@@ -44,4 +44,44 @@ Driver::Command Robot::drive_command() const
 	};
 }
 
+
+void Robot::Ziegler_Nichols_ultimateGain_drivebase(float p_gain, long unsigned int test_duration_ms)
+{
+	SensorState prev = readSensors();
+	SensorState curr;
+
+	float target_vel = 0.5; // m/s
+	unsigned int granularity_ms = 10;
+
+	Serial.print("Start P_gain = ");
+	Serial.println(p_gain);
+
+	driver.wheelMotors[kLeftMotor].pid.P = p_gain;
+	driver.wheelMotors[kRightMotor].pid.P = p_gain;
+	unsigned int n_it = (test_duration_ms / granularity_ms);
+	for(unsigned int i = 0; i < n_it; ++i) {
+		curr = readSensors();
+
+		float diff_s = static_cast<float>(curr.time_ms-prev.time_ms) / 1000.0f;
+		Driver::State dState = Driver::driver_state(prev, curr, diff_s);
+		ActionState todo;
+		tie(todo, driver) = driver.make_actionState({Driver::State{mt::Vec2(target_vel)}, dState}, diff_s);
+
+		// Serial.print("Todo left: ");
+		// Serial.println(todo.driveBaseMotor.left);
+
+		prev = curr;
+		writeActions(todo);
+		Serial.print(curr.time_ms);
+		Serial.print(", ");
+		Serial.print(dState.wheel_vel.left);
+		Serial.print(", ");
+		Serial.println(dState.wheel_vel.right);
+		delay(granularity_ms);
+	}
+	writeActions(ActionState());
+	delay(20);
+	Serial.println("End all tests");
+}
+
 } // !p28
