@@ -3,6 +3,8 @@
 #include "LibRobus.h"
 #include "Constants.hpp"
 
+void PrintEmile();
+
 void setup() 
 {
 
@@ -11,4 +13,8 @@ void setup()
 void loop() 
 {
 
+}
+
+void PrintEmile(){
+    printf("Emile");
 }
