@@ -18,3 +18,7 @@ void loop()
 void PrintEmile(){
     printf("Emile");
 }
+void PrintNathan()
+{
+    printf("Merci Theo!");
+}
