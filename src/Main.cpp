@@ -13,3 +13,8 @@ void loop()
 printf("Mon nom est vincent");
     Serial.print("Vincent");
 }
+
+void monNom()
+{
+    printf("Max");
+}
