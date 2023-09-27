@@ -1,6 +1,7 @@
+
 #include <Arduino.h>
-#include "LibRobus.h"
-#include "Constants.hpp"
+#include <LibRobus.h>
+#include <Constants.hpp>
 
 void setup() 
 {
@@ -9,9 +10,5 @@ void setup()
 
 void loop() 
 {
-
-}
-
-void NomMax(){
-    printf("Maxime was here");
+printf("Mon nom est vincent");
 }
