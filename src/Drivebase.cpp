@@ -1,9 +1,22 @@
 
 #include "Drivebase.hpp"
+#include "Field.hpp"
 
 #include <LibRobus.h>
 
 namespace p28 {
+
+// Helper functions
+
+// Updates the position (in meters) of the robot
+// given a distance travelled along a field direction
+void update_pos(float dist, int direction, float& x, float& y);
+// move; LEFT or RIGHT, changes the robot direction
+// direction is !!! RELATIVE TO THE FIELD !!! 
+void update_orientation(int move, int& direction);
+
+
+// Public functions
 
 float ticks_to_dist(uint32_t ticks)
 {
@@ -31,5 +44,37 @@ Motor update_motor_at_speed(Motor motor, float set_speed, long int time_ms)
 	MOTOR_SetSpeed(motor.ID, harware_set);
 	return motor;
 }
+
+void update_pos(float dist, int direction, float& x, float& y)
+{
+
+}
+void update_orientation(int move, int& direction)
+{
+
+}
+
+Drivebase forward_dist(Drivebase drvb, float dist, float speed)
+{
+
+}
+Drivebase forward_until_detect(Drivebase drvb, float dist, float speed, bool& detection)
+{
+
+}
+Drivebase turn_right(Drivebase drvb)
+{
+
+}
+Drivebase turn_left(Drivebase drvb)
+{
+
+}
+
+Drivebase move_to_square(Drivebase drvb, int square_x, int square_y)
+{
+
+}
+
 
 } // !p28

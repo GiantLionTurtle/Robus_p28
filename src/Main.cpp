@@ -7,15 +7,15 @@
 p28::Motor motorLeft;
 p28::Motor motorRight;
 
-float ticks_to_dist(uint32_t ticks)
-{
-	return static_cast<float>(ticks) / 3200.0 * TWO_PI * p28::kWheelRadius;
-}
+
 
 void setup() 
 {
 	BoardInit();
+	motorLeft.ID = LEFT;
 	motorLeft.pid = { 1.4, 35.55555, 0.0333333 };
+
+	motorRight.ID = RIGHT;
 	motorRight.pid = { 1.4, 35.55555, 0.0333333 };
 }
 
