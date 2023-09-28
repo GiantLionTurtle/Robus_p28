@@ -1,7 +1,6 @@
 
 #include "Drivebase.hpp"
 #include "Field.hpp"
-
 #include <LibRobus.h>
 
 namespace p28 {
@@ -64,11 +63,17 @@ Drivebase forward_until_detect(Drivebase drvb, float dist, float speed, bool& de
 }
 Drivebase turn_right(Drivebase drvb)
 {
-
+	update_motor_at_speed(drvb.left, 0.5,(((TWO_PI*kWheelRadius)/4)*(0.5*kMaxVel))*1000);
+	update_motor_at_speed(drvb.right,-0.5,(((TWO_PI*kWheelRadius)/4)*(0.5*kMaxVel))*1000);
+	update_orientation(3,drvb.direction);
+	return drvb;
 }
 Drivebase turn_left(Drivebase drvb)
 {
-
+	update_motor_at_speed(drvb.left, -0.5,(((TWO_PI*kWheelRadius)/4)*(0.5*kMaxVel))*1000);
+	update_motor_at_speed(drvb.right,0.5,(((TWO_PI*kWheelRadius)/4)*(0.5*kMaxVel))*1000);
+	update_orientation(2,drvb.direction);
+	return drvb;
 }
 
 Drivebase move_to_square(Drivebase drvb, int square_x, int square_y)
