@@ -4,13 +4,13 @@
 #include "Constants.hpp"
 #include "Drivebase.hpp"
 
-<<<<<<< HEAD
+<<<<<<<<< Temporary merge branch 1
 void PrintEmile();
 
 void setup() 
 {
 
-=======
+=========
 p28::Motor motorLeft;
 p28::Motor motorRight;
 
@@ -24,22 +24,22 @@ void setup()
 	BoardInit();
 	motorLeft.pid = { 1.4, 35.55555, 0.0333333 };
 	motorRight.pid = { 1.4, 35.55555, 0.0333333 };
->>>>>>> 0bbbac7dd0612438ad718a694ed36b47df007ff3
+>>>>>>>>> Temporary merge branch 2
 }
 
 void loop() 
 {
-<<<<<<< HEAD
+<<<<<<<<< Temporary merge branch 1
     
 }
 
 void PrintEmile(){
     printf("Emile Raymond test 3"); 
-=======
+=========
 	long int millis_time = millis();
 	motorLeft = p28::update_motor_at_speed(motorLeft, 0.5, millis_time);
 	motorRight = p28::update_motor_at_speed(motorLeft, 0.5, millis_time);
 
 	delay(10);
->>>>>>> 0bbbac7dd0612438ad718a694ed36b47df007ff3
+>>>>>>>>> Temporary merge branch 2
 }
