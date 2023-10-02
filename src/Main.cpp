@@ -24,11 +24,7 @@ void setup()
 	delay(500);
 	mainBase = p28::turn_right(mainBase);
 	delay(500);
-	mainBase = p28::turn_left(mainBase);
-	mainBase = p28::turn_left(mainBase);
-	mainBase = p28::turn_left(mainBase);
-	mainBase = p28::turn_left(mainBase);
-
+	mainBase = p28::forward_dist(mainBase, 0.5, -0.4);
 }
 
 void loop() 

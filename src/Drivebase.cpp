@@ -124,11 +124,39 @@ void update_orientation(int move, int& direction)
 
 Drivebase forward_dist(Drivebase drvb, float dist, float speed)
 {
-	return drvb;
+	long int init_ticks = drvb.left.last_ticks;
+	float distance_parcourue = 0;
+	drvb = set_motorTime(drvb, millis());
+
+	while(distance_parcourue < dist) {
+		delay(kControlLoopDelay);
+
+		long int time_ms = millis();
+		drvb.left = update_motor_at_speed(drvb.left, speed, time_ms);
+		drvb.right = update_motor_at_speed(drvb.right, speed, time_ms);
+		distance_parcourue = abs(ticks_to_dist(drvb.left.last_ticks-init_ticks));
+	}
+
+	update_pos(distance_parcourue, drvb.direction, drvb.x, drvb.y);
+	return zero_all(drvb);
 }
 Drivebase forward_until_detect(Drivebase drvb, float dist, float speed, bool& detection)
 {
-	return drvb;
+	long int init_ticks = drvb.left.last_ticks;
+	float distance_parcourue = 0;
+	drvb = set_motorTime(drvb, millis());
+
+	while(!detection && distance_parcourue < dist) {
+		delay(kControlLoopDelay);
+
+		long int time_ms = millis();
+		drvb.left = update_motor_at_speed(drvb.left, speed, time_ms);
+		drvb.right = update_motor_at_speed(drvb.right, speed, time_ms);
+		distance_parcourue = abs(ticks_to_dist(drvb.left.last_ticks-init_ticks));
+	}
+	
+	update_pos(distance_parcourue, drvb.direction, drvb.x, drvb.y);
+	return zero_all(drvb);
 }
 Drivebase turn_right(Drivebase drvb)
 {
