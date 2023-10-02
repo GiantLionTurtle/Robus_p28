@@ -23,7 +23,7 @@ void loop()
 {
 	long int millis_time = millis();
 	motorLeft = p28::update_motor_at_speed(motorLeft, 0.5, millis_time);
-	motorRight = p28::update_motor_at_speed(motorLeft, 0.5, millis_time);
+	motorRight = p28::update_motor_at_speed(motorRight, 0.5, millis_time);
 
 	delay(10);
 }
