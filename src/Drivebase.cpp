@@ -51,20 +51,31 @@ void update_pos(float dist, int direction, float& x, float& y)
 }
 void update_orientation(int move, int& direction)
 {
-
+	
 }
 
 Drivebase forward_dist(Drivebase drvb, float dist, float speed)
 {
-
+	update_motor_at_speed(drvb.left, speed, (dist/speed)*1000);
+	update_motor_at_speed(drvb.right, speed, (dist/speed)*1000);
+	update_pos(dist, drvb.direction, drvb.x, drvb.y);
+	return drvb;
 }
 Drivebase forward_until_detect(Drivebase drvb, float dist, float speed, bool& detection)
 {
-
+	while(!detection)
+	{
+		update_motor_at_speed(drvb.left, speed, (dist/speed)*1000);
+		update_motor_at_speed(drvb.right, speed, (dist/speed)*1000);
+	}
+	update_motor_at_speed(drvb.right, 0, (dist/speed)*1000);
+	update_motor_at_speed(drvb.right, 0, (dist/speed)*1000);
+	update_pos(dist, drvb.direction, drvb.x, drvb.y);
+	return drvb;
 }
 Drivebase turn_right(Drivebase drvb)
 {
-
+	
 }
 Drivebase turn_left(Drivebase drvb)
 {
