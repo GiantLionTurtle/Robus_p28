@@ -14,7 +14,7 @@ struct Motor {
     PID pid;
     Error error;
     float speed { 0.0 };
-    int32_t last_ticks { 0.0 };
+    int32_t last_ticks { 0 };
     long int last_time_ms { 0 };
 };
 struct Drivebase {

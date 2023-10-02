@@ -94,9 +94,9 @@ void update_pos(float dist, int direction, float& x, float& y)
 
 void update_orientation(int move, int& direction)
 {
-		switch(move)
+	switch(move)
 	{
-		case 0:
+case 0:
 			break;
 		case 1:
 			direction = abs(direction-move);
@@ -139,26 +139,39 @@ void update_orientation(int move, int& direction)
 
 Drivebase forward_dist(Drivebase drvb, float dist, float speed)
 {
-		update_motor_at_speed(drvb.left, speed, (dist/speed)*1000);
-	update_motor_at_speed(drvb.right, speed, (dist/speed)*1000);
-	update_pos(dist, drvb.direction, drvb.x, drvb.y);
+	long int init_ticks = drvb.left.last_ticks;
+	float distance_parcourue = 0;
+	while(distance_parcourue < dist)
+	{
+		long int time_ms = millis();
+		drvb.left = update_motor_at_speed(drvb.left, speed, time_ms);
+		drvb.right = update_motor_at_speed(drvb.right, speed, time_ms);
+		distance_parcourue = ticks_to_dist(drvb.left.last_ticks-init_ticks);
+	}
+	drvb.left = update_motor_at_speed(drvb.left, 0, millis());
+	drvb.right = update_motor_at_speed(drvb.right, 0, millis());
+	update_pos(distance_parcourue, drvb.direction, drvb.x, drvb.y);
 	return drvb;
 }
 Drivebase forward_until_detect(Drivebase drvb, float dist, float speed, bool& detection)
 {
+	long int init_ticks = drvb.left.last_ticks;
+	float distance_parcourue = 0;
 	while(!detection)
 	{
-		update_motor_at_speed(drvb.left, speed, (dist/speed)*1000);
-		update_motor_at_speed(drvb.right, speed, (dist/speed)*1000);
+		long int time_ms = millis();
+		drvb.left = update_motor_at_speed(drvb.left, speed, time_ms);
+		drvb.right = update_motor_at_speed(drvb.right, speed, time_ms);
+		distance_parcourue = ticks_to_dist(drvb.left.last_ticks-init_ticks);
 	}
-	update_motor_at_speed(drvb.right, 0, (dist/speed)*1000);
-	update_motor_at_speed(drvb.right, 0, (dist/speed)*1000);
-	update_pos(dist, drvb.direction, drvb.x, drvb.y);
+	drvb.left = update_motor_at_speed(drvb.left, 0, millis());
+	drvb.right = update_motor_at_speed(drvb.right, 0, millis());
+	update_pos(distance_parcourue, drvb.direction, drvb.x, drvb.y);
 	return drvb;
 }
 Drivebase turn_right(Drivebase drvb)
 {
-	
+
 update_motor_at_speed(drvb.left, 0.5,(((TWO_PI*kWheelRadius)/4)*(0.5*kMaxVel))*1000);
 	update_motor_at_speed(drvb.right,-0.5,(((TWO_PI*kWheelRadius)/4)*(0.5*kMaxVel))*1000);
 	update_orientation(3,drvb.direction);
