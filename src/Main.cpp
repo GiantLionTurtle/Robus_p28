@@ -3,8 +3,9 @@
 #include "LibRobus.h"
 #include "Constants.hpp"
 #include "Drivebase.hpp"
+#include "Solver.hpp"
 
-p28::Drivebase mainBase;
+p28::Drivebase driveBase;
 
 void setup() 
 {
@@ -12,19 +13,21 @@ void setup()
 	delay(1000);
 	Serial.println("Begin!");
 
-	mainBase.left.ID = LEFT;
-	mainBase.left.pid = { 1.4, 35.55555, 0.0333333 };
+	driveBase.left.ID = LEFT;
+	driveBase.left.pid = { 1.4, 35.55555, 0.0333333 };
 
-	mainBase.right.ID = RIGHT;
-	mainBase.right.pid = { 1.4, 35.55555, 0.0333333 };
+	driveBase.right.ID = RIGHT;
+	driveBase.right.pid = { 1.4, 35.55555, 0.0333333 };
 
 	// MOTOR_SetSpeed(RIGHT, 0.5);
 
-	mainBase = p28::turn_left(mainBase);
+	driveBase = p28::turn_left(driveBase);
 	delay(500);
-	mainBase = p28::turn_right(mainBase);
+	driveBase = p28::turn_right(driveBase);
 	delay(500);
-	mainBase = p28::forward_dist(mainBase, 0.5, -0.4);
+	// driveBase = p28::forward_dist(driveBase, 0.5, 0.2);
+
+	driveBase = p28::solve(driveBase);
 }
 
 void loop() 

@@ -125,8 +125,10 @@ void update_orientation(int move, int& direction)
 Drivebase forward_dist(Drivebase drvb, float dist, float speed)
 {
 	long int init_ticks = drvb.left.last_ticks;
+	long int init_time_ms = millis();
 	float distance_parcourue = 0;
-	drvb = set_motorTime(drvb, millis());
+	drvb = set_motorTime(drvb, init_time_ms);
+
 
 	while(distance_parcourue < dist) {
 		delay(kControlLoopDelay);
@@ -193,7 +195,7 @@ Drivebase turn_left(Drivebase drvb)
 	return zero_all(drvb);
 }
 
-Drivebase move_to_square(Drivebase drvb, int square_x, int square_y)
+Drivebase move_to_square(Drivebase drvb, int direction, int n_squares)
 {
 	return drvb;
 }
@@ -213,6 +215,5 @@ Drivebase set_motorTime(Drivebase drvb, long int time_ms)
 	drvb.right.last_time_ms = time_ms;
 	return drvb;
 }
-
 
 } // !p28

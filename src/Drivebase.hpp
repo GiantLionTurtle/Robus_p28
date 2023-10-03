@@ -1,6 +1,6 @@
 
 #ifndef P28_DRIVEBASE_HPP_
-#define P28 DRIVEBASE_HPP_
+#define P28_DRIVEBASE_HPP_
 
 #include <Arduino.h>
 
@@ -21,7 +21,7 @@ struct Drivebase {
     Motor left;
     Motor right;
 
-    float x, y;
+    float x, y; // Position in meters
     int direction; // FRONT, BACK, LEFT, RIGHT
 };
 
@@ -45,12 +45,18 @@ Drivebase forward_until_detect(Drivebase drvb, float dist, float speed, bool& de
 Drivebase turn_right(Drivebase drvb);
 Drivebase turn_left(Drivebase drvb);
 
-// Move to a square, handle the orientation of the robot and such
-// Simple, dumb strategie like go to x, turn, go to y
-Drivebase move_to_square(Drivebase drvb, int square_x, int square_y);
+
+// Moves the drivebase by increments of squares in one of 
+// 4 directions (LEFT, RIGHT, FRONT, REAR)
+// If the drivebase does not start at the center of a square,
+// it still gets to the center of the destination square with
+// respect to it's move direction
+Drivebase move_to_square(Drivebase drvb, int direction, int n_squares);
 
 Drivebase zero_all(Drivebase drvb);
 Drivebase set_motorTime(Drivebase drvb, long int time_ms);
+
+// float velocity_profile(float target_vel, float dist_to_travel, float current_dist, float time_since_start);
 
 } // !p28
 
