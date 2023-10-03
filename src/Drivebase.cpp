@@ -148,8 +148,10 @@ Drivebase forward_dist(Drivebase drvb, float dist, float speed)
 		drvb.right = update_motor_at_speed(drvb.right, speed, time_ms);
 		distance_parcourue = ticks_to_dist(drvb.left.last_ticks-init_ticks);
 	}
-	drvb.left = update_motor_at_speed(drvb.left, 0, millis());
-	drvb.right = update_motor_at_speed(drvb.right, 0, millis());
+	/*drvb.left = update_motor_at_speed(drvb.left, 0, millis());
+	drvb.right = update_motor_at_speed(drvb.right, 0, millis());*/
+	MOTOR_SetSpeed(0, 0);
+	MOTOR_SetSpeed(1, 0);
 	update_pos(distance_parcourue, drvb.direction, drvb.x, drvb.y);
 	return drvb;
 }
