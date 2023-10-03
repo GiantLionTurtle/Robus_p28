@@ -26,7 +26,7 @@ struct Drivebase {
 };
 
 // Conversion for encoders to distance (meters)
-float ticks_to_dist(uint32_t ticks);
+float ticks_to_dist(int32_t ticks);
 
 
 // Functions that move the robot must return 
@@ -48,6 +48,9 @@ Drivebase turn_left(Drivebase drvb);
 // Move to a square, handle the orientation of the robot and such
 // Simple, dumb strategie like go to x, turn, go to y
 Drivebase move_to_square(Drivebase drvb, int square_x, int square_y);
+
+Drivebase zero_all(Drivebase drvb);
+Drivebase set_motorTime(Drivebase drvb, long int time_ms);
 
 } // !p28
 

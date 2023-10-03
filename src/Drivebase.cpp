@@ -12,10 +12,6 @@ namespace p28 {
  * 
  * @param dist Distance that the robot just travelled
  * @param direction Direction in which the robot travelled
- * 0: forwards
- * 1: backwards
- * 2: left
- * 3: right
  * @param x
  * x position of the robot on a 2D plane 
  * @param y 
@@ -29,16 +25,15 @@ void update_orientation(int move, int& direction);
 
 // Public functions
 
-float ticks_to_dist(uint32_t ticks)
+float ticks_to_dist(int32_t ticks)
 {
-	return static_cast<float>(ticks) / 3200.0 * TWO_PI * p28::kWheelRadius;
+	return static_cast<float>(ticks) / 3200 * TWO_PI * p28::kWheelRadius;
 }
 
 Motor get_motor_speed(Motor motor, float delta_s)
 {
 	int32_t current_ticks = ENCODER_Read(motor.ID);
 	int32_t ticks_diff = current_ticks - motor.last_ticks;
-
 	motor.speed = ticks_to_dist(ticks_diff) / delta_s;
 	motor.last_ticks = current_ticks;
 	return motor;
@@ -52,6 +47,7 @@ Motor update_motor_at_speed(Motor motor, float set_speed, long int time_ms)
 	motor = get_motor_speed(motor, delta_s);
 	motor.error = update_error(motor.error, motor.speed, set_speed, delta_s);
 	float harware_set = get(motor.pid, motor.error);
+
 	MOTOR_SetSpeed(motor.ID, harware_set);
 	return motor;
 }
@@ -62,10 +58,7 @@ Motor update_motor_at_speed(Motor motor, float set_speed, long int time_ms)
  * 
  * @param dist Distance that the robot just travelled
  * @param direction Direction in which the robot travelled
- * 0: forwards
- * 1: backwards
- * 2: left
- * 3: right
+
  * @param x
  * x position of the robot on a 2D plane 
  * @param y 
@@ -75,16 +68,16 @@ void update_pos(float dist, int direction, float& x, float& y)
 {
 	switch(direction)
 	{
-		case 0:
+		case FRONT:
 			y+=dist;
 			break;
-		case 1:
+		case REAR:
 			y-=dist;
 			break;
-		case 2:
+		case LEFT:
 			x-=dist;
 			break;
-		case 3:
+		case RIGHT:
 			x+=dist;
 			break;
 		default:
@@ -94,46 +87,38 @@ void update_pos(float dist, int direction, float& x, float& y)
 
 void update_orientation(int move, int& direction)
 {
-	switch(move)
-	{
-case 0:
-			break;
-		case 1:
-			direction = abs(direction-move);
-			break;
-		case 2:
-			switch(direction)
-			{
-				case 0:
-					direction = 2;
-					break;
-				case 1:
-					direction = 3;
-					break;
-				case 2:
-					direction = 1;
-					break;
-				case 3:
-					direction = 0;
-					break;
-			}
-		case 3:
-			switch(direction)
-			{
-				case 0:
-					direction = 3;
-					break;
-				case 1:
-					direction = 2;
-					break;
-				case 2:
-					direction = 0;
-					break;
-				case 3:
-					direction = 1;
-					break;
-			}
-		
+	if(move == LEFT) {
+		switch(direction)
+		{
+			case FRONT:
+				direction = LEFT;
+				break;
+			case REAR:
+				direction = RIGHT;
+				break;
+			case LEFT:
+				direction = REAR;
+				break;
+			case RIGHT:
+				direction = FRONT;
+				break;
+		}
+	} else if(move == RIGHT) {
+		switch(direction)
+		{
+			case FRONT:
+				direction = RIGHT;
+				break;
+			case REAR:
+				direction = LEFT;
+				break;
+			case LEFT:
+				direction = FRONT;
+				break;
+			case RIGHT:
+				direction = REAR;
+				break;
+		}
 	}
 }
 
@@ -141,55 +126,92 @@ Drivebase forward_dist(Drivebase drvb, float dist, float speed)
 {
 	long int init_ticks = drvb.left.last_ticks;
 	float distance_parcourue = 0;
-	while(distance_parcourue < dist)
-	{
+	drvb = set_motorTime(drvb, millis());
+
+	while(distance_parcourue < dist) {
+		delay(kControlLoopDelay);
+
 		long int time_ms = millis();
 		drvb.left = update_motor_at_speed(drvb.left, speed, time_ms);
 		drvb.right = update_motor_at_speed(drvb.right, speed, time_ms);
-		distance_parcourue = ticks_to_dist(drvb.left.last_ticks-init_ticks);
+		distance_parcourue = abs(ticks_to_dist(drvb.left.last_ticks-init_ticks));
 	}
-	/*drvb.left = update_motor_at_speed(drvb.left, 0, millis());
-	drvb.right = update_motor_at_speed(drvb.right, 0, millis());*/
-	MOTOR_SetSpeed(0, 0);
-	MOTOR_SetSpeed(1, 0);
+
 	update_pos(distance_parcourue, drvb.direction, drvb.x, drvb.y);
-	return drvb;
+	return zero_all(drvb);
 }
 Drivebase forward_until_detect(Drivebase drvb, float dist, float speed, bool& detection)
 {
 	long int init_ticks = drvb.left.last_ticks;
 	float distance_parcourue = 0;
-	while(!detection)
-	{
+	drvb = set_motorTime(drvb, millis());
+
+	while(!detection && distance_parcourue < dist) {
+		delay(kControlLoopDelay);
+
 		long int time_ms = millis();
 		drvb.left = update_motor_at_speed(drvb.left, speed, time_ms);
 		drvb.right = update_motor_at_speed(drvb.right, speed, time_ms);
-		distance_parcourue = ticks_to_dist(drvb.left.last_ticks-init_ticks);
+		distance_parcourue = abs(ticks_to_dist(drvb.left.last_ticks-init_ticks));
 	}
-	drvb.left = update_motor_at_speed(drvb.left, 0, millis());
-	drvb.right = update_motor_at_speed(drvb.right, 0, millis());
+	
 	update_pos(distance_parcourue, drvb.direction, drvb.x, drvb.y);
-	return drvb;
+	return zero_all(drvb);
 }
 Drivebase turn_right(Drivebase drvb)
 {
+	float dist_to_travel = PI * kRobotWidth / 4.0;
+	long int init_ticks = drvb.right.last_ticks;
+	drvb = set_motorTime(drvb, millis());
 
-update_motor_at_speed(drvb.left, 0.5,(((TWO_PI*kWheelRadius)/4)*(0.5*kMaxVel))*1000);
-	update_motor_at_speed(drvb.right,-0.5,(((TWO_PI*kWheelRadius)/4)*(0.5*kMaxVel))*1000);
-	update_orientation(3,drvb.direction);
-	return drvb;
+	while(abs(ticks_to_dist(drvb.right.last_ticks-init_ticks)) < dist_to_travel) {
+		delay(kControlLoopDelay);
+
+		long int time_ms = millis();
+		drvb.left = update_motor_at_speed(drvb.left, 0.2, time_ms);
+		drvb.right = update_motor_at_speed(drvb.right, -0.2, time_ms);
+	}		
+
+	update_orientation(RIGHT, drvb.direction);
+	return zero_all(drvb);
 }
 Drivebase turn_left(Drivebase drvb)
 {
-update_motor_at_speed(drvb.left, -0.5,(((TWO_PI*kWheelRadius)/4)*(0.5*kMaxVel))*1000);
-	update_motor_at_speed(drvb.right,0.5,(((TWO_PI*kWheelRadius)/4)*(0.5*kMaxVel))*1000);
-	update_orientation(2,drvb.direction);
-	return drvb;
+	float dist_to_travel = PI * kRobotWidth / 4.0;
+	long int init_ticks = drvb.right.last_ticks;
+	drvb = set_motorTime(drvb, millis());
+
+	while(abs(ticks_to_dist(drvb.right.last_ticks-init_ticks)) < dist_to_travel) {
+		delay(kControlLoopDelay);
+
+		long int time_ms = millis();
+		drvb.left = update_motor_at_speed(drvb.left, -0.2, time_ms);
+		drvb.right = update_motor_at_speed(drvb.right, 0.2, time_ms);
+	}
+
+	update_orientation(LEFT, drvb.direction);
+	return zero_all(drvb);
 }
 
 Drivebase move_to_square(Drivebase drvb, int square_x, int square_y)
 {
+	return drvb;
+}
 
+Drivebase zero_all(Drivebase drvb)
+{
+	MOTOR_SetSpeed(LEFT, 0.0);
+	MOTOR_SetSpeed(RIGHT, 0.0);
+
+	drvb.left.speed = 0.0;
+	drvb.right.speed = 0.0;
+	return drvb;
+}
+Drivebase set_motorTime(Drivebase drvb, long int time_ms)
+{
+	drvb.left.last_time_ms = time_ms;
+	drvb.right.last_time_ms = time_ms;
+	return drvb;
 }
 
 

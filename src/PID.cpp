@@ -1,10 +1,14 @@
 
 #include "PID.hpp"
 
+#include <Arduino.h>
+
 namespace p28 {
 
 Error update_error(Error err, float value, float setpoint, float delta_s)
 {
+	// Serial.print("Delta s: ");
+	// Serial.println(delta_s);
 	Error out;
 	out.error = setpoint - value;
 	out.diff_error = out.error - err.error;

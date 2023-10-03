@@ -4,26 +4,31 @@
 #include "Constants.hpp"
 #include "Drivebase.hpp"
 
-p28::Motor motorLeft;
-p28::Motor motorRight;
-
-
+p28::Drivebase mainBase;
 
 void setup() 
 {
 	BoardInit();
-	motorLeft.ID = LEFT;
-	motorLeft.pid = { 1.4, 35.55555, 0.0333333 };
+	delay(1000);
+	Serial.println("Begin!");
 
-	motorRight.ID = RIGHT;
-	motorRight.pid = { 1.4, 35.55555, 0.0333333 };
+	mainBase.left.ID = LEFT;
+	mainBase.left.pid = { 1.4, 35.55555, 0.0333333 };
+
+	mainBase.right.ID = RIGHT;
+	mainBase.right.pid = { 1.4, 35.55555, 0.0333333 };
+
+	// MOTOR_SetSpeed(RIGHT, 0.5);
+
+	mainBase = p28::turn_left(mainBase);
+	delay(500);
+	mainBase = p28::turn_right(mainBase);
+	delay(500);
+	mainBase = p28::forward_dist(mainBase, 0.5, -0.4);
 }
 
 void loop() 
 {
-	long int millis_time = millis();
-	motorLeft = p28::update_motor_at_speed(motorLeft, 0.5, millis_time);
-	motorRight = p28::update_motor_at_speed(motorRight, 0.5, millis_time);
-
+	Serial.println("out");
 	delay(10);
 }
