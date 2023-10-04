@@ -4,10 +4,12 @@
 #include "Constants.hpp"
 #include "Drivebase.hpp"
 #include "Solver.hpp"
+#include "WhistleDetector.hpp"
 
 #define ROBOT_A
 
 p28::Drivebase driveBase;
+bool detect = false;
 
 void setup()
 {
@@ -27,25 +29,28 @@ void setup()
 #endif
 	pinMode(14, INPUT);
     pinMode(15, INPUT);
-	bool detect = false;
+	pinMode(18, INPUT);
 
-	//MOTOR_SetSpeed(RIGHT, 0.5);
-
-	// driveBase = p28::turn_left(driveBase);
-	// delay(500);
+	// driveBase = p28::forward_until_detect(driveBase, 5, 0.2, detect);
+	// delay(100);
 	// driveBase = p28::turn_right(driveBase);
-	// delay(500);
-	driveBase = p28::forward_dist(driveBase, 2, 0.2);
-
-	// driveBase = p28::solve(driveBase);
-	// // driveBase = p28::forward_dist(driveBase, 0.5, 0.2);
-
-	// driveBase = p28::solve(driveBase);
-	driveBase= p28::move_to_square(driveBase, REAR, 1);
+	// delay(100);
+	// driveBase = p28::turn_right(driveBase);
+	// delay(100);
+	// driveBase = p28::forward_dist(driveBase, 0.5, 0.2);
 }
 
 void loop() 
 {
-	//Serial.println("out");
+	if(whistle_detection())
+	{
+		detect = false;
+		driveBase = p28::forward_until_detect(driveBase, 5, 0.2, detect);
+		delay(100);
+		driveBase = p28::turn_right(driveBase);
+		delay(100);
+		driveBase = p28::turn_right(driveBase);
+		delay(100);
+	}
 	delay(10);
 }
