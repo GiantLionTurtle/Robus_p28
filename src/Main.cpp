@@ -68,7 +68,5 @@ void loop()
 	{
 		start = true;
 	}
-	Serial.println("Whistle: ");
-	Serial.println(p28::whistle_detection());
 	delay(10);
 }
