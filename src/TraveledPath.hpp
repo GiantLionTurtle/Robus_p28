@@ -13,7 +13,7 @@ namespace p28 {
 
     void add_move(int direction);
 
-    int last_move();
+    int get_last_move();
 
     int opposite_move(int move);
 

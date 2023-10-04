@@ -11,8 +11,7 @@ static int index = -1;
 
     void init_path()
     {
-        int length = sizeof(traveled_path);
-        for(int i=0;i<length;i++)
+        for(int i = 0; i < LENGTH-1; i++)
         {
             traveled_path[i] = -1;
         }
@@ -30,6 +29,7 @@ static int index = -1;
         {
             return traveled_path[index];
         }
+        return -1;
     }
 
     void delete_last_move()
@@ -57,6 +57,9 @@ static int index = -1;
                 break;
             case RIGHT:
                 opposite = LEFT;
+                break;
+            default:
+                opposite = -1;
                 break;
         }
         return opposite;

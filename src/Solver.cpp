@@ -77,11 +77,11 @@ void init_legalityMatrix()
 	// Outer walls
 	for(int i = 0; i < kFieldWidth+1; ++i) {
 		set_legality(i, 0, REAR, Legality::Cannot_go);
-		set_legality(i, kFieldHeight, REAR, Legality::Cannot_go);
+		set_legality(i, kFieldHeight-1, FRONT, Legality::Cannot_go);
 	}
 	for(int i = 0; i < kFieldHeight+1; ++i) {
 		set_legality(0, i, LEFT, Legality::Cannot_go);
-		set_legality(kFieldWidth, i, LEFT, Legality::Cannot_go);
+		set_legality(kFieldWidth-1, i, RIGHT, Legality::Cannot_go);
 	}
 }
 
@@ -116,22 +116,31 @@ Drivebase solve(Drivebase drvb)
    
    // return drvb;
 
-Drivebase try_move(Drivebase drvb, int move, bool& success)
+Drivebase try_move(Drivebase drvb, int move, int illegal_move, bool& success)
 {
+	if(move == illegal_move) {
+		success = false;
+		return drvb;
+	}
 	int legal = is_move_legal(drvb.sq_x, drvb.sq_y, move);
-	Serial.print("Legal ");
-	Serial.print(move);
-	Serial.print("  ");
-	Serial.println(legal);
+	// Serial.print("Legal ");
+	// Serial.print(move);
+	// Serial.print("  ");
+	// Serial.println(legal);
 	if(legal == Legality::Can_go) {
 		drvb = move_to_square(drvb, move, 1);
 		success = true;
+		delay(kDecelerationDelay);
 	} else if(legal == Legality::Unknown) {
 		bool wall = false;
-		drvb = move_to_square_or_detect(drvb, move, wall);
+		int init_sq_x = drvb.sq_x;
+		int init_sq_y = drvb.sq_y;
 
-		set_legality(!wall, drvb.sq_x, drvb.sq_y, move);
+		drvb = move_to_square_or_detect(drvb, move, wall);
+		
+		set_legality(init_sq_x, init_sq_y, move, wall ? Legality::Cannot_go : Legality::Can_go);
 		success = !wall;
+		delay(kDecelerationDelay);
 	} else {
 		success = false;
 	}
@@ -139,38 +148,53 @@ Drivebase try_move(Drivebase drvb, int move, bool& success)
 }
 Drivebase step(Drivebase drvb)
 {
+	int auto_fail = opposite_move(get_last_move());
+
 	bool success = false;
-	drvb = try_move(drvb, FRONT, success);
-	if(success)
-	{
+	Serial.println("Try front");
+	drvb = try_move(drvb, FRONT, auto_fail, success);
+	if(success) {
 		add_move(FRONT);
 		return drvb;
 	}
-	drvb = try_move(drvb, LEFT, success);
-	if(success)
-	{
+	drvb = try_move(drvb, LEFT, auto_fail, success);
+	if(success) {
 		add_move(LEFT);
 		return drvb;
 	}
 
-	drvb = try_move(drvb, RIGHT, success);
-	if(success)
-	{
+	Serial.println("Try right");
+	drvb = try_move(drvb, RIGHT, auto_fail, success);
+	if(success) {
 		add_move(RIGHT);
 		return drvb;
 	}
+	drvb = try_move(drvb, REAR, auto_fail, success);
+	if(success) {
+		add_move(REAR);
+		return drvb;
+	}
+
 
 	// Manage back
 	int trace_back = retrace_last_move();
+	if(trace_back == -1)
+		return drvb; // give up;
+
 	drvb = move_to_square(drvb, trace_back, 1);
 	// Update Legality matrix
-	set_legality(false, drvb.sq_x, drvb.sq_y, opposite_move(trace_back));
+	set_legality(drvb.sq_x, drvb.sq_y, opposite_move(trace_back), Legality::Cannot_go);
 
 	return drvb;
 }
 Drivebase solve2(Drivebase drvb)
 {
 	while(drvb.sq_y != 9) {
+		Serial.print("square: ");
+		Serial.print(drvb.x);
+		Serial.print(",  ");
+		Serial.println(drvb.sq_x);
+
 		drvb = step(drvb);
 	}
 	return drvb;

@@ -45,28 +45,31 @@ void setup()
 	// driveBase = p28::solve(driveBase);
 	// driveBase= p28::move_to_square(driveBase, REAR, 1);
 	// driveBase = p28::move_to_square_or_detect(driveBase, RIGHT, detect);
-	// driveBase = p28::solve2(driveBase);
-	Serial.print("Legal: ");
-	Serial.println(p28::is_move_legal(1, 0, FRONT));
-	driveBase= p28::move_to_square(driveBase, REAR, 1);
+	driveBase = p28::solve2(driveBase);
+
+	// Serial.print("Legal: ");
+	// Serial.println(p28::is_move_legal(1, 0, RIGHT));
+	// driveBase= p28::move_to_square(driveBase, REAR, 1);
 }
 
 void loop() 
 {
-	if(start)
-	{
-		bool detect = false;
-		float traveled_dist = 0;
-		driveBase = p28::forward_until_detect(driveBase, 5, 0.2, traveled_dist, detect);
-		delay(100);
-		driveBase = p28::turn_right(driveBase);
-		delay(100);
-		driveBase = p28::turn_right(driveBase);
-		delay(100);
-	}
-	if(p28::whistle_detection())
-	{
-		start = true;
-	}
-	delay(10);
+	// if(start)
+	// {
+	// 	bool detect = false;
+	// 	float traveled_dist = 0;
+	// 	driveBase = p28::forward_until_detect(driveBase, 5, 0.2, traveled_dist, detect);
+	// 	delay(100);
+	// 	driveBase = p28::turn_right(driveBase);
+	// 	delay(100);
+	// 	driveBase = p28::turn_right(driveBase);
+	// 	delay(100);
+	// }
+	// if(p28::whistle_detection())
+	// {
+	// 	start = true;
+	// }
+	// Serial.println("Whistle: ");
+	// Serial.println(p28::whistle_detection());
+	// delay(10);
 }

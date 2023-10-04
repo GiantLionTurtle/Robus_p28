@@ -16,7 +16,7 @@ bool wall_detection()
 {
     bool red = !digitalRead(RED_PIN);
     bool green = !digitalRead(GREEN_PIN);
-    return (red && green);
+    return (red || green);
 }
 
 }

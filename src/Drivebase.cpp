@@ -84,6 +84,7 @@ Drivebase update_pos(Drivebase drvb, float dist, int direction)
 		default:
 			break;
 	}
+
 	drvb.sq_x = drvb.x / kSquareSize;
 	drvb.sq_y = drvb.y / kSquareSize;
 	return drvb;
@@ -136,7 +137,6 @@ Drivebase forward_dist(Drivebase drvb, float dist, float speed)
 	float distance_parcourue = 0;
 	drvb = set_motorTime(drvb, init_time_ms);
 
-
 	while(distance_parcourue < dist) {
 		delay(kControlLoopDelay);
 
@@ -146,7 +146,8 @@ Drivebase forward_dist(Drivebase drvb, float dist, float speed)
 		distance_parcourue = abs(ticks_to_dist(drvb.left.last_ticks-init_ticks));
 	}
 
-	update_pos(drvb, distance_parcourue, drvb.orientation);
+	double dist_mult = speed < 0 ? -1.0 : 1.0;
+	drvb = update_pos(drvb, dist_mult*distance_parcourue, drvb.orientation);
 	return zero_all(drvb);
 }
 Drivebase forward_until_detect(Drivebase drvb, float dist, float speed, float& traveled_dist, bool& detection)
@@ -177,8 +178,8 @@ Drivebase turn_right(Drivebase drvb)
 		delay(kControlLoopDelay);
 
 		long int time_ms = millis();
-		drvb.left = update_motor_at_speed(drvb.left, 0.2, time_ms);
-		drvb.right = update_motor_at_speed(drvb.right, -0.2, time_ms);
+		drvb.left = update_motor_at_speed(drvb.left, kTurnSpeed, time_ms);
+		drvb.right = update_motor_at_speed(drvb.right, -kTurnSpeed, time_ms);
 	}		
 
 	drvb = update_orientation(drvb, RIGHT);
@@ -194,8 +195,8 @@ Drivebase turn_left(Drivebase drvb)
 		delay(kControlLoopDelay);
 
 		long int time_ms = millis();
-		drvb.left = update_motor_at_speed(drvb.left, -0.2, time_ms);
-		drvb.right = update_motor_at_speed(drvb.right, 0.2, time_ms);
+		drvb.left = update_motor_at_speed(drvb.left, -kTurnSpeed, time_ms);
+		drvb.right = update_motor_at_speed(drvb.right, kTurnSpeed, time_ms);
 	}
 	drvb = update_orientation(drvb, LEFT);
 	return zero_all(drvb);
@@ -227,7 +228,7 @@ Drivebase move_to_square(Drivebase drvb, int direction, int n_squares)
 {
 	drvb = orient_toward_direction(drvb, direction);
 	delay(kDecelerationDelay);
-	drvb = forward_dist(drvb, kSquareSize, 0.2);
+	drvb = forward_dist(drvb, kSquareSize, kForwardSpeed);
 
 	return drvb;
 }
@@ -236,13 +237,13 @@ Drivebase move_to_square_or_detect(Drivebase drvb, int direction, bool& detectio
 	drvb = orient_toward_direction(drvb, direction);
 	delay(kDecelerationDelay);
 	float traveled_dist;
-	drvb = forward_until_detect(drvb, kSquareSize/2.0, 0.2, traveled_dist, detection);
+	drvb = forward_until_detect(drvb, kSquareSize/2.0, kDetectSpeed, traveled_dist, detection);
 
 	if(detection) { // There was a wall
 		delay(kDecelerationDelay);
-		drvb = forward_dist(drvb, traveled_dist, -0.2);
+		drvb = forward_dist(drvb, traveled_dist, -kForwardSpeed);
 	} else {
-		drvb = forward_dist(drvb, kSquareSize-traveled_dist, 0.2);
+		drvb = forward_dist(drvb, kSquareSize-traveled_dist, kForwardSpeed);
 	}
 	return drvb;
 }
