@@ -7,18 +7,9 @@
 
 namespace p28 {
 
-// Get the index in the LegalityMatrix for a given
-// square
-int legalityIndex(int x, int y);
-
 enum Legality { Cannot_go = 1, Can_go = 2, Unknown = 4 };
-
-// returns the Legality of a move (LEFT, RIGHT, FRONT or REAR)
-Legality is_legal_move(int sq_x, int sq_y, int move);
-
-// Sets the legality matrix after discovering that a move is legal
-void set_legality(bool legal, int sq_x, int sq_y, int move);
-
+int is_move_legal(int sq_x, int sq_y, int move);
+void set_legality(int sq_x, int sq_y, int move, int legality);
 void init_legalityMatrix();
 
 /*

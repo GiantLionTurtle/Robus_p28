@@ -11,11 +11,12 @@ p28::Drivebase driveBase;
 void setup()
 {
 	BoardInit();
-	p28::init_detector();
-	p28::init_legalityMatrix();
-	delay(1000);
 	Serial.println("Begin!");
 
+	p28::init_detector();
+	p28::init_legalityMatrix();
+
+	delay(1000);
 	driveBase.left.ID = LEFT;
 	driveBase.right.ID = RIGHT;
 
@@ -43,7 +44,9 @@ void setup()
 	// driveBase = p28::solve(driveBase);
 	// driveBase= p28::move_to_square(driveBase, REAR, 1);
 	// driveBase = p28::move_to_square_or_detect(driveBase, RIGHT, detect);
-	driveBase = p28::solve2(driveBase);
+	// driveBase = p28::solve2(driveBase);
+	Serial.print("Legal: ");
+	Serial.println(p28::is_move_legal(1, 0, FRONT));
 }
 
 void loop() 

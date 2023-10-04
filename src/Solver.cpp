@@ -2,7 +2,13 @@
 #include "Solver.hpp"
 #include "LibRobus.h"
 
+
+#define LEFT_WALL_BIT_MASK (1 | 2 | 4)
+#define REAR_WALL_BIT_MASK (8 | 16 | 32)
+#define REAR_WALL_BIT_OFFSET 3
+
 namespace p28 {
+
 
 // Each char represents the left and bottom "walls" of 
 // a case
@@ -10,66 +16,74 @@ static char LegalityMatrix[(kFieldWidth+1)*(kFieldHeight+1)];
 
 int legalityIndex(int sq_x, int sq_y)
 {
-	return sq_x * (kFieldWidth+1) + sq_y;
+	return sq_y * (kFieldWidth+1) + sq_x;
 }
 
-Legality is_legal_move(int sq_x, int sq_y, int move)
+int is_move_legal(int sq_x, int sq_y, int move)
 {
 	switch(move) {
 	case LEFT:
-		return static_cast<Legality>(LegalityMatrix[legalityIndex(sq_x, sq_y)]);
+		return LegalityMatrix[legalityIndex(sq_x, sq_y)] & ~REAR_WALL_BIT_MASK;
 	case RIGHT:
-		return is_legal_move(sq_x+1, sq_y, LEFT);
+		return is_move_legal(sq_x+1, sq_y, LEFT);
 	case FRONT:
-		return is_legal_move(sq_x, sq_y+1, REAR);
+		return is_move_legal(sq_x, sq_y+1, REAR);
 	case REAR:
-		return static_cast<Legality>(LegalityMatrix[legalityIndex(sq_x, sq_y)]>>3);
+		return (LegalityMatrix[legalityIndex(sq_x, sq_y)] & ~LEFT_WALL_BIT_MASK) >> REAR_WALL_BIT_OFFSET;
 	default:
 		return Legality::Cannot_go;
 	}
 }
-
-void set_legality(bool legal, int sq_x, int sq_y, int move)
+void set_legality(int sq_x, int sq_y, int move, int legality)
 {
-	int legal_impl = legal ? Legality::Can_go : Legality::Cannot_go;
+	int ind;
 	switch(move) {
 	case LEFT:
-			LegalityMatrix[legalityIndex(sq_x, sq_y)] = legal_impl;
+			ind = legalityIndex(sq_x, sq_y);
+			LegalityMatrix[ind] &= ~LEFT_WALL_BIT_MASK;
+			LegalityMatrix[ind] |= legality;
 		break;
 	case RIGHT:
-			set_legality(legal, sq_x+1, sq_y, LEFT);
+			set_legality(sq_x+1, sq_y, LEFT, legality);
 		break;
 	case FRONT:
-			set_legality(legal, sq_x, sq_y+1, REAR);
+			set_legality(sq_x, sq_y+1, REAR, legality);
 		break;
 	case REAR:
-			LegalityMatrix[legalityIndex(sq_x, sq_y)] = legal_impl<<3;
+			ind = legalityIndex(sq_x, sq_y);
+			LegalityMatrix[ind] &= ~REAR_WALL_BIT_MASK;
+			LegalityMatrix[legalityIndex(sq_x, sq_y)] |= (legality << REAR_WALL_BIT_OFFSET);
 		break;
 	default:
 		break;
 	}
 }
 
+
 void init_legalityMatrix()
 {
-	for(int i = 0; i < (kFieldWidth+1)*(kFieldHeight+1); ++i) {
-		LegalityMatrix[i] = Legality::Unknown;
+	for(int i = 0; i < kFieldWidth+1; ++i) {
+		for(int j = 0; j < kFieldHeight+1; ++j) {
+			set_legality(i, j, LEFT, Legality::Unknown);
+			set_legality(i, j, REAR, Legality::Unknown);
+		}
 	}
 	// Black walls in the middle
 	for(int i = 1; i < 10; i+=2) {
-		set_legality(false, 1, i, LEFT);
-		set_legality(false, 1, i, RIGHT);
+		set_legality(1, i, LEFT, Legality::Cannot_go);
+		set_legality(1, i, RIGHT, Legality::Cannot_go);
 	}
 	// Outer walls
 	for(int i = 0; i < kFieldWidth+1; ++i) {
-		set_legality(false, i, 0, REAR);
-		set_legality(false, i, kFieldHeight, REAR);
+		set_legality(i, 0, REAR, Legality::Cannot_go);
+		set_legality(i, kFieldHeight, REAR, Legality::Cannot_go);
 	}
 	for(int i = 0; i < kFieldHeight+1; ++i) {
-		set_legality(false, 0, i, LEFT);
-		set_legality(false, kFieldWidth, i, LEFT);
+		set_legality(0, i, LEFT, Legality::Cannot_go);
+		set_legality(kFieldWidth, i, LEFT, Legality::Cannot_go);
 	}
 }
+
 
 Drivebase solve(Drivebase drvb)
 {}
@@ -103,7 +117,7 @@ Drivebase solve(Drivebase drvb)
 
 Drivebase try_move(Drivebase drvb, int move, bool& success)
 {
-	Legality legal = is_legal_move(drvb.sq_x, drvb.sq_y, move);
+	int legal = is_move_legal(drvb.sq_x, drvb.sq_y, move);
 	Serial.print("Legal ");
 	Serial.print(move);
 	Serial.print("  ");
