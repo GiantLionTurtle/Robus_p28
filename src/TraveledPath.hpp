@@ -9,15 +9,18 @@
 namespace p28 {
 
 
-    void init_path();
+void init_path();
 
-    void add_move(int direction);
+void add_move(int direction);
 
-    int get_last_move();
+int get_last_move();
 
-    int opposite_move(int move);
+int opposite_move(int move);
 
-    int retrace_last_move();
+int retrace_last_move();
+
+int stored_move(int ind);
+int n_stored_moves();
 
 }
 

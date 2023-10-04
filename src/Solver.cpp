@@ -8,6 +8,10 @@
 #define REAR_WALL_BIT_MASK (8 | 16 | 32)
 #define REAR_WALL_BIT_OFFSET 3
 
+// Uncomment to go back at the begining of
+// the maze when finished solving
+// #define GO_BACK_TO_BEGINING
+
 namespace p28 {
 
 
@@ -151,7 +155,6 @@ Drivebase step(Drivebase drvb)
 	int auto_fail = opposite_move(get_last_move());
 
 	bool success = false;
-	Serial.println("Try front");
 	drvb = try_move(drvb, FRONT, auto_fail, success);
 	if(success) {
 		add_move(FRONT);
@@ -162,8 +165,6 @@ Drivebase step(Drivebase drvb)
 		add_move(LEFT);
 		return drvb;
 	}
-
-	Serial.println("Try right");
 	drvb = try_move(drvb, RIGHT, auto_fail, success);
 	if(success) {
 		add_move(RIGHT);
@@ -174,7 +175,6 @@ Drivebase step(Drivebase drvb)
 		add_move(REAR);
 		return drvb;
 	}
-
 
 	// Manage back
 	int trace_back = retrace_last_move();
@@ -189,14 +189,27 @@ Drivebase step(Drivebase drvb)
 }
 Drivebase solve2(Drivebase drvb)
 {
-	while(drvb.sq_y != 9) {
-		Serial.print("square: ");
-		Serial.print(drvb.x);
-		Serial.print(",  ");
-		Serial.println(drvb.sq_x);
-
-		drvb = step(drvb);
+	int n_stored = n_stored_moves();
+	if(n_stored <= 0) { // Maze is not solved yet
+		while(drvb.sq_y != 9) {
+			drvb = step(drvb);
+		}
+	} else {
+		for(int i = 0; i < n_stored; ++i) {
+			drvb = move_to_square(drvb, stored_move(i), 1);
+		}
 	}
+
+#ifndef GO_BACK_TO_BEGINING
+	delay(1000);
+	n_stored = n_stored_moves();
+	for(int i = n_stored-1; i >= 0; --i) {
+		// don't use retrace_last_move to remember the optimal path
+		// for next time
+		drvb = move_to_square(drvb, opposite_move(stored_move(i)), 1);
+	}
+#endif
+
 	return drvb;
 }
 
