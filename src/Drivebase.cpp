@@ -195,14 +195,32 @@ Drivebase turn_left(Drivebase drvb)
 	return zero_all(drvb);
 }
 
-Drivebase move_to_square(Drivebase drvb, int direction, int n_squares)
-{
-	return drvb;
+bool is_fastest_left(int current_dir, int target_dir){
+	bool inv = false;
+	if(target_dir < current_dir){
+		int tmp = target_dir;
+		target_dir = current_dir;
+		current_dir = tmp;
+		inv = true;
+	}
+	bool out=true;
+	if(current_dir==LEFT && target_dir==FRONT)
+		out=false;
+	if(current_dir==RIGHT && target_dir==REAR)
+		out=false;
+	if(inv)
+		return !out;
 }
 
-Drivebase direction_until_detect(Drivebase drvb,int direction,float dist, bool& detection)
+Drivebase move_to_square(Drivebase drvb, int direction, int n_squares)
 {
-	
+	while(direction!=drvb.direction){
+		Serial.println(drvb.direction);
+		drvb=turn_left(drvb);
+	}
+	forward_dist(drvb, kSquareSize, 0.2);
+
+	return drvb;
 }
 
 Drivebase zero_all(Drivebase drvb)
