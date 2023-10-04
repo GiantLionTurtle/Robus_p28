@@ -7,6 +7,7 @@ namespace p28{
 
 #define LENGTH 100
 static int traveled_path[LENGTH];
+static int index = -1;
 
     void init_path()
     {
@@ -17,33 +18,27 @@ static int traveled_path[LENGTH];
         }
     }
 
-    int index_last_move()
-    {
-        int i =0;
-        for(i;i<LENGTH && traveled_path[i] != -1;i++)
-        {
-        }
-        return i-1;
-    }
-
     void add_move(int direction)
     {
-        int index = index_last_move()+1;
+        index++;
         traveled_path[index] = direction;
-
     }
 
     int get_last_move()
     {
-        int index = index_last_move();
-        return traveled_path[index];
-
+         if(index >= 0)
+        {
+            return traveled_path[index];
+        }
     }
 
     void delete_last_move()
     {
-       int index = index_last_move();
-        traveled_path[index] = -1;
+        if(index >= 0)
+        {
+            traveled_path[index] = -1;
+            index--;
+        }
     }
 
     int retrace_last_move()
