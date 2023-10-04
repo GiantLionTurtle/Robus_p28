@@ -237,6 +237,7 @@ Drivebase orient_toward_direction(Drivebase drvb, int direction)
 			drvb = turn_right(drvb);
 		}
 	}
+	return drvb;
 }
 
 Drivebase zero_all(Drivebase drvb)
