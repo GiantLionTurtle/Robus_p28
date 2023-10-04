@@ -223,12 +223,6 @@ Drivebase move_to_square(Drivebase drvb, int direction, int n_squares)
 	return drvb;
 }
 
-void pos_square(Drivebase drvb, int& sq_x, int& sq_y)
-{
-	sq_x=drvb.x/0.5;
-	sq_y=drvb.y/0.5;
-}
-
 Drivebase zero_all(Drivebase drvb)
 {
 	MOTOR_SetSpeed(LEFT, 0.0);
