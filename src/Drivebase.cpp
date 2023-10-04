@@ -65,64 +65,68 @@ Motor update_motor_at_speed(Motor motor, float set_speed, long int time_ms)
  * @param y  (out)
  * y position of the robot on a 2D plane
  */
-void update_pos(float dist, int direction, float& x, float& y)
+Drivebase update_pos(Drivebase drvb, float dist, int direction)
 {
 	switch(direction)
 	{
 		case FRONT:
-			y+=dist;
+			drvb.y+=dist;
 			break;
 		case REAR:
-			y-=dist;
+			drvb.y-=dist;
 			break;
 		case LEFT:
-			x-=dist;
+			drvb.x-=dist;
 			break;
 		case RIGHT:
-			x+=dist;
+			drvb.x+=dist;
 			break;
 		default:
 			break;
 	}
+	drvb.sq_x = drvb.x / kSquareSize;
+	drvb.sq_y = drvb.y / kSquareSize;
+	return drvb;
 }
 
 // Move is field centric, orientation is robot centric
 // @param orientation (out)
-void update_orientation(int move, int& orientation)
+Drivebase update_orientation(Drivebase drvb, int move)
 {
 	if(move == LEFT) {
-		switch(orientation)
+		switch(drvb.orientation)
 		{
 			case FRONT:
-				orientation = LEFT;
+				drvb.orientation = LEFT;
 				break;
 			case REAR:
-				orientation = RIGHT;
+				drvb.orientation = RIGHT;
 				break;
 			case LEFT:
-				orientation = REAR;
+				drvb.orientation = REAR;
 				break;
 			case RIGHT:
-				orientation = FRONT;
+				drvb.orientation = FRONT;
 				break;
 		}
 	} else if(move == RIGHT) {
-		switch(orientation)
+		switch(drvb.orientation)
 		{
 			case FRONT:
-				orientation = RIGHT;
+				drvb.orientation = RIGHT;
 				break;
 			case REAR:
-				orientation = LEFT;
+				drvb.orientation = LEFT;
 				break;
 			case LEFT:
-				orientation = FRONT;
+				drvb.orientation = FRONT;
 				break;
 			case RIGHT:
-				orientation = REAR;
+				drvb.orientation = REAR;
 				break;
 		}
 	}
+	return drvb;
 }
 
 Drivebase forward_dist(Drivebase drvb, float dist, float speed)
@@ -142,7 +146,7 @@ Drivebase forward_dist(Drivebase drvb, float dist, float speed)
 		distance_parcourue = abs(ticks_to_dist(drvb.left.last_ticks-init_ticks));
 	}
 
-	update_pos(distance_parcourue, drvb.orientation, drvb.x, drvb.y);
+	update_pos(drvb, distance_parcourue, drvb.orientation);
 	return zero_all(drvb);
 }
 Drivebase forward_until_detect(Drivebase drvb, float dist, float speed, float& traveled_dist, bool& detection)
@@ -160,7 +164,7 @@ Drivebase forward_until_detect(Drivebase drvb, float dist, float speed, float& t
 		traveled_dist = abs(ticks_to_dist(drvb.left.last_ticks-init_ticks));
 		detection = wall_detection();
 	}
-	update_pos(traveled_dist, drvb.orientation, drvb.x, drvb.y);
+	drvb = update_pos(drvb, traveled_dist, drvb.orientation);
 	return zero_all(drvb);
 }
 Drivebase turn_right(Drivebase drvb)
@@ -177,7 +181,7 @@ Drivebase turn_right(Drivebase drvb)
 		drvb.right = update_motor_at_speed(drvb.right, -0.2, time_ms);
 	}		
 
-	update_orientation(RIGHT, drvb.orientation);
+	drvb = update_orientation(drvb, RIGHT);
 	return zero_all(drvb);
 }
 Drivebase turn_left(Drivebase drvb)
@@ -193,7 +197,7 @@ Drivebase turn_left(Drivebase drvb)
 		drvb.left = update_motor_at_speed(drvb.left, -0.2, time_ms);
 		drvb.right = update_motor_at_speed(drvb.right, 0.2, time_ms);
 	}
-	update_orientation(LEFT, drvb.orientation);
+	drvb = update_orientation(drvb, LEFT);
 	return zero_all(drvb);
 }
 
