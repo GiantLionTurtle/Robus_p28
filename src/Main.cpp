@@ -42,7 +42,8 @@ void setup()
 
 	// driveBase = p28::solve(driveBase);
 	// driveBase= p28::move_to_square(driveBase, REAR, 1);
-	driveBase = p28::move_to_square_or_detect(driveBase, RIGHT, detect);
+	// driveBase = p28::move_to_square_or_detect(driveBase, RIGHT, detect);
+	driveBase = p28::solve2(driveBase);
 }
 
 void loop() 

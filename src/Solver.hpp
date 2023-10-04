@@ -27,6 +27,7 @@ void init_legalityMatrix();
 
 // Main function, solves the maze
 Drivebase solve(Drivebase drvb);
+Drivebase solve2(Drivebase drvb);
 
 } // !p28
 

@@ -22,6 +22,7 @@ struct Drivebase {
     Motor left;
     Motor right;
 
+    int sq_x { 1 }, sq_y { 0 }; // Position in squares
     float x{ 0.75 }, y { 0.25 }; // Position in meters, from the bottom left corner of the field
     int orientation { FRONT }; // FRONT, BACK, LEFT, RIGHT
 };

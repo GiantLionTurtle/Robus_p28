@@ -101,7 +101,51 @@ Drivebase solve(Drivebase drvb)
    
    // return drvb;
 
+Drivebase try_move(Drivebase drvb, int move, bool& success)
+{
+	Legality legal = is_legal_move(drvb.sq_x, drvb.sq_y, move);
+	Serial.print("Legal ");
+	Serial.print(move);
+	Serial.print("  ");
+	Serial.println(legal);
+	if(legal == Legality::Can_go) {
+		drvb = move_to_square(drvb, move, 1);
+		success = true;
+	} else if(legal == Legality::Unknown) {
+		bool wall = false;
+		drvb = move_to_square_or_detect(drvb, move, wall);
 
+		set_legality(!wall, drvb.sq_x, drvb.sq_y, move);
+		success = !wall;
+	} else {
+		success = false;
+	}
+	return drvb;
+}
+Drivebase step(Drivebase drvb)
+{
+	bool success = false;
+	drvb = try_move(drvb, FRONT, success);
+	if(success) return drvb;
+
+	drvb = try_move(drvb, LEFT, success);
+	if(success) return drvb;
+
+	drvb = try_move(drvb, RIGHT, success);
+	if(success) return drvb;
+
+	// Manage back
+
+
+	return drvb;
+}
+Drivebase solve2(Drivebase drvb)
+{
+	while(drvb.sq_y != 9) {
+		drvb = step(drvb);
+	}
+	return drvb;
+}
 
 
 } // !p28
