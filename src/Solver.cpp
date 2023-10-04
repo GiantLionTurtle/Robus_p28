@@ -1,6 +1,7 @@
 
 #include "Solver.hpp"
 #include "LibRobus.h"
+#include "TraveledPath.hpp"
 
 
 #define LEFT_WALL_BIT_MASK (1 | 2 | 4)
@@ -115,8 +116,12 @@ Drivebase solve(Drivebase drvb)
    
    // return drvb;
 
-Drivebase try_move(Drivebase drvb, int move, bool& success)
+Drivebase try_move(Drivebase drvb, int move, int illegal_move, bool& success)
 {
+	if(move == illegal_move) {
+		success = false;
+		return drvb;
+	}
 	int legal = is_move_legal(drvb.sq_x, drvb.sq_y, move);
 	// Serial.print("Legal ");
 	// Serial.print(move);
@@ -143,20 +148,36 @@ Drivebase try_move(Drivebase drvb, int move, bool& success)
 }
 Drivebase step(Drivebase drvb)
 {
+	int auto_fail = opposite_move(get_last_move());
+
 	bool success = false;
 	Serial.println("Try front");
-	drvb = try_move(drvb, FRONT, success);
-	if(success) return drvb;
-
-	Serial.println("Try left");
-	drvb = try_move(drvb, LEFT, success);
-	if(success) return drvb;
+	drvb = try_move(drvb, FRONT, auto_fail, success);
+	if(success) {
+		add_move(FRONT);
+		return drvb;
+	}
+	drvb = try_move(drvb, LEFT, auto_fail, success);
+	if(success) {
+		add_move(LEFT);
+		return drvb;
+	}
 
 	Serial.println("Try right");
-	drvb = try_move(drvb, RIGHT, success);
-	if(success) return drvb;
+	drvb = try_move(drvb, RIGHT, auto_fail, success);
+	if(success) {
+		add_move(RIGHT);
+		return drvb;
+	}
 
 	// Manage back
+	int trace_back = retrace_last_move();
+	if(trace_back == -1)
+		return drvb; // give up;
+
+	drvb = move_to_square(drvb, trace_back, 1);
+	// Update Legality matrix
+	set_legality(drvb.sq_x, drvb.sq_y, opposite_move(trace_back), Legality::Cannot_go);
 
 	return drvb;
 }

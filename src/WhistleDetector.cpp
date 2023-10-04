@@ -1,9 +1,20 @@
+
 #include <Arduino.h>
 #include "LibRobus.h"
 #include "Constants.hpp"
+#include "WhistleDetector.hpp"
 
-bool wall_detection()
+namespace p28 {
+
+void init_whistle()
 {
-    bool whistle = digitalRead(18);
+    pinMode(WHISTLE_PIN, INPUT);
+}
+
+bool whistle_detection()
+{
+    bool whistle = digitalRead(WHISTLE_PIN);
     return whistle;
+}
+
 }
