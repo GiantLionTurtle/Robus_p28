@@ -3,6 +3,7 @@
 #define P28_DRIVEBASE_HPP_
 
 #include <Arduino.h>
+#include <LibRobus.h>
 
 #include "PID.hpp"
 #include "Constants.hpp"
@@ -21,8 +22,8 @@ struct Drivebase {
     Motor left;
     Motor right;
 
-    float x, y; // Position in meters
-    int direction; // FRONT, BACK, LEFT, RIGHT
+    float x{ 0.0 }, y { 0.0 }; // Position in meters, from the bottom left corner of the field
+    int direction { FRONT }; // FRONT, BACK, LEFT, RIGHT
 };
 
 // Conversion for encoders to distance (meters)
