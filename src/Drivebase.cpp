@@ -1,6 +1,7 @@
 #include "Drivebase.hpp"
 #include "Field.hpp"
 #include <LibRobus.h>
+#include "ProximityDetector.hpp"
 
 namespace p28 {
 
@@ -146,15 +147,15 @@ Drivebase forward_until_detect(Drivebase drvb, float dist, float speed, bool& de
 	float distance_parcourue = 0;
 	drvb = set_motorTime(drvb, millis());
 
-	while(!detection && distance_parcourue < dist) {
+	while(!detection && distance_parcourue < dist)
+	 {
 		delay(kControlLoopDelay);
-
 		long int time_ms = millis();
 		drvb.left = update_motor_at_speed(drvb.left, speed, time_ms);
 		drvb.right = update_motor_at_speed(drvb.right, speed, time_ms);
 		distance_parcourue = abs(ticks_to_dist(drvb.left.last_ticks-init_ticks));
+		detection = wall_detection();
 	}
-	
 	update_pos(distance_parcourue, drvb.direction, drvb.x, drvb.y);
 	return zero_all(drvb);
 }
@@ -188,7 +189,6 @@ Drivebase turn_left(Drivebase drvb)
 		drvb.left = update_motor_at_speed(drvb.left, -0.2, time_ms);
 		drvb.right = update_motor_at_speed(drvb.right, 0.2, time_ms);
 	}
-
 	update_orientation(LEFT, drvb.direction);
 	return zero_all(drvb);
 }
