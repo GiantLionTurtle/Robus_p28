@@ -23,7 +23,7 @@ struct Drivebase {
     Motor right;
 
     float x{ 0.0 }, y { 0.0 }; // Position in meters, from the bottom left corner of the field
-    int direction { FRONT }; // FRONT, BACK, LEFT, RIGHT
+    int orientation { FRONT }; // FRONT, BACK, LEFT, RIGHT
 };
 
 // Conversion for encoders to distance (meters)
@@ -52,6 +52,7 @@ Drivebase turn_left(Drivebase drvb);
 // it still gets to the center of the destination square with
 // respect to it's move direction
 Drivebase move_to_square(Drivebase drvb, int direction, int n_squares);
+Drivebase orient_toward_direction(Drivebase drvb, int direction);
 Drivebase direction_until_detect(Drivebase drvb,int direction,float dist, bool& detection);
 
 Drivebase zero_all(Drivebase drvb);

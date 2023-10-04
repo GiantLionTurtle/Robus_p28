@@ -58,11 +58,11 @@ Motor update_motor_at_speed(Motor motor, float set_speed, long int time_ms)
  * given a distance travelled along a field direction
  * 
  * @param dist Distance that the robot just travelled
- * @param direction Direction in which the robot travelled
+ * @param direction Direction in which the robot travelled (field centric)
 
- * @param x
+ * @param x (out)
  * x position of the robot on a 2D plane 
- * @param y 
+ * @param y  (out)
  * y position of the robot on a 2D plane
  */
 void update_pos(float dist, int direction, float& x, float& y)
@@ -86,38 +86,40 @@ void update_pos(float dist, int direction, float& x, float& y)
 	}
 }
 
-void update_orientation(int move, int& direction)
+// Move is field centric, orientation is robot centric
+// @param orientation (out)
+void update_orientation(int move, int& orientation)
 {
 	if(move == LEFT) {
-		switch(direction)
+		switch(orientation)
 		{
 			case FRONT:
-				direction = LEFT;
+				orientation = LEFT;
 				break;
 			case REAR:
-				direction = RIGHT;
+				orientation = RIGHT;
 				break;
 			case LEFT:
-				direction = REAR;
+				orientation = REAR;
 				break;
 			case RIGHT:
-				direction = FRONT;
+				orientation = FRONT;
 				break;
 		}
 	} else if(move == RIGHT) {
-		switch(direction)
+		switch(orientation)
 		{
 			case FRONT:
-				direction = RIGHT;
+				orientation = RIGHT;
 				break;
 			case REAR:
-				direction = LEFT;
+				orientation = LEFT;
 				break;
 			case LEFT:
-				direction = FRONT;
+				orientation = FRONT;
 				break;
 			case RIGHT:
-				direction = REAR;
+				orientation = REAR;
 				break;
 		}
 	}
@@ -140,7 +142,7 @@ Drivebase forward_dist(Drivebase drvb, float dist, float speed)
 		distance_parcourue = abs(ticks_to_dist(drvb.left.last_ticks-init_ticks));
 	}
 
-	update_pos(distance_parcourue, drvb.direction, drvb.x, drvb.y);
+	update_pos(distance_parcourue, drvb.orientation, drvb.x, drvb.y);
 	return zero_all(drvb);
 }
 Drivebase forward_until_detect(Drivebase drvb, float dist, float speed, bool& detection)
@@ -158,7 +160,7 @@ Drivebase forward_until_detect(Drivebase drvb, float dist, float speed, bool& de
 		distance_parcourue = abs(ticks_to_dist(drvb.left.last_ticks-init_ticks));
 		detection = wall_detection();
 	}
-	update_pos(distance_parcourue, drvb.direction, drvb.x, drvb.y);
+	update_pos(distance_parcourue, drvb.orientation, drvb.x, drvb.y);
 	return zero_all(drvb);
 }
 Drivebase turn_right(Drivebase drvb)
@@ -175,7 +177,7 @@ Drivebase turn_right(Drivebase drvb)
 		drvb.right = update_motor_at_speed(drvb.right, -0.2, time_ms);
 	}		
 
-	update_orientation(RIGHT, drvb.direction);
+	update_orientation(RIGHT, drvb.orientation);
 	return zero_all(drvb);
 }
 Drivebase turn_left(Drivebase drvb)
@@ -191,36 +193,50 @@ Drivebase turn_left(Drivebase drvb)
 		drvb.left = update_motor_at_speed(drvb.left, -0.2, time_ms);
 		drvb.right = update_motor_at_speed(drvb.right, 0.2, time_ms);
 	}
-	update_orientation(LEFT, drvb.direction);
+	update_orientation(LEFT, drvb.orientation);
 	return zero_all(drvb);
 }
 
-bool is_fastest_left(int current_dir, int target_dir){
+// Given en orientation, is it fastest to turn left or right
+// to point toward a direction?
+bool is_fastest_left(int orientation, int target_direction){
 	bool inv = false;
-	if(target_dir < current_dir){
-		int tmp = target_dir;
-		target_dir = current_dir;
-		current_dir = tmp;
+	if(target_direction < orientation){
+		int tmp = target_direction;
+		target_direction = orientation;
+		orientation = tmp;
 		inv = true;
 	}
-	bool out=true;
-	if(current_dir==LEFT && target_dir==FRONT)
-		out=false;
-	if(current_dir==RIGHT && target_dir==REAR)
-		out=false;
+	bool out = true;
+	
+	if(orientation == LEFT && target_direction == FRONT)
+		out = false;
+	if(orientation == RIGHT && target_direction == REAR)
+		out = false;
+	
 	if(inv)
 		return !out;
+	return out;
 }
 
 Drivebase move_to_square(Drivebase drvb, int direction, int n_squares)
 {
-	while(direction!=drvb.direction){
-		Serial.println(drvb.direction);
-		drvb=turn_left(drvb);
-	}
-	forward_dist(drvb, kSquareSize, 0.2);
+	drvb = orient_toward_direction(drvb, direction);
+	drvb = forward_dist(drvb, kSquareSize, 0.2);
 
 	return drvb;
+}
+Drivebase orient_toward_direction(Drivebase drvb, int direction)
+{
+	if(is_fastest_left(drvb.orientation, direction)) {
+		while(direction != drvb.orientation) {
+			drvb = turn_left(drvb);
+		}
+	} else {
+		while(direction != drvb.orientation) {
+			drvb = turn_right(drvb);
+		}
+	}
 }
 
 Drivebase zero_all(Drivebase drvb)
