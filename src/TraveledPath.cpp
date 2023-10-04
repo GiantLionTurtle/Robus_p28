@@ -3,8 +3,6 @@
 #include "Constants.hpp"
 #include "TraveledPath.hpp"
 
-namespace p28{
-
 #define LENGTH 100
 static int traveled_path[LENGTH];
 static int index = -1;
@@ -77,5 +75,4 @@ int retrace_last_move()
 int n_stored_moves()
 {
 	return index+1;
-}
 }

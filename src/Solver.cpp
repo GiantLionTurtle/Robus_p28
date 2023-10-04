@@ -12,7 +12,7 @@
 // the maze when finished solving
 // #define GO_BACK_TO_BEGINING
 
-namespace p28 {
+
 
 
 // Each char represents the left and bottom "walls" of 
@@ -90,7 +90,7 @@ void init_legalityMatrix()
 }
 
 
-Drivebase solve(Drivebase drvb)
+struct Drivebase solve(struct Drivebase drvb)
 {}
 //    if(is_legal_move(drvb, FRONT) == Legality::Can_go) {                
 //     move_to_square(drvb, FRONT, 1);
@@ -120,7 +120,7 @@ Drivebase solve(Drivebase drvb)
    
    // return drvb;
 
-Drivebase try_move(Drivebase drvb, int move, int illegal_move, bool& success)
+struct Drivebase try_move(struct Drivebase drvb, int move, int illegal_move, bool& success)
 {
 	if(move == illegal_move) {
 		success = false;
@@ -150,7 +150,7 @@ Drivebase try_move(Drivebase drvb, int move, int illegal_move, bool& success)
 	}
 	return drvb;
 }
-Drivebase step(Drivebase drvb)
+struct Drivebase step(struct Drivebase drvb)
 {
 	int auto_fail = opposite_move(get_last_move());
 
@@ -187,7 +187,7 @@ Drivebase step(Drivebase drvb)
 
 	return drvb;
 }
-Drivebase solve2(Drivebase drvb)
+struct Drivebase solve2(struct Drivebase drvb)
 {
 	int n_stored = n_stored_moves();
 	if(n_stored <= 0) { // Maze is not solved yet
@@ -214,4 +214,3 @@ Drivebase solve2(Drivebase drvb)
 }
 
 
-} // !p28

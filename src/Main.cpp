@@ -7,7 +7,7 @@
 #include "WhistleDetector.hpp"
 #include "ProximityDetector.hpp"
 
-p28::Drivebase driveBase;
+Drivebase driveBase;
 bool start = false;
 
 void setup()
@@ -15,9 +15,9 @@ void setup()
 	BoardInit();
 	Serial.println("Begin!");
 
-	p28::init_detector();
-	p28::init_whistle();
-	p28::init_legalityMatrix();
+	init_detector();
+	init_whistle();
+	init_legalityMatrix();
 
 	delay(1000);
 	driveBase.left.ID = LEFT;
@@ -33,23 +33,23 @@ void setup()
 
 	//MOTOR_SetSpeed(RIGHT, 0.5);
 
-	// driveBase = p28::turn_left(driveBase);
+	// driveBase = turn_left(driveBase);
 	// delay(500);
-	// driveBase = p28::turn_right(driveBase);
+	// driveBase = turn_right(driveBase);
 	// delay(500);
-	//driveBase = p28::forward_dist(driveBase, 2, 0.2);
+	//driveBase = forward_dist(driveBase, 2, 0.2);
 
-	// driveBase = p28::solve(driveBase);
-	// // driveBase = p28::forward_dist(driveBase, 0.5, 0.2);
+	// driveBase = solve(driveBase);
+	// // driveBase = forward_dist(driveBase, 0.5, 0.2);
 
-	// driveBase = p28::solve(driveBase);
-	// driveBase= p28::move_to_square(driveBase, REAR, 1);
-	// driveBase = p28::move_to_square_or_detect(driveBase, RIGHT, detect);
-	driveBase = p28::solve2(driveBase);
+	// driveBase = solve(driveBase);
+	// driveBase= move_to_square(driveBase, REAR, 1);
+	// driveBase = move_to_square_or_detect(driveBase, RIGHT, detect);
+	driveBase = solve2(driveBase);
 
 	// Serial.print("Legal: ");
-	// Serial.println(p28::is_move_legal(1, 0, RIGHT));
-	// driveBase= p28::move_to_square(driveBase, REAR, 1);
+	// Serial.println(is_move_legal(1, 0, RIGHT));
+	// driveBase= move_to_square(driveBase, REAR, 1);
 }
 
 void loop() 
@@ -58,18 +58,18 @@ void loop()
 	// {
 	// 	bool detect = false;
 	// 	float traveled_dist = 0;
-	// 	driveBase = p28::forward_until_detect(driveBase, 5, 0.2, traveled_dist, detect);
+	// 	driveBase = forward_until_detect(driveBase, 5, 0.2, traveled_dist, detect);
 	// 	delay(100);
-	// 	driveBase = p28::turn_right(driveBase);
+	// 	driveBase = turn_right(driveBase);
 	// 	delay(100);
-	// 	driveBase = p28::turn_right(driveBase);
+	// 	driveBase = turn_right(driveBase);
 	// 	delay(100);
 	// }
-	// if(p28::whistle_detection())
+	// if(whistle_detection())
 	// {
 	// 	start = true;
 	// }
 	// Serial.println("Whistle: ");
-	// Serial.println(p28::whistle_detection());
+	// Serial.println(whistle_detection());
 	// delay(10);
 }
