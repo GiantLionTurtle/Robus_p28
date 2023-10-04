@@ -4,9 +4,11 @@
 #include "Constants.hpp"
 #include "Drivebase.hpp"
 #include "Solver.hpp"
+#include "WhistleDetector.hpp"
 #include "ProximityDetector.hpp"
 
 p28::Drivebase driveBase;
+bool detect = false;
 
 void setup()
 {
@@ -36,7 +38,7 @@ void setup()
 	// delay(500);
 	// driveBase = p28::turn_right(driveBase);
 	// delay(500);
-	// driveBase = p28::forward_dist(driveBase, 2, 0.2);
+	driveBase = p28::forward_dist(driveBase, 2, 0.2);
 
 	// driveBase = p28::solve(driveBase);
 	// // driveBase = p28::forward_dist(driveBase, 0.5, 0.2);
@@ -47,10 +49,20 @@ void setup()
 	// driveBase = p28::solve2(driveBase);
 	Serial.print("Legal: ");
 	Serial.println(p28::is_move_legal(1, 0, FRONT));
+	driveBase= p28::move_to_square(driveBase, REAR, 1);
 }
 
 void loop() 
 {
-	//Serial.println("out");
+	if(whistle_detection())
+	{
+		detect = false;
+		driveBase = p28::forward_until_detect(driveBase, 5, 0.2, detect);
+		delay(100);
+		driveBase = p28::turn_right(driveBase);
+		delay(100);
+		driveBase = p28::turn_right(driveBase);
+		delay(100);
+	}
 	delay(10);
 }
