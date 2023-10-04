@@ -200,6 +200,11 @@ Drivebase move_to_square(Drivebase drvb, int direction, int n_squares)
 	return drvb;
 }
 
+Drivebase direction_until_detect(Drivebase drvb,int direction,float dist, bool& detection)
+{
+	
+}
+
 Drivebase zero_all(Drivebase drvb)
 {
 	MOTOR_SetSpeed(LEFT, 0.0);

@@ -45,16 +45,17 @@ Drivebase forward_until_detect(Drivebase drvb, float dist, float speed, bool& de
 Drivebase turn_right(Drivebase drvb);
 Drivebase turn_left(Drivebase drvb);
 
-
 // Moves the drivebase by increments of squares in one of 
 // 4 directions (LEFT, RIGHT, FRONT, REAR)
 // If the drivebase does not start at the center of a square,
 // it still gets to the center of the destination square with
 // respect to it's move direction
 Drivebase move_to_square(Drivebase drvb, int direction, int n_squares);
+Drivebase direction_until_detect(Drivebase drvb,int direction,float dist, bool& detection);
 
 Drivebase zero_all(Drivebase drvb);
 Drivebase set_motorTime(Drivebase drvb, long int time_ms);
+
 
 // float velocity_profile(float target_vel, float dist_to_travel, float current_dist, float time_since_start);
 
