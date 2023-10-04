@@ -8,12 +8,13 @@
 #include "ProximityDetector.hpp"
 
 p28::Drivebase driveBase;
-bool detect = false;
+bool start = false;
 
 void setup()
 {
 	BoardInit();
 	p28::init_detector();
+	p28::init_whistle();
 	p28::init_legalityMatrix();
 	delay(1000);
 	Serial.println("Begin!");
@@ -29,34 +30,39 @@ void setup()
 	driveBase.right.pid = { 2.8, 53.4, 0.055 };
 #endif
 
-	bool detect = false;
-
 	//MOTOR_SetSpeed(RIGHT, 0.5);
 
 	// driveBase = p28::turn_left(driveBase);
 	// delay(500);
 	// driveBase = p28::turn_right(driveBase);
 	// delay(500);
-	driveBase = p28::forward_dist(driveBase, 2, 0.2);
+	//driveBase = p28::forward_dist(driveBase, 2, 0.2);
 
 	// driveBase = p28::solve(driveBase);
 	// // driveBase = p28::forward_dist(driveBase, 0.5, 0.2);
 
 	// driveBase = p28::solve(driveBase);
-	driveBase= p28::move_to_square(driveBase, REAR, 1);
+	//driveBase= p28::move_to_square(driveBase, REAR, 1);
 }
 
 void loop() 
 {
-	if(whistle_detection())
+	if(start)
 	{
-		detect = false;
-		driveBase = p28::forward_until_detect(driveBase, 5, 0.2, detect);
+		bool detect = false;
+		float traveled_dist = 0;
+		driveBase = p28::forward_until_detect(driveBase, 5, 0.2, traveled_dist, detect);
 		delay(100);
 		driveBase = p28::turn_right(driveBase);
 		delay(100);
 		driveBase = p28::turn_right(driveBase);
 		delay(100);
 	}
+	if(p28::whistle_detection())
+	{
+		start = true;
+	}
+	Serial.println("Whistle: ");
+	Serial.println(p28::whistle_detection());
 	delay(10);
 }
