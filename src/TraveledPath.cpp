@@ -41,25 +41,30 @@ static int index = -1;
         }
     }
 
+    int opposite_move(int move)
+    {
+        int opposite;
+         switch(move)
+        {
+            case FRONT:
+                opposite = REAR;
+                break;
+            case REAR:
+                opposite = FRONT;
+                break;
+            case LEFT:
+                opposite = RIGHT;
+                break;
+            case RIGHT:
+                opposite = LEFT;
+                break;
+        }
+        return opposite;
+    }
     int retrace_last_move()
     {
         int last_move = get_last_move();
-        int go_back;
-        switch(last_move)
-        {
-            case FRONT:
-                go_back = REAR;
-                break;
-            case REAR:
-                go_back = FRONT;
-                break;
-            case LEFT:
-                go_back = RIGHT;
-                break;
-            case RIGHT:
-                go_back = LEFT;
-                break;
-        }
+        int go_back = opposite_move(last_move);
         delete_last_move();
         return go_back;
     }

@@ -1,6 +1,7 @@
 
 #include "Solver.hpp"
 #include "LibRobus.h"
+#include "TraveledPath.hpp"
 
 
 #define LEFT_WALL_BIT_MASK (1 | 2 | 4)
@@ -140,16 +141,30 @@ Drivebase step(Drivebase drvb)
 {
 	bool success = false;
 	drvb = try_move(drvb, FRONT, success);
-	if(success) return drvb;
-
+	if(success)
+	{
+		add_move(FRONT);
+		return drvb;
+	}
 	drvb = try_move(drvb, LEFT, success);
-	if(success) return drvb;
+	if(success)
+	{
+		add_move(LEFT);
+		return drvb;
+	}
 
 	drvb = try_move(drvb, RIGHT, success);
-	if(success) return drvb;
+	if(success)
+	{
+		add_move(RIGHT);
+		return drvb;
+	}
 
 	// Manage back
-
+	int trace_back = retrace_last_move();
+	drvb = move_to_square(drvb, trace_back, 1);
+	// Update Legality matrix
+	set_legality(false, drvb.sq_x, drvb.sq_y, opposite_move(trace_back));
 
 	return drvb;
 }

@@ -11,11 +11,13 @@ namespace p28 {
 
     void init_path();
 
-    void add_move(struct Path traveled_path, int direction);
+    void add_move(int direction);
 
-    int last_move(struct Path traveled_path);
+    int last_move();
 
-    int retrace_last_move(struct Path traveled_path);
+    int opposite_move(int move);
+
+    int retrace_last_move();
 
 }
 
