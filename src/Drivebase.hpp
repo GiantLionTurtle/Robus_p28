@@ -22,8 +22,8 @@ struct Drivebase {
     Motor left;
     Motor right;
 
-    float x{ 0.0 }, y { 0.0 }; // Position in meters, from the bottom left corner of the field
-    int direction { FRONT }; // FRONT, BACK, LEFT, RIGHT
+    float x{ 0.75 }, y { 0.25 }; // Position in meters, from the bottom left corner of the field
+    int orientation { FRONT }; // FRONT, BACK, LEFT, RIGHT
 };
 
 // Conversion for encoders to distance (meters)
@@ -42,7 +42,7 @@ Motor update_motor_at_speed(Motor motor, float speed, long int time_ms);
 // !!! RELATIVE TO IT'S OWN ORIENTATION !!!
 // Negative distance means backward
 Drivebase forward_dist(Drivebase drvb, float dist, float speed);
-Drivebase forward_until_detect(Drivebase drvb, float dist, float speed, bool& detection);
+Drivebase forward_until_detect(Drivebase drvb, float dist, float speed, float& traveled_dist, bool& detection);
 Drivebase turn_right(Drivebase drvb);
 Drivebase turn_left(Drivebase drvb);
 
@@ -52,7 +52,10 @@ Drivebase turn_left(Drivebase drvb);
 // it still gets to the center of the destination square with
 // respect to it's move direction
 Drivebase move_to_square(Drivebase drvb, int direction, int n_squares);
-Drivebase direction_until_detect(Drivebase drvb,int direction,float dist, bool& detection);
+// Tries to move 1 square in a direction, but tries to detect a wall 
+// and moves back to the starting position if there was a wall
+Drivebase move_to_square_or_detect(Drivebase drvb, int direction, bool& detection);
+Drivebase orient_toward_direction(Drivebase drvb, int direction);
 
 Drivebase zero_all(Drivebase drvb);
 Drivebase set_motorTime(Drivebase drvb, long int time_ms);

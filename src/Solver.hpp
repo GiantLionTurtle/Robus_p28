@@ -7,11 +7,6 @@
 
 namespace p28 {
 
-
-// Each char represents the left and bottom "walls" of 
-// a case
-static char LegalityMatrix[(kFieldWidth+1)*(kFieldHeight+1)];
-
 // Get the index in the LegalityMatrix for a given
 // square
 int legalityIndex(int x, int y);

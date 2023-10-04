@@ -6,6 +6,8 @@
     All physical constants of the robot in SI units where applicable
 */
 
+#define ROBOT_A
+
 namespace p28 {
 
 enum kMotorId : uint8_t { kLeftMotor = 0, kRightMotor = 1 };
@@ -20,6 +22,7 @@ constexpr float kMaxVel = 1.9;                  // m / s
 constexpr unsigned int kControlLoopDelay = 1; // ms
 constexpr float kAccell = 0.1; // m/s^2
 constexpr float kdetectionDistance = 0.1; // m
+constexpr unsigned int kDecelerationDelay = 100; // ms, time to stop the robot
 
 using time_t = long unsigned int;
 

@@ -4,6 +4,10 @@
 
 namespace p28 {
 
+// Each char represents the left and bottom "walls" of 
+// a case
+static char LegalityMatrix[(kFieldWidth+1)*(kFieldHeight+1)];
+
 int legalityIndex(int sq_x, int sq_y)
 {
 	return sq_x * (kFieldWidth+1) + sq_y;
@@ -30,7 +34,7 @@ void set_legality(bool legal, int sq_x, int sq_y, int move)
 	int legal_impl = legal ? Legality::Can_go : Legality::Cannot_go;
 	switch(move) {
 	case LEFT:
-			LegalityMatrix[legalityIndex(sq_x, sq_y)] |= legal_impl;
+			LegalityMatrix[legalityIndex(sq_x, sq_y)] = legal_impl;
 		break;
 	case RIGHT:
 			set_legality(legal, sq_x+1, sq_y, LEFT);
@@ -39,7 +43,7 @@ void set_legality(bool legal, int sq_x, int sq_y, int move)
 			set_legality(legal, sq_x, sq_y+1, REAR);
 		break;
 	case REAR:
-			LegalityMatrix[legalityIndex(sq_x, sq_y)] |= legal_impl<<3;
+			LegalityMatrix[legalityIndex(sq_x, sq_y)] = legal_impl<<3;
 		break;
 	default:
 		break;
