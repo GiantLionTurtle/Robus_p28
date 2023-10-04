@@ -126,8 +126,10 @@ void update_orientation(int move, int& direction)
 Drivebase forward_dist(Drivebase drvb, float dist, float speed)
 {
 	long int init_ticks = drvb.left.last_ticks;
+	long int init_time_ms = millis();
 	float distance_parcourue = 0;
-	drvb = set_motorTime(drvb, millis());
+	drvb = set_motorTime(drvb, init_time_ms);
+
 
 	while(distance_parcourue < dist) {
 		delay(kControlLoopDelay);
@@ -193,8 +195,31 @@ Drivebase turn_left(Drivebase drvb)
 	return zero_all(drvb);
 }
 
-Drivebase move_to_square(Drivebase drvb, int square_x, int square_y)
+bool is_fastest_left(int current_dir, int target_dir){
+	bool inv = false;
+	if(target_dir < current_dir){
+		int tmp = target_dir;
+		target_dir = current_dir;
+		current_dir = tmp;
+		inv = true;
+	}
+	bool out=true;
+	if(current_dir==LEFT && target_dir==FRONT)
+		out=false;
+	if(current_dir==RIGHT && target_dir==REAR)
+		out=false;
+	if(inv)
+		return !out;
+}
+
+Drivebase move_to_square(Drivebase drvb, int direction, int n_squares)
 {
+	while(direction!=drvb.direction){
+		Serial.println(drvb.direction);
+		drvb=turn_left(drvb);
+	}
+	forward_dist(drvb, kSquareSize, 0.2);
+
 	return drvb;
 }
 
@@ -213,6 +238,5 @@ Drivebase set_motorTime(Drivebase drvb, long int time_ms)
 	drvb.right.last_time_ms = time_ms;
 	return drvb;
 }
-
 
 } // !p28

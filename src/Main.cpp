@@ -3,42 +3,49 @@
 #include "LibRobus.h"
 #include "Constants.hpp"
 #include "Drivebase.hpp"
+#include "Solver.hpp"
 
-p28::Drivebase mainBase;
+#define ROBOT_A
 
-void setup() 
+p28::Drivebase driveBase;
+
+void setup()
 {
 	BoardInit();
 	delay(1000);
 	Serial.println("Begin!");
 
-	mainBase.left.ID = LEFT;
-	mainBase.left.pid = { 1.4, 35.55555, 0.0333333 };
+	driveBase.left.ID = LEFT;
+	driveBase.right.ID = RIGHT;
 
-	mainBase.right.ID = RIGHT;
-	mainBase.right.pid = { 1.4, 35.55555, 0.0333333 };
-
+#ifdef ROBOT_A
+	driveBase.left.pid = { 2.8, 53.4, 0.055 };
+	driveBase.right.pid = { 2.8, 53.4, 0.055 };
+#else
+	driveBase.left.pid = { 2.8, 53.4, 0.055 };
+	driveBase.right.pid = { 2.8, 53.4, 0.055 };
+#endif
 	pinMode(14, INPUT);
     pinMode(15, INPUT);
 	bool detect = false;
 
 	//MOTOR_SetSpeed(RIGHT, 0.5);
 
-	// /*mainBase = p28::turn_left(mainBase);
+	// driveBase = p28::turn_left(driveBase);
 	// delay(500);
-	// mainBase = p28::turn_right(mainBase);
+	// driveBase = p28::turn_right(driveBase);
 	// delay(500);
-	mainBase = p28::forward_until_detect(mainBase, 5, 0.2, detect);
-	delay(100);
-	mainBase = p28::turn_right(mainBase);
-	delay(100);
-	mainBase = p28::turn_right(mainBase);
-	delay(100);
-	mainBase = p28:: forward_dist(mainBase, 0.5, 0.2);
+	driveBase = p28::forward_dist(driveBase, 2, 0.2);
+
+	// driveBase = p28::solve(driveBase);
+	// // driveBase = p28::forward_dist(driveBase, 0.5, 0.2);
+
+	// driveBase = p28::solve(driveBase);
+	driveBase= p28::move_to_square(driveBase, REAR, 1);
 }
 
 void loop() 
 {
-	Serial.println("Out of setup");
+	//Serial.println("out");
 	delay(10);
 }

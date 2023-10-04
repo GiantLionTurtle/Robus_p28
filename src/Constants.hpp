@@ -18,6 +18,8 @@ constexpr int kTicksPerRotation = 3200;
 constexpr float kMaxAngVelocity = 0.2;          // rad / s
 constexpr float kMaxVel = 1.9;                  // m / s
 constexpr unsigned int kControlLoopDelay = 1; // ms
+constexpr float kAccell = 0.1; // m/s^2
+constexpr float kdetectionDistance = 0.1; // m
 
 using time_t = long unsigned int;
 
