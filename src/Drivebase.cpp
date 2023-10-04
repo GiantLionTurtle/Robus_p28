@@ -222,6 +222,7 @@ bool is_fastest_left(int orientation, int target_direction){
 Drivebase move_to_square(Drivebase drvb, int direction, int n_squares)
 {
 	drvb = orient_toward_direction(drvb, direction);
+	delay(kDecelerationDelay);
 	drvb = forward_dist(drvb, kSquareSize, 0.2);
 
 	return drvb;
@@ -229,11 +230,12 @@ Drivebase move_to_square(Drivebase drvb, int direction, int n_squares)
 Drivebase move_to_square_or_detect(Drivebase drvb, int direction, bool& detection)
 {
 	drvb = orient_toward_direction(drvb, direction);
-
+	delay(kDecelerationDelay);
 	float traveled_dist;
 	drvb = forward_until_detect(drvb, kSquareSize/2.0, 0.2, traveled_dist, detection);
 
 	if(detection) { // There was a wall
+		delay(kDecelerationDelay);
 		drvb = forward_dist(drvb, traveled_dist, -0.2);
 	} else {
 		drvb = forward_dist(drvb, kSquareSize-traveled_dist, 0.2);

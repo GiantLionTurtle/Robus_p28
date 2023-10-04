@@ -4,14 +4,15 @@
 #include "Constants.hpp"
 #include "Drivebase.hpp"
 #include "Solver.hpp"
-
-#define ROBOT_A
+#include "ProximityDetector.hpp"
 
 p28::Drivebase driveBase;
 
 void setup()
 {
 	BoardInit();
+	p28::init_detector();
+	p28::init_legalityMatrix();
 	delay(1000);
 	Serial.println("Begin!");
 
@@ -25,8 +26,7 @@ void setup()
 	driveBase.left.pid = { 2.8, 53.4, 0.055 };
 	driveBase.right.pid = { 2.8, 53.4, 0.055 };
 #endif
-	pinMode(14, INPUT);
-    pinMode(15, INPUT);
+
 	bool detect = false;
 
 	//MOTOR_SetSpeed(RIGHT, 0.5);
@@ -35,13 +35,14 @@ void setup()
 	// delay(500);
 	// driveBase = p28::turn_right(driveBase);
 	// delay(500);
-	driveBase = p28::forward_dist(driveBase, 2, 0.2);
+	// driveBase = p28::forward_dist(driveBase, 2, 0.2);
 
 	// driveBase = p28::solve(driveBase);
 	// // driveBase = p28::forward_dist(driveBase, 0.5, 0.2);
 
 	// driveBase = p28::solve(driveBase);
-	driveBase= p28::move_to_square(driveBase, REAR, 1);
+	// driveBase= p28::move_to_square(driveBase, REAR, 1);
+	driveBase = p28::move_to_square_or_detect(driveBase, RIGHT, detect);
 }
 
 void loop() 
