@@ -30,7 +30,9 @@ void setup()
 	driveBase.right.pid = { 2.8, 53.4, 0.055 };
 #endif
 
-	bool detect = false;
+	// while (Serial.available() <= 0) {delay(5);}
+
+	// bool detect = false;
 
 	//MOTOR_SetSpeed(RIGHT, 0.5);
 
@@ -38,7 +40,7 @@ void setup()
 	// delay(500);
 	// driveBase = p28::turn_right(driveBase);
 	// delay(500);
-	driveBase = p28::forward_dist(driveBase, 2, 0.2);
+	// driveBase = p28::forward_dist(driveBase, 2, 0.2);
 
 	// driveBase = p28::solve(driveBase);
 	// // driveBase = p28::forward_dist(driveBase, 0.5, 0.2);
@@ -46,23 +48,24 @@ void setup()
 	// driveBase = p28::solve(driveBase);
 	// driveBase= p28::move_to_square(driveBase, REAR, 1);
 	// driveBase = p28::move_to_square_or_detect(driveBase, RIGHT, detect);
-	// driveBase = p28::solve2(driveBase);
-	Serial.print("Legal: ");
-	Serial.println(p28::is_move_legal(1, 0, FRONT));
-	driveBase= p28::move_to_square(driveBase, REAR, 1);
+	driveBase = p28::solve2(driveBase);
+
+	// Serial.print("Legal: ");
+	// Serial.println(p28::is_move_legal(1, 0, RIGHT));
+	// driveBase= p28::move_to_square(driveBase, REAR, 1);
 }
 
 void loop() 
 {
-	if(whistle_detection())
-	{
-		detect = false;
-		driveBase = p28::forward_until_detect(driveBase, 5, 0.2, detect);
-		delay(100);
-		driveBase = p28::turn_right(driveBase);
-		delay(100);
-		driveBase = p28::turn_right(driveBase);
-		delay(100);
-	}
+	// if(whistle_detection())
+	// {
+	// 	detect = false;
+	// 	driveBase = p28::forward_until_detect(driveBase, 5, 0.2, detect);
+	// 	delay(100);
+	// 	driveBase = p28::turn_right(driveBase);
+	// 	delay(100);
+	// 	driveBase = p28::turn_right(driveBase);
+	// 	delay(100);
+	// }
 	delay(10);
 }

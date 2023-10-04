@@ -84,6 +84,7 @@ Drivebase update_pos(Drivebase drvb, float dist, int direction)
 		default:
 			break;
 	}
+
 	drvb.sq_x = drvb.x / kSquareSize;
 	drvb.sq_y = drvb.y / kSquareSize;
 	return drvb;
@@ -136,7 +137,6 @@ Drivebase forward_dist(Drivebase drvb, float dist, float speed)
 	float distance_parcourue = 0;
 	drvb = set_motorTime(drvb, init_time_ms);
 
-
 	while(distance_parcourue < dist) {
 		delay(kControlLoopDelay);
 
@@ -146,7 +146,8 @@ Drivebase forward_dist(Drivebase drvb, float dist, float speed)
 		distance_parcourue = abs(ticks_to_dist(drvb.left.last_ticks-init_ticks));
 	}
 
-	update_pos(drvb, distance_parcourue, drvb.orientation);
+	double dist_mult = speed < 0 ? -1.0 : 1.0;
+	drvb = update_pos(drvb, dist_mult*distance_parcourue, drvb.orientation);
 	return zero_all(drvb);
 }
 Drivebase forward_until_detect(Drivebase drvb, float dist, float speed, float& traveled_dist, bool& detection)
