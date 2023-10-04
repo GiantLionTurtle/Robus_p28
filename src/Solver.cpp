@@ -169,6 +169,12 @@ Drivebase step(Drivebase drvb)
 		add_move(RIGHT);
 		return drvb;
 	}
+	drvb = try_move(drvb, REAR, auto_fail, success);
+	if(success) {
+		add_move(REAR);
+		return drvb;
+	}
+
 
 	// Manage back
 	int trace_back = retrace_last_move();

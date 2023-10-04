@@ -23,6 +23,9 @@ constexpr unsigned int kControlLoopDelay = 1; // ms
 constexpr float kAccell = 0.1; // m/s^2
 constexpr float kdetectionDistance = 0.1; // m
 constexpr unsigned int kDecelerationDelay = 100; // ms, time to stop the robot
+constexpr float kTurnSpeed = 0.2;
+constexpr float kForwardSpeed = 0.2;
+constexpr float kDetectSpeed = 0.2;
 
 using time_t = long unsigned int;
 
