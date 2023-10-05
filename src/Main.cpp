@@ -51,7 +51,7 @@ void setup()
 	// driveBase= move_to_square(driveBase, REAR, 1);
 	// driveBase = move_to_square_or_detect(driveBase, RIGHT, detect);
 	bool fail = false;
-	//driveBase = solve2(driveBase, fail);
+	driveBase = solve2(driveBase, fail);
 	// driveBase= move_to_square(driveBase, FRONT, 1);
 	// bool detect;
 	// driveBase = move_to_square_or_detect(driveBase, FRONT, 1, detect);
@@ -63,10 +63,10 @@ void setup()
 
 void loop() 
 {
-	bool start = whistle_detection();
-	if(start)
-	{
-		driveBase = solve2(driveBase);
-	}
-	delay(10);
+	// bool start = whistle_detection();
+	// if(start)
+	// {
+	// 	driveBase = solve2(driveBase);
+	// }
+	// delay(10);
 }

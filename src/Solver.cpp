@@ -167,16 +167,16 @@ struct Drivebase solve2(struct Drivebase drvb, bool& fail)
 	Serial.print("N stored: ");
 	Serial.println(n_stored);
 	// if(n_stored <= 0) 
-	{ // Maze is not solved yet
+	// { // Maze is not solved yet
 		while(drvb.sq_y != 9) 
 		{
-			drvb = step(drvb);
+			drvb = step(drvb, fail);
 		}
-	// } 
-	else 
-	{
+	// // } 
+	// else 
+	// {
 	// 	for(int i = 0; i < n_stored; ++i) 
-		{
+		// {
 	// 		drvb = move_to_square(drvb, stored_move(i), 1);
 	// 	}
 	// }
