@@ -19,11 +19,11 @@ const float kWheelRadius = 0.0381;           // m
 const int kTicksPerRotation = 3200;
 const float kMaxAngVelocity = 0.2;          // rad / s
 const float kMaxVel = 1.9;                  // m / s
-const unsigned int kControlLoopDelay = 1; // ms
+const unsigned int kControlLoopDelay = 10; // ms
 const float kAccell = 0.1; // m/s^2
 const float kdetectionDistance = 0.1; // m
 const unsigned int kDecelerationDelay = 100; // ms, time to stop the robot
-const float kTurnSpeed = 0.2;
+const float kTurnSpeed = 0.1;
 const float kForwardSpeed = 0.2;
 const float kDetectSpeed = 0.2;
 
