@@ -8,12 +8,10 @@
 
 #define WHISTLE_PIN 18
 
-namespace p28 {
 
 void init_whistle();
 
 bool whistle_detection();
 
-}
 
 #endif

@@ -5,7 +5,7 @@
 #include "Drivebase.hpp"
 #include "Field.hpp"
 
-namespace p28 {
+
 
 enum Legality { Cannot_go = 1, Can_go = 2, Unknown = 4 };
 int is_move_legal(int sq_x, int sq_y, int move);
@@ -17,10 +17,10 @@ void init_legalityMatrix();
 */
 
 // Main function, solves the maze
-Drivebase solve(Drivebase drvb);
-Drivebase solve2(Drivebase drvb);
+struct Drivebase solve(struct Drivebase drvb);
+struct Drivebase solve2(struct Drivebase drvb);
 
-} // !p28
+
 
 
 

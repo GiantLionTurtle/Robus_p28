@@ -9,12 +9,11 @@
 #define GREEN_PIN 15
 #define RED_PIN 14
 
-namespace p28 {
+
 
 void init_detector();
 
 bool wall_detection();
 
-}
 
 #endif

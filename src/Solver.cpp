@@ -8,7 +8,11 @@
 #define REAR_WALL_BIT_MASK (8 | 16 | 32)
 #define REAR_WALL_BIT_OFFSET 3
 
-namespace p28 {
+// Uncomment to go back at the begining of
+// the maze when finished solving
+// #define GO_BACK_TO_BEGINING
+
+
 
 
 // Each char represents the left and bottom "walls" of 
@@ -86,7 +90,7 @@ void init_legalityMatrix()
 }
 
 
-Drivebase solve(Drivebase drvb)
+struct Drivebase solve(struct Drivebase drvb)
 {}
 //    if(is_legal_move(drvb, FRONT) == Legality::Can_go) {                
 //     move_to_square(drvb, FRONT, 1);
@@ -116,17 +120,14 @@ Drivebase solve(Drivebase drvb)
    
    // return drvb;
 
-Drivebase try_move(Drivebase drvb, int move, int illegal_move, bool& success)
+struct Drivebase try_move(struct Drivebase drvb, int move, int illegal_move, int try_n_squares, bool& success)
 {
 	if(move == illegal_move) {
 		success = false;
 		return drvb;
 	}
 	int legal = is_move_legal(drvb.sq_x, drvb.sq_y, move);
-	// Serial.print("Legal ");
-	// Serial.print(move);
-	// Serial.print("  ");
-	// Serial.println(legal);
+
 	if(legal == Legality::Can_go) {
 		drvb = move_to_square(drvb, move, 1);
 		success = true;
@@ -136,7 +137,7 @@ Drivebase try_move(Drivebase drvb, int move, int illegal_move, bool& success)
 		int init_sq_x = drvb.sq_x;
 		int init_sq_y = drvb.sq_y;
 
-		drvb = move_to_square_or_detect(drvb, move, wall);
+		drvb = move_to_square_or_detect(drvb, move, try_n_squares, wall);
 		
 		set_legality(init_sq_x, init_sq_y, move, wall ? Legality::Cannot_go : Legality::Can_go);
 		success = !wall;
@@ -146,35 +147,34 @@ Drivebase try_move(Drivebase drvb, int move, int illegal_move, bool& success)
 	}
 	return drvb;
 }
-Drivebase step(Drivebase drvb)
+struct Drivebase step(struct Drivebase drvb)
 {
 	int auto_fail = opposite_move(get_last_move());
 
 	bool success = false;
-	Serial.println("Try front");
-	drvb = try_move(drvb, FRONT, auto_fail, success);
+	// Shoot for the stars, try to move forward to the en of the maze
+	int init_sq_y = drvb.sq_y;
+	drvb = try_move(drvb, FRONT, auto_fail, kFieldHeight - drvb.sq_y-1, success);
 	if(success) {
-		add_move(FRONT);
+		for(int i = init_sq_y; i < drvb.sq_y; ++i)
+			add_move(FRONT);
 		return drvb;
 	}
-	drvb = try_move(drvb, LEFT, auto_fail, success);
+	drvb = try_move(drvb, LEFT, auto_fail, 1, success);
 	if(success) {
 		add_move(LEFT);
 		return drvb;
 	}
-
-	Serial.println("Try right");
-	drvb = try_move(drvb, RIGHT, auto_fail, success);
+	drvb = try_move(drvb, RIGHT, auto_fail, 1, success);
 	if(success) {
 		add_move(RIGHT);
 		return drvb;
 	}
-	drvb = try_move(drvb, REAR, auto_fail, success);
+	drvb = try_move(drvb, REAR, auto_fail, 1, success);
 	if(success) {
 		add_move(REAR);
 		return drvb;
 	}
-
 
 	// Manage back
 	int trace_back = retrace_last_move();
@@ -187,18 +187,30 @@ Drivebase step(Drivebase drvb)
 
 	return drvb;
 }
-Drivebase solve2(Drivebase drvb)
+struct Drivebase solve2(struct Drivebase drvb)
 {
-	while(drvb.sq_y != 9) {
-		Serial.print("square: ");
-		Serial.print(drvb.x);
-		Serial.print(",  ");
-		Serial.println(drvb.sq_x);
-
-		drvb = step(drvb);
+	int n_stored = n_stored_moves();
+	if(n_stored <= 0) { // Maze is not solved yet
+		while(drvb.sq_y != 9) {
+			drvb = step(drvb);
+		}
+	} else {
+		for(int i = 0; i < n_stored; ++i) {
+			drvb = move_to_square(drvb, stored_move(i), 1);
+		}
 	}
+
+#ifndef GO_BACK_TO_BEGINING
+	delay(1000);
+	n_stored = n_stored_moves();
+	for(int i = n_stored-1; i >= 0; --i) {
+		// don't use retrace_last_move to remember the optimal path
+		// for next time
+		drvb = move_to_square(drvb, opposite_move(stored_move(i)), 1);
+	}
+#endif
+
 	return drvb;
 }
 
 
-} // !p28

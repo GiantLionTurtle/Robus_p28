@@ -3,7 +3,7 @@
 #include <LibRobus.h>
 #include "ProximityDetector.hpp"
 
-namespace p28 {
+
 
 // Helper functions
 
@@ -28,10 +28,10 @@ void update_orientation(int move, int& direction);
 
 float ticks_to_dist(int32_t ticks)
 {
-	return static_cast<float>(ticks) / 3200 * TWO_PI * p28::kWheelRadius;
+	return static_cast<float>(ticks) / 3200 * TWO_PI * kWheelRadius;
 }
 
-Motor get_motor_speed(Motor motor, float delta_s)
+struct Motor get_motor_speed(struct Motor motor, float delta_s)
 {
 	int32_t current_ticks = ENCODER_Read(motor.ID);
 	int32_t ticks_diff = current_ticks - motor.last_ticks;
@@ -39,7 +39,7 @@ Motor get_motor_speed(Motor motor, float delta_s)
 	motor.last_ticks = current_ticks;
 	return motor;
 }
-Motor update_motor_at_speed(Motor motor, float set_speed, long int time_ms)
+struct Motor update_motor_at_speed(struct Motor motor, float set_speed, long int time_ms)
 {
 	long int diff_time_ms = time_ms - motor.last_time_ms;
 	float delta_s = static_cast<float>(diff_time_ms) / 1000.0f;
@@ -65,7 +65,7 @@ Motor update_motor_at_speed(Motor motor, float set_speed, long int time_ms)
  * @param y  (out)
  * y position of the robot on a 2D plane
  */
-Drivebase update_pos(Drivebase drvb, float dist, int direction)
+struct Drivebase update_pos(struct Drivebase drvb, float dist, int direction)
 {
 	switch(direction)
 	{
@@ -92,7 +92,7 @@ Drivebase update_pos(Drivebase drvb, float dist, int direction)
 
 // Move is field centric, orientation is robot centric
 // @param orientation (out)
-Drivebase update_orientation(Drivebase drvb, int move)
+struct Drivebase update_orientation(struct Drivebase drvb, int move)
 {
 	if(move == LEFT) {
 		switch(drvb.orientation)
@@ -130,7 +130,7 @@ Drivebase update_orientation(Drivebase drvb, int move)
 	return drvb;
 }
 
-Drivebase forward_dist(Drivebase drvb, float dist, float speed)
+struct Drivebase forward_dist(struct Drivebase drvb, float dist, float speed)
 {
 	long int init_ticks = drvb.left.last_ticks;
 	long int init_time_ms = millis();
@@ -150,7 +150,7 @@ Drivebase forward_dist(Drivebase drvb, float dist, float speed)
 	drvb = update_pos(drvb, dist_mult*distance_parcourue, drvb.orientation);
 	return zero_all(drvb);
 }
-Drivebase forward_until_detect(Drivebase drvb, float dist, float speed, float& traveled_dist, bool& detection)
+struct Drivebase forward_until_detect(struct Drivebase drvb, float dist, float speed, float& traveled_dist, bool& detection)
 {
 	long int init_ticks = drvb.left.last_ticks;
 	traveled_dist = 0;
@@ -168,7 +168,7 @@ Drivebase forward_until_detect(Drivebase drvb, float dist, float speed, float& t
 	drvb = update_pos(drvb, traveled_dist, drvb.orientation);
 	return zero_all(drvb);
 }
-Drivebase turn_right(Drivebase drvb)
+struct Drivebase turn_right(struct Drivebase drvb)
 {
 	float dist_to_travel = PI * kRobotWidth / 4.0;
 	long int init_ticks = drvb.right.last_ticks;
@@ -185,7 +185,7 @@ Drivebase turn_right(Drivebase drvb)
 	drvb = update_orientation(drvb, RIGHT);
 	return zero_all(drvb);
 }
-Drivebase turn_left(Drivebase drvb)
+struct Drivebase turn_left(struct Drivebase drvb)
 {
 	float dist_to_travel = PI * kRobotWidth / 4.0;
 	long int init_ticks = drvb.right.last_ticks;
@@ -224,30 +224,30 @@ bool is_fastest_left(int orientation, int target_direction){
 	return out;
 }
 
-Drivebase move_to_square(Drivebase drvb, int direction, int n_squares)
+struct Drivebase move_to_square(struct Drivebase drvb, int direction, int n_squares)
 {
 	drvb = orient_toward_direction(drvb, direction);
 	delay(kDecelerationDelay);
-	drvb = forward_dist(drvb, kSquareSize, kForwardSpeed);
+	drvb = forward_dist(drvb, kSquareSize * n_squares, kForwardSpeed);
 
 	return drvb;
 }
-Drivebase move_to_square_or_detect(Drivebase drvb, int direction, bool& detection)
+struct Drivebase move_to_square_or_detect(struct Drivebase drvb, int direction, int n_squares, bool& detection)
 {
 	drvb = orient_toward_direction(drvb, direction);
 	delay(kDecelerationDelay);
+
 	float traveled_dist;
-	drvb = forward_until_detect(drvb, kSquareSize/2.0, kDetectSpeed, traveled_dist, detection);
+	drvb = forward_until_detect(drvb, kSquareSize * n_squares, kDetectSpeed, traveled_dist, detection);
 
 	if(detection) { // There was a wall
 		delay(kDecelerationDelay);
-		drvb = forward_dist(drvb, traveled_dist, -kForwardSpeed);
-	} else {
-		drvb = forward_dist(drvb, kSquareSize-traveled_dist, kForwardSpeed);
+		// Go back to the middle of the last ok square
+		drvb = forward_dist(drvb, fmod(traveled_dist, kSquareSize), -kForwardSpeed);
 	}
 	return drvb;
 }
-Drivebase orient_toward_direction(Drivebase drvb, int direction)
+struct Drivebase orient_toward_direction(struct Drivebase drvb, int direction)
 {
 	if(is_fastest_left(drvb.orientation, direction)) {
 		while(direction != drvb.orientation) {
@@ -261,20 +261,22 @@ Drivebase orient_toward_direction(Drivebase drvb, int direction)
 	return drvb;
 }
 
-Drivebase zero_all(Drivebase drvb)
+struct Drivebase zero_all(struct Drivebase drvb)
 {
 	MOTOR_SetSpeed(LEFT, 0.0);
 	MOTOR_SetSpeed(RIGHT, 0.0);
 
 	drvb.left.speed = 0.0;
+	drvb.left.error = Error{};
+
 	drvb.right.speed = 0.0;
+	drvb.right.error = Error{};
 	return drvb;
 }
-Drivebase set_motorTime(Drivebase drvb, long int time_ms)
+struct Drivebase set_motorTime(struct Drivebase drvb, long int time_ms)
 {
 	drvb.left.last_time_ms = time_ms;
 	drvb.right.last_time_ms = time_ms;
 	return drvb;
 }
 
-} // !p28

@@ -4,7 +4,6 @@
 #include "Constants.hpp"
 #include "WhistleDetector.hpp"
 
-namespace p28 {
 
 void init_whistle()
 {
@@ -17,4 +16,3 @@ bool whistle_detection()
     return whistle;
 }
 
-}
