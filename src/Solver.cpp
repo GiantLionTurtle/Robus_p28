@@ -10,7 +10,7 @@
 
 // Uncomment to go back at the begining of
 // the maze when finished solving
-// #define GO_BACK_TO_BEGINING
+#define GO_BACK_TO_BEGINING
 
 
 
@@ -166,22 +166,19 @@ struct Drivebase solve2(struct Drivebase drvb, bool& fail)
 	int n_stored = n_stored_moves();
 	Serial.print("N stored: ");
 	Serial.println(n_stored);
-	// if(n_stored <= 0) 
-	// { // Maze is not solved yet
+	if(n_stored <= 0) { // Maze is not solved yet
 		while(drvb.sq_y != 9) 
 		{
 			drvb = step(drvb, fail);
 		}
-	// // } 
-	// else 
-	// {
-	// 	for(int i = 0; i < n_stored; ++i) 
-		// {
-	// 		drvb = move_to_square(drvb, stored_move(i), 1);
-	// 	}
-	// }
+	} else {
+		for(int i = 0; i < n_stored; ++i) 
+		{
+			drvb = move_to_square(drvb, stored_move(i), 1);
+		}
+	}
 
-#ifndef GO_BACK_TO_BEGINING
+#ifdef GO_BACK_TO_BEGINING
 	delay(1000);
 	n_stored = n_stored_moves();
 	for(int i = n_stored-1; i >= 0; --i) {

@@ -240,7 +240,7 @@ struct Drivebase forward_until_detect(struct Drivebase drvb, float dist, float s
 		drvb.left = update_motor_at_speed(drvb.left, curr_speed, time_ms);
 		drvb.right = update_motor_at_speed(drvb.right, curr_speed, time_ms);
 		traveled_dist = abs(ticks_to_dist(drvb.left.last_ticks-init_ticks));
-		detection = wall_detection();
+		detection = wall_detection() && traveled_dist < dist * 0.75;
 	}
 
 	while(curr_speed > kMinSpeed) {
@@ -265,7 +265,7 @@ struct Drivebase turn_right(struct Drivebase drvb, int n_times)
 	drvb = set_motorTime(drvb, millis());
 
 	float accel_dist, decel_dist;
-	accel_decel_dist(kTurnSpeed, kAccel, dist_to_travel, accel_dist, decel_dist);
+	accel_decel_dist(kTurnSpeed, kTurnAccel, dist_to_travel, accel_dist, decel_dist);
 	float curr_speed = 0.0;
 	float traveled_dist = 0.0;
 
@@ -276,7 +276,7 @@ struct Drivebase turn_right(struct Drivebase drvb, int n_times)
 
 		long int diff_time_ms = time_ms - drvb.left.last_time_ms;
 		float delta_s = static_cast<float>(diff_time_ms) / 1000.0f;
-		curr_speed = next_speed(curr_speed, kTurnSpeed, kAccel, traveled_dist, accel_dist, decel_dist, delta_s);
+		curr_speed = next_speed(curr_speed, kTurnSpeed, kTurnAccel, traveled_dist, accel_dist, decel_dist, delta_s);
 
 		drvb.left = update_motor_at_speed(drvb.left, curr_speed, time_ms);
 		drvb.right = update_motor_at_speed(drvb.right, -curr_speed, time_ms);
@@ -294,7 +294,7 @@ struct Drivebase turn_left(struct Drivebase drvb, int n_times)
 	drvb = set_motorTime(drvb, millis());
 
 	float accel_dist, decel_dist;
-	accel_decel_dist(kTurnSpeed, kAccel, dist_to_travel, accel_dist, decel_dist);
+	accel_decel_dist(kTurnSpeed, kTurnAccel, dist_to_travel, accel_dist, decel_dist);
 	float curr_speed = 0.0;
 	float traveled_dist = 0.0;
 
@@ -305,12 +305,16 @@ struct Drivebase turn_left(struct Drivebase drvb, int n_times)
 
 		long int diff_time_ms = time_ms - drvb.left.last_time_ms;
 		float delta_s = static_cast<float>(diff_time_ms) / 1000.0f;
-		curr_speed = next_speed(curr_speed, kTurnSpeed, kAccel, traveled_dist, accel_dist, decel_dist, delta_s);
+		curr_speed = next_speed(curr_speed, kTurnSpeed, kTurnAccel, traveled_dist, accel_dist, decel_dist, delta_s);
 
 		drvb.left = update_motor_at_speed(drvb.left, -curr_speed, time_ms);
 		drvb.right = update_motor_at_speed(drvb.right, curr_speed, time_ms);
 		traveled_dist = abs(ticks_to_dist(drvb.right.last_ticks-init_ticks));
-	}		
+	}
+	Serial.print("traveled ");
+	Serial.print(traveled_dist);
+	Serial.print(" of ");
+	Serial.println(dist_to_travel);
 
 	for(int i = 0; i < n_times; ++i)
 		drvb = update_orientation(drvb, LEFT);
@@ -341,6 +345,7 @@ bool is_fastest_left(int orientation, int target_direction){
 
 struct Drivebase move_to_square(struct Drivebase drvb, int direction, int n_squares)
 {
+	delay(kDecelerationDelay);
 	drvb = orient_toward_direction(drvb, direction);
 	delay(kDecelerationDelay);
 	drvb = forward_dist(drvb, kSquareSize * n_squares, kForwardSpeed);
@@ -349,25 +354,27 @@ struct Drivebase move_to_square(struct Drivebase drvb, int direction, int n_squa
 }
 struct Drivebase move_to_square_or_detect(struct Drivebase drvb, int direction, int n_squares, bool& detection)
 {
+	Serial.println("Move to square!");
+	delay(kDecelerationDelay);
 	drvb = orient_toward_direction(drvb, direction);
 	delay(kDecelerationDelay);
 	float traveled_dist;
 	detection = false;
 	drvb = forward_until_detect(drvb, kSquareSize, kDetectSpeed, traveled_dist, detection);
 
-	if(detection) { // There was a wall
+	if(detection && traveled_dist > 0.05) { // There was a wall
 		delay(kDecelerationDelay);
-		
+		Serial.print("Go back ");
+		Serial.println(traveled_dist);
 		drvb = forward_dist(drvb, traveled_dist, -kForwardSpeed);
-	} else {
-		drvb = forward_dist(drvb, kSquareSize-traveled_dist, kForwardSpeed);
 	}
 	return drvb;
 }
 struct Drivebase orient_toward_direction(struct Drivebase drvb, int direction)
 {
 	if(drvb.orientation == opposite_move(direction)) {
-		drvb = turn_left(drvb, 2);
+		drvb = turn_left(drvb);
+		drvb = turn_left(drvb);
 		return drvb;
 	} else if(drvb.orientation == direction) {
 		return drvb;

@@ -20,21 +20,19 @@ void setup()
 	init_whistle();
 	init_legalityMatrix();
 	init_path();
-	init_path();
-	buzzerFin();
+	// buzzerFin();
 
 	delay(1000);
 	driveBase.left.ID = LEFT;
 	driveBase.right.ID = RIGHT;
 
 #ifdef ROBOT_A
-	driveBase.left.pid = { 2.8, 53.4, 0.055 };
-	driveBase.right.pid = { 2.8, 53.4, 0.055 };
+	driveBase.left.pid = { 1.4, 35.5555, 0.03333333 };
+	driveBase.right.pid = { 1.4, 35.5555, 0.03333333 };
 #else
 	driveBase.left.pid = { 2.8, 53.4, 0.055 };
 	driveBase.right.pid = { 2.8, 53.4, 0.055 };
 #endif
-	while(!ROBUS_IsBumper(3)) {}
 
 	//MOTOR_SetSpeed(RIGHT, 0.5);
 
@@ -50,8 +48,7 @@ void setup()
 	// driveBase = solve(driveBase);
 	// driveBase= move_to_square(driveBase, REAR, 1);
 	// driveBase = move_to_square_or_detect(driveBase, RIGHT, detect);
-	bool fail = false;
-	driveBase = solve2(driveBase, fail);
+
 	// driveBase= move_to_square(driveBase, FRONT, 1);
 	// bool detect;
 	// driveBase = move_to_square_or_detect(driveBase, FRONT, 1, detect);
@@ -59,10 +56,19 @@ void setup()
 	// Serial.print("Legal: ");
 	// Serial.println(is_move_legal(1, 0, RIGHT));
 	// driveBase= move_to_square(driveBase, REAR, 1);
+
+
+	// for(int i = 0; i < 4; ++i) {
+	// 	driveBase = turn_left(driveBase, 1);
+	// }
 }
 
 void loop() 
 {
+	while(!ROBUS_IsBumper(3)) {}
+
+	bool fail = false;
+	driveBase = solve2(driveBase, fail);
 	// bool start = whistle_detection();
 	// if(start)
 	// {
