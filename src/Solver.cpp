@@ -190,12 +190,17 @@ struct Drivebase step(struct Drivebase drvb)
 struct Drivebase solve2(struct Drivebase drvb)
 {
 	int n_stored = n_stored_moves();
-	if(n_stored <= 0) { // Maze is not solved yet
-		while(drvb.sq_y != 9) {
+	if(n_stored <= 0) 
+	{ // Maze is not solved yet
+		while(drvb.sq_y != 9) 
+		{
 			drvb = step(drvb);
 		}
-	} else {
-		for(int i = 0; i < n_stored; ++i) {
+	} 
+	else 
+	{
+		for(int i = 0; i < n_stored; ++i) 
+		{
 			drvb = move_to_square(drvb, stored_move(i), 1);
 		}
 	}
