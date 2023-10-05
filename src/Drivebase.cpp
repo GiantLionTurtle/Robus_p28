@@ -2,7 +2,7 @@
 #include "Field.hpp"
 #include <LibRobus.h>
 #include "ProximityDetector.hpp"
-
+#include "TraveledPath.hpp"
 
 
 // Helper functions
@@ -30,9 +30,9 @@ float ticks_to_dist(int32_t ticks)
 {
 	return static_cast<float>(ticks) / 3200 * TWO_PI * kWheelRadius;
 }
-float accel_dist(float accel, float target_speed)
+float comp_accel_dist(float accel, float currSpeed, float targSpeed)
 {
-	return target_speed / accel;
+	return (targSpeed - currSpeed) / accel;
 }
 
 struct Motor get_motor_speed(struct Motor motor, float delta_s)
@@ -134,79 +134,186 @@ struct Drivebase update_orientation(struct Drivebase drvb, int move)
 	return drvb;
 }
 
+float do_accell(float curr, float accel, float delta_s)
+{
+	return curr + accel * delta_s;
+}
+float next_speed(float curr_speed, float target, float accel, float curr_dist, float accel_dist, float decel_dist, float delta_s)
+{
+	if(target < 0.0) {
+		return -next_speed(-curr_speed, -target, -accel, curr_dist, accel_dist, decel_dist, delta_s);
+	}
+	if(curr_dist < accel_dist) {
+		// Serial.println("accel");
+		return min(do_accell(curr_speed, accel, delta_s), target);
+	} else if(curr_dist > decel_dist) {
+		// Serial.println("decl");
+		return max(do_accell(curr_speed, -accel, delta_s), kMinSpeed);
+	} else {
+		// Serial.println("Stable");
+		return target;
+	}
+
+}
+void accel_decel_dist(float target_speed, float accel, float max_dist, float& accel_dist, float& decel_dist)
+{
+	accel_dist = abs(comp_accel_dist(accel, 0.0, target_speed));
+	if(max_dist < 2*accel_dist) {
+		accel_dist = max_dist/2.0;
+	}
+	decel_dist = max_dist - accel_dist;
+}
 struct Drivebase forward_dist(struct Drivebase drvb, float dist, float speed)
 {
 	long int init_ticks = drvb.left.last_ticks;
 	long int init_time_ms = millis();
 	float distance_parcourue = 0;
 	drvb = set_motorTime(drvb, init_time_ms);
-	// Serial.print("Forward dist ");
-	// Serial.println(dist);
+
+	float curr_speed = 0.0;
+	float accel_dist, decel_dist;
+	accel_decel_dist(speed, kAccel, dist, accel_dist, decel_dist);
+	float dist_mult = speed < 0 ? -1.0 : 1.0;
 
 	while(distance_parcourue < dist) {
 		delay(kControlLoopDelay);
 
 		long int time_ms = millis();
-		drvb.left = update_motor_at_speed(drvb.left, speed, time_ms);
-		drvb.right = update_motor_at_speed(drvb.right, speed, time_ms);
+
+		long int diff_time_ms = time_ms - drvb.left.last_time_ms;
+		float delta_s = static_cast<float>(diff_time_ms) / 1000.0f;
+		curr_speed = dist_mult*next_speed(abs(curr_speed), abs(speed), kAccel, distance_parcourue, accel_dist, decel_dist, delta_s);
+
+		drvb.left = update_motor_at_speed(drvb.left, curr_speed, time_ms);
+		drvb.right = update_motor_at_speed(drvb.right, curr_speed, time_ms);
 		distance_parcourue = abs(ticks_to_dist(drvb.left.last_ticks-init_ticks));
 	}
 
-	double dist_mult = speed < 0 ? -1.0 : 1.0;
 	drvb = update_pos(drvb, dist_mult*distance_parcourue, drvb.orientation);
 	return zero_all(drvb);
 }
-struct Drivebase forward_until_detect(struct Drivebase drvb, float dist, float speed, float& traveled_dist, bool& detection)
+struct Drivebase forward_and_detect(struct Drivebase drvb, float dist, float speed, float& traveled_dist, bool& detection)
 {
 	long int init_ticks = drvb.left.last_ticks;
 	traveled_dist = 0;
 	drvb = set_motorTime(drvb, millis());
 
-	// float acc_dist = accel_dist(kAccell, speed);
+	float curr_speed = 0.0;
+	float accel_dist, decel_dist;
+	accel_decel_dist(speed, kAccel, dist, accel_dist, decel_dist);
 
-	while(!detection && traveled_dist < dist)
-	 {
+	while(traveled_dist < dist) {
 		delay(kControlLoopDelay);
 		long int time_ms = millis();
-		drvb.left = update_motor_at_speed(drvb.left, speed, time_ms);
-		drvb.right = update_motor_at_speed(drvb.right, speed, time_ms);
+
+		long int diff_time_ms = time_ms - drvb.left.last_time_ms;
+		float delta_s = static_cast<float>(diff_time_ms) / 1000.0f;
+		curr_speed = next_speed(curr_speed, speed, kAccel, traveled_dist, accel_dist, decel_dist, delta_s);
+
+		drvb.left = update_motor_at_speed(drvb.left, curr_speed, time_ms);
+		drvb.right = update_motor_at_speed(drvb.right, curr_speed, time_ms);
 		traveled_dist = abs(ticks_to_dist(drvb.left.last_ticks-init_ticks));
 		detection = wall_detection();
 	}
 	drvb = update_pos(drvb, traveled_dist, drvb.orientation);
 	return zero_all(drvb);
 }
-struct Drivebase turn_right(struct Drivebase drvb)
+
+struct Drivebase forward_until_detect(struct Drivebase drvb, float dist, float speed, float& traveled_dist, bool& detection)
 {
-	float dist_to_travel = PI * kRobotWidth / 4.0;
-	long int init_ticks = drvb.right.last_ticks;
+	long int init_ticks = drvb.left.last_ticks;
+	traveled_dist = 0;
 	drvb = set_motorTime(drvb, millis());
 
-	while(abs(ticks_to_dist(drvb.right.last_ticks-init_ticks)) < dist_to_travel) {
+	float curr_speed = 0.0;
+	float accel_dist, decel_dist;
+	accel_decel_dist(speed, kAccel, dist, accel_dist, decel_dist);
+
+	while(!detection && traveled_dist < dist) {
 		delay(kControlLoopDelay);
-
 		long int time_ms = millis();
-		drvb.left = update_motor_at_speed(drvb.left, kTurnSpeed, time_ms);
-		drvb.right = update_motor_at_speed(drvb.right, -kTurnSpeed, time_ms);
-	}		
+		
+		long int diff_time_ms = time_ms - drvb.left.last_time_ms;
+		float delta_s = static_cast<float>(diff_time_ms) / 1000.0f;
+		curr_speed = next_speed(curr_speed, speed, kAccel, traveled_dist, accel_dist, decel_dist, delta_s);
 
-	drvb = update_orientation(drvb, RIGHT);
+		drvb.left = update_motor_at_speed(drvb.left, curr_speed, time_ms);
+		drvb.right = update_motor_at_speed(drvb.right, curr_speed, time_ms);
+		traveled_dist = abs(ticks_to_dist(drvb.left.last_ticks-init_ticks));
+		detection = wall_detection();
+	}
+
+	while(curr_speed > kMinSpeed) {
+		delay(kControlLoopDelay);
+		long int time_ms = millis();
+
+		long int diff_time_ms = time_ms - drvb.left.last_time_ms;
+		float delta_s = static_cast<float>(diff_time_ms) / 1000.0f;
+		curr_speed = next_speed(curr_speed, speed, kAccel, 5, 0, 2, delta_s);
+
+		drvb.left = update_motor_at_speed(drvb.left, curr_speed, time_ms);
+		drvb.right = update_motor_at_speed(drvb.right, curr_speed, time_ms);
+	}
+
+	drvb = update_pos(drvb, traveled_dist, drvb.orientation);
 	return zero_all(drvb);
 }
-struct Drivebase turn_left(struct Drivebase drvb)
+struct Drivebase turn_right(struct Drivebase drvb, int n_times)
 {
-	float dist_to_travel = PI * kRobotWidth / 4.0;
+	float dist_to_travel = PI * kRobotWidth / 4.0 * (float)n_times;
 	long int init_ticks = drvb.right.last_ticks;
 	drvb = set_motorTime(drvb, millis());
 
-	while(abs(ticks_to_dist(drvb.right.last_ticks-init_ticks)) < dist_to_travel) {
+	float accel_dist, decel_dist;
+	accel_decel_dist(kTurnSpeed, kAccel, dist_to_travel, accel_dist, decel_dist);
+	float curr_speed = 0.0;
+	float traveled_dist = 0.0;
+
+	while(traveled_dist < dist_to_travel) {
 		delay(kControlLoopDelay);
 
 		long int time_ms = millis();
-		drvb.left = update_motor_at_speed(drvb.left, -kTurnSpeed, time_ms);
-		drvb.right = update_motor_at_speed(drvb.right, kTurnSpeed, time_ms);
-	}
-	drvb = update_orientation(drvb, LEFT);
+
+		long int diff_time_ms = time_ms - drvb.left.last_time_ms;
+		float delta_s = static_cast<float>(diff_time_ms) / 1000.0f;
+		curr_speed = next_speed(curr_speed, kTurnSpeed, kAccel, traveled_dist, accel_dist, decel_dist, delta_s);
+
+		drvb.left = update_motor_at_speed(drvb.left, curr_speed, time_ms);
+		drvb.right = update_motor_at_speed(drvb.right, -curr_speed, time_ms);
+		traveled_dist = abs(ticks_to_dist(drvb.right.last_ticks-init_ticks));
+	}		
+
+	for(int i = 0; i < n_times; ++i)
+		drvb = update_orientation(drvb, RIGHT);
+	return zero_all(drvb);
+}
+struct Drivebase turn_left(struct Drivebase drvb, int n_times)
+{
+	float dist_to_travel = PI * kRobotWidth / 4.0 * (float)n_times;
+	long int init_ticks = drvb.right.last_ticks;
+	drvb = set_motorTime(drvb, millis());
+
+	float accel_dist, decel_dist;
+	accel_decel_dist(kTurnSpeed, kAccel, dist_to_travel, accel_dist, decel_dist);
+	float curr_speed = 0.0;
+	float traveled_dist = 0.0;
+
+	while(traveled_dist < dist_to_travel) {
+		delay(kControlLoopDelay);
+
+		long int time_ms = millis();
+
+		long int diff_time_ms = time_ms - drvb.left.last_time_ms;
+		float delta_s = static_cast<float>(diff_time_ms) / 1000.0f;
+		curr_speed = next_speed(curr_speed, kTurnSpeed, kAccel, traveled_dist, accel_dist, decel_dist, delta_s);
+
+		drvb.left = update_motor_at_speed(drvb.left, -curr_speed, time_ms);
+		drvb.right = update_motor_at_speed(drvb.right, curr_speed, time_ms);
+		traveled_dist = abs(ticks_to_dist(drvb.right.last_ticks-init_ticks));
+	}		
+
+	for(int i = 0; i < n_times; ++i)
+		drvb = update_orientation(drvb, LEFT);
 	return zero_all(drvb);
 }
 
@@ -244,29 +351,30 @@ struct Drivebase move_to_square_or_detect(struct Drivebase drvb, int direction, 
 {
 	drvb = orient_toward_direction(drvb, direction);
 	delay(kDecelerationDelay);
-
 	float traveled_dist;
-	drvb = forward_until_detect(drvb, kSquareSize * n_squares, kDetectSpeed, traveled_dist, detection);
+	detection = false;
+	drvb = forward_until_detect(drvb, kSquareSize, kDetectSpeed, traveled_dist, detection);
 
 	if(detection) { // There was a wall
 		delay(kDecelerationDelay);
-		// Go back to the middle of the last ok square
-		Serial.print("Traveled_dist ");
-		Serial.println(traveled_dist);
-		drvb = forward_dist(drvb, traveled_dist, -kDetectSpeed);
+		
+		drvb = forward_dist(drvb, traveled_dist, -kForwardSpeed);
+	} else {
+		drvb = forward_dist(drvb, kSquareSize-traveled_dist, kForwardSpeed);
 	}
 	return drvb;
 }
 struct Drivebase orient_toward_direction(struct Drivebase drvb, int direction)
 {
-	if(is_fastest_left(drvb.orientation, direction)) {
-		while(direction != drvb.orientation) {
-			drvb = turn_left(drvb);
-		}
+	if(drvb.orientation == opposite_move(direction)) {
+		drvb = turn_left(drvb, 2);
+		return drvb;
+	} else if(drvb.orientation == direction) {
+		return drvb;
+	} else if(is_fastest_left(drvb.orientation, direction)) {
+		drvb = turn_left(drvb);
 	} else {
-		while(direction != drvb.orientation) {
-			drvb = turn_right(drvb);
-		}
+		drvb = turn_right(drvb);
 	}
 	return drvb;
 }
@@ -277,10 +385,7 @@ struct Drivebase zero_all(struct Drivebase drvb)
 	MOTOR_SetSpeed(RIGHT, 0.0);
 
 	drvb.left.speed = 0.0;
-	// drvb.left.error = Error{};
-
 	drvb.right.speed = 0.0;
-	// drvb.right.error = Error{};
 	return drvb;
 }
 struct Drivebase set_motorTime(struct Drivebase drvb, long int time_ms)
@@ -289,4 +394,3 @@ struct Drivebase set_motorTime(struct Drivebase drvb, long int time_ms)
 	drvb.right.last_time_ms = time_ms;
 	return drvb;
 }
-

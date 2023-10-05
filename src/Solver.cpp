@@ -212,7 +212,7 @@ void buzzerFin(void)
 }
   struct Drivebase failure(bool& fail)
 {
-	if(fail = true){
+	if(fail == true){
 		buzzerFin(); //buzzer function for fail
 	}
 }

@@ -44,8 +44,8 @@ struct Motor update_motor_at_speed(struct Motor motor, float speed, long int tim
 // Negative distance means backward
 struct Drivebase forward_dist(struct Drivebase drvb, float dist, float speed);
 struct Drivebase forward_until_detect(struct Drivebase drvb, float dist, float speed, float& traveled_dist, bool& detection);
-struct Drivebase turn_right(struct Drivebase drvb);
-struct Drivebase turn_left(struct Drivebase drvb);
+struct Drivebase turn_right(struct Drivebase drvb, int n_times = 1);
+struct Drivebase turn_left(struct Drivebase drvb, int n_times = 1);
 
 // Moves the drivebase by increments of squares in one of 
 // 4 directions (LEFT, RIGHT, FRONT, REAR)
