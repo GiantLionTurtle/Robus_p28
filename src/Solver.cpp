@@ -147,7 +147,7 @@ struct Drivebase try_move(struct Drivebase drvb, int move, int illegal_move, int
 	}
 	return drvb;
 }
-struct Drivebase step(struct Drivebase drvb)
+struct Drivebase step(struct Drivebase drvb, bool& fail)
 {
 	int auto_fail = opposite_move(get_last_move());
 
@@ -178,8 +178,10 @@ struct Drivebase step(struct Drivebase drvb)
 
 	// Manage back
 	int trace_back = retrace_last_move();
-	if(trace_back == -1)
+	if(trace_back == -1){
+		fail = true;
 		return drvb; // give up;
+	}
 
 	drvb = move_to_square(drvb, trace_back, 1);
 	// Update Legality matrix
@@ -187,12 +189,12 @@ struct Drivebase step(struct Drivebase drvb)
 
 	return drvb;
 }
-struct Drivebase solve2(struct Drivebase drvb)
+struct Drivebase solve2(struct Drivebase drvb, bool& fail)
 {
 	int n_stored = n_stored_moves();
 	if(n_stored <= 0) { // Maze is not solved yet
 		while(drvb.sq_y != 9) {
-			drvb = step(drvb);
+			drvb = step(drvb, fail);
 		}
 	} else {
 		for(int i = 0; i < n_stored; ++i) {
@@ -211,6 +213,29 @@ struct Drivebase solve2(struct Drivebase drvb)
 #endif
 
 	return drvb;
+}
+void buzzerFin(void)
+{
+	AX_BuzzerON(1000, 200);
+	delay(400);
+	AX_BuzzerON(800, 200);
+	delay(400);
+	AX_BuzzerON(800, 150);
+	delay(200);
+	AX_BuzzerON(1000, 150);
+	delay(200);
+	AX_BuzzerON(1500, 150);
+	delay(200);
+	AX_BuzzerON(240, 400);
+	delay(600);
+	AX_BuzzerON(120, 400);
+	delay(600);
+}
+  struct Drivebase failure(bool& fail)
+{
+	if(fail = true){
+		buzzerFin(); //buzzer function for fail
+	}
 }
 
 

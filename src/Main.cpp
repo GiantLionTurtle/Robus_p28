@@ -18,6 +18,7 @@ void setup()
 	init_detector();
 	init_whistle();
 	init_legalityMatrix();
+	buzzerFin();
 
 	delay(1000);
 	driveBase.left.ID = LEFT;
@@ -45,7 +46,8 @@ void setup()
 	// driveBase = solve(driveBase);
 	// driveBase= move_to_square(driveBase, REAR, 1);
 	// driveBase = move_to_square_or_detect(driveBase, RIGHT, detect);
-	driveBase = solve2(driveBase);
+	bool fail = false;
+	driveBase = solve2(driveBase, fail);
 
 	// Serial.print("Legal: ");
 	// Serial.println(is_move_legal(1, 0, RIGHT));

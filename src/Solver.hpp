@@ -18,8 +18,11 @@ void init_legalityMatrix();
 
 // Main function, solves the maze
 struct Drivebase solve(struct Drivebase drvb);
-struct Drivebase solve2(struct Drivebase drvb);
+struct Drivebase solve2(struct Drivebase drvb, bool& fail);
+struct Drivebase failure(bool& fail);
 
+//buzzer
+void buzzerFin(void);
 
 
 
