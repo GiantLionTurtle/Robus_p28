@@ -6,6 +6,7 @@
 #include "Solver.hpp"
 #include "WhistleDetector.hpp"
 #include "ProximityDetector.hpp"
+#include "TraveledPath.hpp"
 
 Drivebase driveBase;
 bool start = false;
@@ -18,6 +19,7 @@ void setup()
 	init_detector();
 	init_whistle();
 	init_legalityMatrix();
+	p28::init_path();
 
 	delay(1000);
 	driveBase.left.ID = LEFT;
