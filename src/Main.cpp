@@ -20,6 +20,8 @@ void setup()
 	init_whistle();
 	init_legalityMatrix();
 	init_path();
+	init_path();
+	buzzerFin();
 
 	delay(1000);
 	driveBase.left.ID = LEFT;
@@ -46,10 +48,13 @@ void setup()
 	// // driveBase = forward_dist(driveBase, 0.5, 0.2);
 
 	// driveBase = solve(driveBase);
+	// driveBase= move_to_square(driveBase, REAR, 1);
+	// driveBase = move_to_square_or_detect(driveBase, RIGHT, detect);
+	bool fail = false;
+	//driveBase = solve2(driveBase, fail);
 	// driveBase= move_to_square(driveBase, FRONT, 1);
 	// bool detect;
 	// driveBase = move_to_square_or_detect(driveBase, FRONT, 1, detect);
-	driveBase = solve2(driveBase);
 
 	// Serial.print("Legal: ");
 	// Serial.println(is_move_legal(1, 0, RIGHT));
@@ -58,22 +63,10 @@ void setup()
 
 void loop() 
 {
-	// if(start)
-	// {
-	// 	bool detect = false;
-	// 	float traveled_dist = 0;
-	// 	driveBase = forward_until_detect(driveBase, 5, 0.2, traveled_dist, detect);
-	// 	delay(100);
-	// 	driveBase = turn_right(driveBase);
-	// 	delay(100);
-	// 	driveBase = turn_right(driveBase);
-	// 	delay(100);
-	// }
-	// if(whistle_detection())
-	// {
-	// 	start = true;
-	// }
-	// Serial.println("Whistle: ");
-	// Serial.println(whistle_detection());
-	// delay(10);
+	bool start = whistle_detection();
+	if(start)
+	{
+		driveBase = solve2(driveBase);
+	}
+	delay(10);
 }

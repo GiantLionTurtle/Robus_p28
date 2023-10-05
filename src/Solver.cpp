@@ -89,37 +89,6 @@ void init_legalityMatrix()
 	}
 }
 
-
-struct Drivebase solve(struct Drivebase drvb)
-{}
-//    if(is_legal_move(drvb, FRONT) == Legality::Can_go) {                
-//     move_to_square(drvb, FRONT, 1);
-//    }
-//      else if(is_legal_move(drvb, FRONT) == Legality::Cannot_go) {
-//        // direction_until_detect(drvb, LEFT, kdetectionDistance, detection);
-//      }   
-//             if(is_legal_move(drvb, LEFT) == Legality::Can_go){
-//             move_to_square(drvb, LEFT, 1);
-//             }
-//        // else if                                                    //code temporaire 
-//        // else if(is_legal_move(drvb, LEFT) == Legality::Can_go){
-//        // move_to_square(drvb, FRONT, 1);
-//    }
-           // else if(is_legal_move(drvb, LEFT) == Legality::Cannot_go){
-              //  turn_right(drvb);
-                //turn_right(drvb);
-            // }
-               // else if(is_legal_move(drvb, FRONT) == Legality::Can_go){
-                   // move_to_square(drvb, FRONT, 1);
-               // }
-                   // else {
-
-                  //  }
-// }
- // } 
-   
-   // return drvb;
-
 struct Drivebase try_move(struct Drivebase drvb, int move, int illegal_move, int try_n_squares, bool& success)
 {
 	if(move == illegal_move) {
@@ -128,7 +97,7 @@ struct Drivebase try_move(struct Drivebase drvb, int move, int illegal_move, int
 	}
 	int legal = is_move_legal(drvb.sq_x, drvb.sq_y, move);
 
-	if(legal == Legality::Can_go && try_n_squares == 1) {
+	if(legal == Legality::Can_go) {
 		drvb = move_to_square(drvb, move, 1);
 		success = true;
 		delay(kDecelerationDelay);
@@ -147,14 +116,14 @@ struct Drivebase try_move(struct Drivebase drvb, int move, int illegal_move, int
 	}
 	return drvb;
 }
-struct Drivebase step(struct Drivebase drvb)
+struct Drivebase step(struct Drivebase drvb, bool& fail)
 {
-	int auto_fail = -1; // opposite_move(get_last_move());
+	int auto_fail = opposite_move(get_last_move());
 
 	bool success = false;
 	// Shoot for the stars, try to move forward to the en of the maze
 	int init_sq_y = drvb.sq_y;
-	drvb = try_move(drvb, FRONT, auto_fail, /*kFieldHeight - drvb.sq_y-*/1, success);
+	drvb = try_move(drvb, FRONT, auto_fail, 1, success);
 	if(success) {
 		add_move(FRONT);
 		set_legality(drvb.sq_x, drvb.sq_y, opposite_move(FRONT), Legality::Cannot_go);
@@ -181,8 +150,10 @@ struct Drivebase step(struct Drivebase drvb)
 
 	// Manage back
 	int trace_back = retrace_last_move();
-	if(trace_back == -1)
+	if(trace_back == -1){
+		fail = true;
 		return drvb; // give up;
+	}
 
 	drvb = move_to_square(drvb, trace_back, 1);
 	// Update Legality matrix
@@ -190,32 +161,60 @@ struct Drivebase step(struct Drivebase drvb)
 
 	return drvb;
 }
-struct Drivebase solve2(struct Drivebase drvb)
+struct Drivebase solve2(struct Drivebase drvb, bool& fail)
 {
 	int n_stored = n_stored_moves();
 	Serial.print("N stored: ");
 	Serial.println(n_stored);
-	// if(n_stored <= 0) { // Maze is not solved yet
-		while(drvb.sq_y != 9) {
+	// if(n_stored <= 0) 
+	{ // Maze is not solved yet
+		while(drvb.sq_y != 9) 
+		{
 			drvb = step(drvb);
 		}
-	// } else {
-	// 	for(int i = 0; i < n_stored; ++i) {
+	// } 
+	else 
+	{
+	// 	for(int i = 0; i < n_stored; ++i) 
+		{
 	// 		drvb = move_to_square(drvb, stored_move(i), 1);
 	// 	}
 	// }
 
-// #ifndef GO_BACK_TO_BEGINING
-// 	delay(1000);
-// 	n_stored = n_stored_moves();
-// 	for(int i = n_stored-1; i >= 0; --i) {
-// 		// don't use retrace_last_move to remember the optimal path
-// 		// for next time
-// 		drvb = move_to_square(drvb, opposite_move(stored_move(i)), 1);
-// 	}
-// #endif
+#ifndef GO_BACK_TO_BEGINING
+	delay(1000);
+	n_stored = n_stored_moves();
+	for(int i = n_stored-1; i >= 0; --i) {
+		// don't use retrace_last_move to remember the optimal path
+		// for next time
+		drvb = move_to_square(drvb, opposite_move(stored_move(i)), 1);
+	}
+#endif
 
 	return drvb;
+}
+void buzzerFin(void)
+{
+	AX_BuzzerON(1000, 200);
+	delay(400);
+	AX_BuzzerON(800, 200);
+	delay(400);
+	AX_BuzzerON(800, 150);
+	delay(200);
+	AX_BuzzerON(1000, 150);
+	delay(200);
+	AX_BuzzerON(1500, 150);
+	delay(200);
+	AX_BuzzerON(240, 400);
+	delay(600);
+	AX_BuzzerON(120, 400);
+	delay(600);
+}
+  struct Drivebase failure(bool& fail)
+{
+	if(fail = true){
+		buzzerFin(); //buzzer function for fail
+	}
 }
 
 
