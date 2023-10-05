@@ -32,6 +32,7 @@ void setup()
 	driveBase.left.pid = { 2.8, 53.4, 0.055 };
 	driveBase.right.pid = { 2.8, 53.4, 0.055 };
 #endif
+	while(!ROBUS_IsBumper(3)) {}
 
 	//MOTOR_SetSpeed(RIGHT, 0.5);
 
