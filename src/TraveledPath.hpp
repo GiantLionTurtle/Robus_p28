@@ -15,6 +15,8 @@ namespace p28 {
 
     int get_last_move();
 
+    void delete_last_move();
+
     int opposite_move(int move);
 
     int retrace_last_move();
