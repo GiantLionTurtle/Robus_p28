@@ -29,7 +29,7 @@ struct Drivebase {
 
 // Conversion for encoders to distance (meters)
 float ticks_to_dist(int32_t ticks);
-
+float accel_dist(float accel, float target_speed);
 
 // Functions that move the robot must return 
 // the part of the robot that has been moved

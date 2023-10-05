@@ -30,6 +30,10 @@ float ticks_to_dist(int32_t ticks)
 {
 	return static_cast<float>(ticks) / 3200 * TWO_PI * kWheelRadius;
 }
+float accel_dist(float accel, float target_speed)
+{
+	return target_speed / accel;
+}
 
 struct Motor get_motor_speed(struct Motor motor, float delta_s)
 {
@@ -156,6 +160,8 @@ struct Drivebase forward_until_detect(struct Drivebase drvb, float dist, float s
 	traveled_dist = 0;
 	drvb = set_motorTime(drvb, millis());
 
+	// float acc_dist = accel_dist(kAccell, speed);
+
 	while(!detection && traveled_dist < dist)
 	 {
 		delay(kControlLoopDelay);
@@ -243,7 +249,7 @@ struct Drivebase move_to_square_or_detect(struct Drivebase drvb, int direction, 
 	if(detection) { // There was a wall
 		delay(kDecelerationDelay);
 		// Go back to the middle of the last ok square
-		drvb = forward_dist(drvb, fmod(traveled_dist, kSquareSize), -kForwardSpeed);
+		drvb = forward_dist(drvb, kSquareSize - fmod(traveled_dist, kSquareSize), -kForwardSpeed);
 	}
 	return drvb;
 }
