@@ -128,7 +128,7 @@ struct Drivebase try_move(struct Drivebase drvb, int move, int illegal_move, int
 	}
 	int legal = is_move_legal(drvb.sq_x, drvb.sq_y, move);
 
-	if(legal == Legality::Can_go) {
+	if(legal == Legality::Can_go && try_n_squares == 1) {
 		drvb = move_to_square(drvb, move, 1);
 		success = true;
 		delay(kDecelerationDelay);
@@ -149,30 +149,33 @@ struct Drivebase try_move(struct Drivebase drvb, int move, int illegal_move, int
 }
 struct Drivebase step(struct Drivebase drvb)
 {
-	int auto_fail = opposite_move(get_last_move());
+	int auto_fail = -1; // opposite_move(get_last_move());
 
 	bool success = false;
 	// Shoot for the stars, try to move forward to the en of the maze
 	int init_sq_y = drvb.sq_y;
-	drvb = try_move(drvb, FRONT, auto_fail, kFieldHeight - drvb.sq_y-1, success);
+	drvb = try_move(drvb, FRONT, auto_fail, /*kFieldHeight - drvb.sq_y-*/1, success);
 	if(success) {
-		for(int i = init_sq_y; i < drvb.sq_y; ++i)
-			add_move(FRONT);
+		add_move(FRONT);
+		set_legality(drvb.sq_x, drvb.sq_y, opposite_move(FRONT), Legality::Cannot_go);
 		return drvb;
 	}
 	drvb = try_move(drvb, LEFT, auto_fail, 1, success);
 	if(success) {
 		add_move(LEFT);
+		set_legality(drvb.sq_x, drvb.sq_y, opposite_move(LEFT), Legality::Cannot_go);
 		return drvb;
 	}
 	drvb = try_move(drvb, RIGHT, auto_fail, 1, success);
 	if(success) {
 		add_move(RIGHT);
+		set_legality(drvb.sq_x, drvb.sq_y, opposite_move(RIGHT), Legality::Cannot_go);
 		return drvb;
 	}
 	drvb = try_move(drvb, REAR, auto_fail, 1, success);
 	if(success) {
 		add_move(REAR);
+		set_legality(drvb.sq_x, drvb.sq_y, opposite_move(REAR), Legality::Cannot_go);
 		return drvb;
 	}
 
@@ -190,25 +193,27 @@ struct Drivebase step(struct Drivebase drvb)
 struct Drivebase solve2(struct Drivebase drvb)
 {
 	int n_stored = n_stored_moves();
-	if(n_stored <= 0) { // Maze is not solved yet
+	Serial.print("N stored: ");
+	Serial.println(n_stored);
+	// if(n_stored <= 0) { // Maze is not solved yet
 		while(drvb.sq_y != 9) {
 			drvb = step(drvb);
 		}
-	} else {
-		for(int i = 0; i < n_stored; ++i) {
-			drvb = move_to_square(drvb, stored_move(i), 1);
-		}
-	}
+	// } else {
+	// 	for(int i = 0; i < n_stored; ++i) {
+	// 		drvb = move_to_square(drvb, stored_move(i), 1);
+	// 	}
+	// }
 
-#ifndef GO_BACK_TO_BEGINING
-	delay(1000);
-	n_stored = n_stored_moves();
-	for(int i = n_stored-1; i >= 0; --i) {
-		// don't use retrace_last_move to remember the optimal path
-		// for next time
-		drvb = move_to_square(drvb, opposite_move(stored_move(i)), 1);
-	}
-#endif
+// #ifndef GO_BACK_TO_BEGINING
+// 	delay(1000);
+// 	n_stored = n_stored_moves();
+// 	for(int i = n_stored-1; i >= 0; --i) {
+// 		// don't use retrace_last_move to remember the optimal path
+// 		// for next time
+// 		drvb = move_to_square(drvb, opposite_move(stored_move(i)), 1);
+// 	}
+// #endif
 
 	return drvb;
 }
