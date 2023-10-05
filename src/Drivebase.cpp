@@ -228,22 +228,22 @@ struct Drivebase move_to_square(struct Drivebase drvb, int direction, int n_squa
 {
 	drvb = orient_toward_direction(drvb, direction);
 	delay(kDecelerationDelay);
-	drvb = forward_dist(drvb, kSquareSize, kForwardSpeed);
+	drvb = forward_dist(drvb, kSquareSize * n_squares, kForwardSpeed);
 
 	return drvb;
 }
-struct Drivebase move_to_square_or_detect(struct Drivebase drvb, int direction, bool& detection)
+struct Drivebase move_to_square_or_detect(struct Drivebase drvb, int direction, int n_squares, bool& detection)
 {
 	drvb = orient_toward_direction(drvb, direction);
 	delay(kDecelerationDelay);
+
 	float traveled_dist;
-	drvb = forward_until_detect(drvb, kSquareSize/2.0, kDetectSpeed, traveled_dist, detection);
+	drvb = forward_until_detect(drvb, kSquareSize * n_squares, kDetectSpeed, traveled_dist, detection);
 
 	if(detection) { // There was a wall
 		delay(kDecelerationDelay);
-		drvb = forward_dist(drvb, traveled_dist, -kForwardSpeed);
-	} else {
-		drvb = forward_dist(drvb, kSquareSize-traveled_dist, kForwardSpeed);
+		// Go back to the middle of the last ok square
+		drvb = forward_dist(drvb, fmod(traveled_dist, kSquareSize), -kForwardSpeed);
 	}
 	return drvb;
 }

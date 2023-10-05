@@ -55,7 +55,7 @@ struct Drivebase turn_left(struct Drivebase drvb);
 struct Drivebase move_to_square(struct Drivebase drvb, int direction, int n_squares);
 // Tries to move 1 square in a direction, but tries to detect a wall 
 // and moves back to the starting position if there was a wall
-struct Drivebase move_to_square_or_detect(struct Drivebase drvb, int direction, bool& detection);
+struct Drivebase move_to_square_or_detect(struct Drivebase drvb, int direction, int n_squares, bool& detection);
 struct Drivebase orient_toward_direction(struct Drivebase drvb, int direction);
 
 struct Drivebase zero_all(struct Drivebase drvb);
