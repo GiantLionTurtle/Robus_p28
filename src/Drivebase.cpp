@@ -30,6 +30,10 @@ float ticks_to_dist(int32_t ticks)
 {
 	return static_cast<float>(ticks) / 3200 * TWO_PI * kWheelRadius;
 }
+float accel_dist(float accel, float target_speed)
+{
+	return target_speed / accel;
+}
 
 struct Motor get_motor_speed(struct Motor motor, float delta_s)
 {
@@ -136,6 +140,8 @@ struct Drivebase forward_dist(struct Drivebase drvb, float dist, float speed)
 	long int init_time_ms = millis();
 	float distance_parcourue = 0;
 	drvb = set_motorTime(drvb, init_time_ms);
+	// Serial.print("Forward dist ");
+	// Serial.println(dist);
 
 	while(distance_parcourue < dist) {
 		delay(kControlLoopDelay);
@@ -155,6 +161,8 @@ struct Drivebase forward_until_detect(struct Drivebase drvb, float dist, float s
 	long int init_ticks = drvb.left.last_ticks;
 	traveled_dist = 0;
 	drvb = set_motorTime(drvb, millis());
+
+	// float acc_dist = accel_dist(kAccell, speed);
 
 	while(!detection && traveled_dist < dist)
 	 {
@@ -243,7 +251,9 @@ struct Drivebase move_to_square_or_detect(struct Drivebase drvb, int direction, 
 	if(detection) { // There was a wall
 		delay(kDecelerationDelay);
 		// Go back to the middle of the last ok square
-		drvb = forward_dist(drvb, fmod(traveled_dist, kSquareSize), -kForwardSpeed);
+		Serial.print("Traveled_dist ");
+		Serial.println(traveled_dist);
+		drvb = forward_dist(drvb, traveled_dist, -kDetectSpeed);
 	}
 	return drvb;
 }
@@ -267,10 +277,10 @@ struct Drivebase zero_all(struct Drivebase drvb)
 	MOTOR_SetSpeed(RIGHT, 0.0);
 
 	drvb.left.speed = 0.0;
-	drvb.left.error = Error{};
+	// drvb.left.error = Error{};
 
 	drvb.right.speed = 0.0;
-	drvb.right.error = Error{};
+	// drvb.right.error = Error{};
 	return drvb;
 }
 struct Drivebase set_motorTime(struct Drivebase drvb, long int time_ms)

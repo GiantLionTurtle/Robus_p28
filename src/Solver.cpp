@@ -89,37 +89,6 @@ void init_legalityMatrix()
 	}
 }
 
-
-struct Drivebase solve(struct Drivebase drvb)
-{}
-//    if(is_legal_move(drvb, FRONT) == Legality::Can_go) {                
-//     move_to_square(drvb, FRONT, 1);
-//    }
-//      else if(is_legal_move(drvb, FRONT) == Legality::Cannot_go) {
-//        // direction_until_detect(drvb, LEFT, kdetectionDistance, detection);
-//      }   
-//             if(is_legal_move(drvb, LEFT) == Legality::Can_go){
-//             move_to_square(drvb, LEFT, 1);
-//             }
-//        // else if                                                    //code temporaire 
-//        // else if(is_legal_move(drvb, LEFT) == Legality::Can_go){
-//        // move_to_square(drvb, FRONT, 1);
-//    }
-           // else if(is_legal_move(drvb, LEFT) == Legality::Cannot_go){
-              //  turn_right(drvb);
-                //turn_right(drvb);
-            // }
-               // else if(is_legal_move(drvb, FRONT) == Legality::Can_go){
-                   // move_to_square(drvb, FRONT, 1);
-               // }
-                   // else {
-
-                  //  }
-// }
- // } 
-   
-   // return drvb;
-
 struct Drivebase try_move(struct Drivebase drvb, int move, int illegal_move, int try_n_squares, bool& success)
 {
 	if(move == illegal_move) {
@@ -154,25 +123,28 @@ struct Drivebase step(struct Drivebase drvb, bool& fail)
 	bool success = false;
 	// Shoot for the stars, try to move forward to the en of the maze
 	int init_sq_y = drvb.sq_y;
-	drvb = try_move(drvb, FRONT, auto_fail, kFieldHeight - drvb.sq_y-1, success);
+	drvb = try_move(drvb, FRONT, auto_fail, 1, success);
 	if(success) {
-		for(int i = init_sq_y; i < drvb.sq_y; ++i)
-			add_move(FRONT);
+		add_move(FRONT);
+		set_legality(drvb.sq_x, drvb.sq_y, opposite_move(FRONT), Legality::Cannot_go);
 		return drvb;
 	}
 	drvb = try_move(drvb, LEFT, auto_fail, 1, success);
 	if(success) {
 		add_move(LEFT);
+		set_legality(drvb.sq_x, drvb.sq_y, opposite_move(LEFT), Legality::Cannot_go);
 		return drvb;
 	}
 	drvb = try_move(drvb, RIGHT, auto_fail, 1, success);
 	if(success) {
 		add_move(RIGHT);
+		set_legality(drvb.sq_x, drvb.sq_y, opposite_move(RIGHT), Legality::Cannot_go);
 		return drvb;
 	}
 	drvb = try_move(drvb, REAR, auto_fail, 1, success);
 	if(success) {
 		add_move(REAR);
+		set_legality(drvb.sq_x, drvb.sq_y, opposite_move(REAR), Legality::Cannot_go);
 		return drvb;
 	}
 
@@ -192,15 +164,22 @@ struct Drivebase step(struct Drivebase drvb, bool& fail)
 struct Drivebase solve2(struct Drivebase drvb, bool& fail)
 {
 	int n_stored = n_stored_moves();
-	if(n_stored <= 0) { // Maze is not solved yet
-		while(drvb.sq_y != 9) {
-			drvb = step(drvb, fail);
+	Serial.print("N stored: ");
+	Serial.println(n_stored);
+	// if(n_stored <= 0) 
+	{ // Maze is not solved yet
+		while(drvb.sq_y != 9) 
+		{
+			drvb = step(drvb);
 		}
-	} else {
-		for(int i = 0; i < n_stored; ++i) {
-			drvb = move_to_square(drvb, stored_move(i), 1);
-		}
-	}
+	// } 
+	else 
+	{
+	// 	for(int i = 0; i < n_stored; ++i) 
+		{
+	// 		drvb = move_to_square(drvb, stored_move(i), 1);
+	// 	}
+	// }
 
 #ifndef GO_BACK_TO_BEGINING
 	delay(1000);
