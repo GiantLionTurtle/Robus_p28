@@ -31,6 +31,9 @@ struct Drivebase {
 double ticks_to_dist(int32_t ticks);
 double accel_dist(double accel, double target_speed);
 
+struct Drivebase update_pos(struct Drivebase drvb, double dist, int direction);
+struct Drivebase update_orientation(struct Drivebase drvb, int move);
+
 // Functions that move the robot must return 
 // the part of the robot that has been moved
 // with a modified state

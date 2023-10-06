@@ -346,12 +346,37 @@ bool is_fastest_left(int orientation, int target_direction){
 	return out;
 }
 
+// Tries to make the number of ticks right and left equal
+struct Drivebase realign(struct Drivebase drvb)
+{
+#ifdef TEST_REALIGN
+	while(drvb.left.last_ticks < drvb.right.last_ticks) {
+		delay(kControlLoopDelay);
+		long int time_ms = millis();
+
+		drvb.left = update_motor_at_speed(drvb.left, kMinSpeed, time_ms);
+		drvb.right = update_motor_at_speed(drvb.right, -kMinSpeed, time_ms);
+	}
+	while(drvb.right.last_ticks < drvb.left.last_ticks) {
+		delay(kControlLoopDelay);
+		long int time_ms = millis();
+		
+		drvb.left = update_motor_at_speed(drvb.left, kMinSpeed, time_ms);
+		drvb.right = update_motor_at_speed(drvb.right, -kMinSpeed, time_ms);
+	}
+#endif
+	return drvb;
+}
 struct Drivebase move_to_square(struct Drivebase drvb, int direction, int n_squares)
 {
 	delay(kDecelerationDelay);
 	drvb = orient_toward_direction(drvb, direction);
+
+	if(direction == FRONT)
+		drvb = realign(drvb);
+
 	delay(kDecelerationDelay);
-	drvb = forward_dist(drvb, kSquareSize * n_squares - 0.01, kForwardSpeed);
+	drvb = forward_dist(drvb, kSquareSize * n_squares - kInertiaDist, kForwardSpeed);
 
 	return drvb;
 }
@@ -360,16 +385,20 @@ struct Drivebase move_to_square_or_detect(struct Drivebase drvb, int direction, 
 	Serial.println("Move to square!");
 	delay(kDecelerationDelay);
 	drvb = orient_toward_direction(drvb, direction);
+
+	if(direction == FRONT)
+		drvb = realign(drvb);
+
 	delay(kDecelerationDelay);
 	double traveled_dist;
 	detection = false;
-	drvb = forward_until_detect(drvb, kSquareSize-0.01, kDetectSpeed, traveled_dist, detection);
+	drvb = forward_until_detect(drvb, n_squares*kSquareSize-kInertiaDist, kDetectSpeed, traveled_dist, detection);
 
 	if(detection) {// && traveled_dist > 0.02) { // There was a wall
 		delay(kDecelerationDelay);
 		Serial.print("Go back ");
 		Serial.println(traveled_dist);
-		drvb = forward_dist(drvb, traveled_dist+0.01, -kForwardSpeed);
+		drvb = forward_dist(drvb, fmod(traveled_dist, kSquareSize)+kInertiaDist, -kForwardSpeed);
 	}
 	return drvb;
 }

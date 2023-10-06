@@ -26,6 +26,7 @@ constexpr double kTurnSpeed = 0.15;
 constexpr double kForwardSpeed = 1.2;
 constexpr double kDetectSpeed = 1.2;
 constexpr double kMinSpeed = 0.08;
+constexpr double kInertiaDist = 0.01;
 
 using time_t = long unsigned int;
 
