@@ -13,19 +13,19 @@
 enum kMotorId : uint8_t { kLeftMotor = 0, kRightMotor = 1 };
 enum kBumperId : uint8_t  { kLeftBumper = 0, kRightBumper = 1, kFrontBumper = 2, kRearBumper = 3 };
 
-constexpr float kRobotWidth = 0.189;              // m
-constexpr float kRobotWidth_2 = kRobotWidth/2;  // m
-constexpr float kWheelRadius = 0.0380;           // m
+constexpr double kRobotWidth = 0.189;              // m
+constexpr double kRobotWidth_2 = kRobotWidth/2;  // m
+constexpr double kWheelRadius = 0.0380;           // m
 constexpr int kTicksPerRotation = 3200;
-constexpr float kMaxVel = 1.9;                  // m / s
+constexpr double kMaxVel = 1.9;                  // m / s
 constexpr unsigned int kControlLoopDelay = 1; // ms
-constexpr float kAccel = 0.5; // m/s^2
-constexpr float kTurnAccel = 0.2;
-constexpr unsigned int kDecelerationDelay = 0; // ms, time to stop the robot
-constexpr float kTurnSpeed = 0.1;
-constexpr float kForwardSpeed = 0.5;
-constexpr float kDetectSpeed = 0.5;
-constexpr float kMinSpeed = 0.05;
+constexpr double kAccel = 0.36; // m/s^2
+constexpr double kTurnAccel = 0.1;
+constexpr unsigned int kDecelerationDelay = 80; // ms, time to stop the robot
+constexpr double kTurnSpeed = 0.15;
+constexpr double kForwardSpeed = 1.2;
+constexpr double kDetectSpeed = 1.2;
+constexpr double kMinSpeed = 0.08;
 
 using time_t = long unsigned int;
 

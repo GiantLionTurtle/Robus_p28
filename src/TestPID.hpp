@@ -4,7 +4,7 @@
 
 
 
-void start(float P);
+void start(double P);
 
 
 

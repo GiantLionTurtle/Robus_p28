@@ -5,18 +5,18 @@
 
 
 struct PID {
-	float P;
-	float I;
-	float D;
+	double P;
+	double I;
+	double D;
 };
 struct Error {
-	float error { 0.0 };
-	float diff_error { 0.0 };
-	float sum_error { 0.0 };
+	double error { 0.0 };
+	double diff_error { 0.0 };
+	double sum_error { 0.0 };
 };
 
-struct Error update_error(struct Error err, float value, float setpoint, float delta_s);
-float get(struct PID const& pid, struct Error const& error);
+struct Error update_error(struct Error err, double value, double setpoint, double delta_s);
+double get(struct PID const& pid, struct Error const& error);
 
 
 

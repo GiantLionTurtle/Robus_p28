@@ -14,7 +14,7 @@ struct Motor {
 	int ID;
 	struct PID pid;
 	struct Error error;
-	float speed { 0.0 };
+	double speed { 0.0 };
 	int32_t last_ticks { 0 };
 	long int last_time_ms { 0 };
 };
@@ -23,27 +23,27 @@ struct Drivebase {
 	struct Motor right;
 
 	int sq_x { 1 }, sq_y { 0 }; // Position in squares
-	float x{ 0.75 }, y { 0.25 }; // Position in meters, from the bottom left corner of the field
+	double x{ 0.75 }, y { 0.25 }; // Position in meters, from the bottom left corner of the field
 	int orientation { FRONT }; // FRONT, BACK, LEFT, RIGHT
 };
 
 // Conversion for encoders to distance (meters)
-float ticks_to_dist(int32_t ticks);
-float accel_dist(float accel, float target_speed);
+double ticks_to_dist(int32_t ticks);
+double accel_dist(double accel, double target_speed);
 
 // Functions that move the robot must return 
 // the part of the robot that has been moved
 // with a modified state
 
 
-struct Motor get_motor_speed(struct Motor motor, float delta_s);
-struct Motor update_motor_at_speed(struct Motor motor, float speed, long int time_ms);
+struct Motor get_motor_speed(struct Motor motor, double delta_s);
+struct Motor update_motor_at_speed(struct Motor motor, double speed, long int time_ms);
 
 // Functions to move the robot 
 // !!! RELATIVE TO IT'S OWN ORIENTATION !!!
 // Negative distance means backward
-struct Drivebase forward_dist(struct Drivebase drvb, float dist, float speed);
-struct Drivebase forward_until_detect(struct Drivebase drvb, float dist, float speed, float& traveled_dist, bool& detection);
+struct Drivebase forward_dist(struct Drivebase drvb, double dist, double speed);
+struct Drivebase forward_until_detect(struct Drivebase drvb, double dist, double speed, double& traveled_dist, bool& detection);
 struct Drivebase turn_right(struct Drivebase drvb, int n_times = 1);
 struct Drivebase turn_left(struct Drivebase drvb, int n_times = 1);
 
@@ -62,7 +62,7 @@ struct Drivebase zero_all(struct Drivebase drvb);
 struct Drivebase set_motorTime(struct Drivebase drvb, long int time_ms);
 
 
-// float velocity_profile(float target_vel, float dist_to_travel, float current_dist, float time_since_start);
+// double velocity_profile(double target_vel, double dist_to_travel, double current_dist, double time_since_start);
 
 
 
