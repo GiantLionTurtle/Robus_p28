@@ -32,7 +32,7 @@ double ticks_to_dist(int32_t ticks)
 }
 double comp_accel_dist(double accel, double currSpeed, double targSpeed)
 {
-	return (targSpeed - currSpeed) / accel;
+	return (targSpeed - currSpeed) / accel / 2.0;
 }
 
 struct Motor get_motor_speed(struct Motor motor, double delta_s)
@@ -91,6 +91,7 @@ struct Drivebase update_pos(struct Drivebase drvb, double dist, int direction)
 
 	drvb.sq_x = drvb.x / kSquareSize;
 	drvb.sq_y = drvb.y / kSquareSize;
+
 	return drvb;
 }
 
@@ -140,9 +141,6 @@ double do_accell(double curr, double accel, double delta_s)
 }
 double next_speed(double curr_speed, double target, double accel, double curr_dist, double accel_dist, double decel_dist, double delta_s)
 {
-	if(target < 0.0) {
-		return -next_speed(-curr_speed, -target, -accel, curr_dist, accel_dist, decel_dist, delta_s);
-	}
 	if(curr_dist < accel_dist) {
 		// Serial.println("accel");
 		return min(do_accell(curr_speed, accel, delta_s), target);
@@ -157,7 +155,8 @@ double next_speed(double curr_speed, double target, double accel, double curr_di
 }
 void accel_decel_dist(double target_speed, double accel, double max_dist, double& accel_dist, double& decel_dist)
 {
-	accel_dist = abs(comp_accel_dist(accel, 0.0, target_speed));
+	// accel_dist = abs(comp_accel_dist(accel, kMinSpeed, target_speed));
+	accel_dist = kAccelDist;
 	if(max_dist < 2*accel_dist) {
 		accel_dist = max_dist/2.0;
 	}
@@ -228,33 +227,41 @@ struct Drivebase forward_until_detect(struct Drivebase drvb, double dist, double
 	double curr_speed = 0.0;
 	double accel_dist, decel_dist;
 	accel_decel_dist(speed, kAccel, dist, accel_dist, decel_dist);
-
+	// Serial.print("accel decel ");
+	// Serial.print(accel_dist);
+	// Serial.print(",  ");
+	// Serial.println(decel_dist);
 	while(!detection && traveled_dist < dist) {
 		delay(kControlLoopDelay);
+		// Serial.print(traveled_dist);
+		// Serial.print(",  ");
+		// Serial.println(curr_speed);
 		long int time_ms = millis();
 		
 		long int diff_time_ms = time_ms - drvb.left.last_time_ms;
 		double delta_s = static_cast<float>(diff_time_ms) / 1000.0f;
 		curr_speed = next_speed(curr_speed, speed, kAccel, traveled_dist, accel_dist, decel_dist, delta_s);
-
+	
 		drvb.left = update_motor_at_speed(drvb.left, curr_speed, time_ms);
 		drvb.right = update_motor_at_speed(drvb.right, curr_speed, time_ms);
 		traveled_dist = abs(ticks_to_dist(drvb.left.last_ticks-init_ticks));
-		detection = wall_detection() && traveled_dist < dist * 0.75;
+		detection = wall_detection() && fmod(traveled_dist, kSquareSize) < kSquareSize * 0.75;
 	}
 
 	while(curr_speed > kMinSpeed) {
 		delay(kControlLoopDelay);
+		// Serial.println("in slowdown");
 		long int time_ms = millis();
 
 		long int diff_time_ms = time_ms - drvb.left.last_time_ms;
 		double delta_s = static_cast<float>(diff_time_ms) / 1000.0f;
-		curr_speed = next_speed(curr_speed, speed, kAccel, 5, 0, 2, delta_s);
+		curr_speed = next_speed(curr_speed, speed, kCatastrophicDecel, 5, 0, 2, delta_s);
 
 		drvb.left = update_motor_at_speed(drvb.left, curr_speed, time_ms);
 		drvb.right = update_motor_at_speed(drvb.right, curr_speed, time_ms);
 	}
 
+	traveled_dist = abs(ticks_to_dist(drvb.left.last_ticks-init_ticks));
 	drvb = update_pos(drvb, traveled_dist, drvb.orientation);
 	return zero_all(drvb);
 }
@@ -349,56 +356,93 @@ bool is_fastest_left(int orientation, int target_direction){
 // Tries to make the number of ticks right and left equal
 struct Drivebase realign(struct Drivebase drvb)
 {
-#ifdef TEST_REALIGN
+	if(abs(drvb.left.last_ticks - drvb.right.last_ticks) > 200) // cannot fix that
+		return drvb;
+	drvb = set_motorTime(drvb, millis());
+
 	while(drvb.left.last_ticks < drvb.right.last_ticks) {
 		delay(kControlLoopDelay);
 		long int time_ms = millis();
 
-		drvb.left = update_motor_at_speed(drvb.left, kMinSpeed, time_ms);
-		drvb.right = update_motor_at_speed(drvb.right, -kMinSpeed, time_ms);
+		drvb.left = update_motor_at_speed(drvb.left, kRealignSpeed, time_ms);
+		drvb.right = update_motor_at_speed(drvb.right, -kRealignSpeed, time_ms);
 	}
 	while(drvb.right.last_ticks < drvb.left.last_ticks) {
 		delay(kControlLoopDelay);
 		long int time_ms = millis();
 		
-		drvb.left = update_motor_at_speed(drvb.left, kMinSpeed, time_ms);
-		drvb.right = update_motor_at_speed(drvb.right, -kMinSpeed, time_ms);
+		drvb.left = update_motor_at_speed(drvb.left, -kRealignSpeed, time_ms);
+		drvb.right = update_motor_at_speed(drvb.right, kRealignSpeed, time_ms);
 	}
-#endif
-	return drvb;
+	return zero_all(drvb);
 }
+
 struct Drivebase move_to_square(struct Drivebase drvb, int direction, int n_squares)
 {
 	delay(kDecelerationDelay);
-	drvb = orient_toward_direction(drvb, direction);
 
-	if(direction == FRONT)
+	double speed = kForwardSpeed;
+	// if(direction == REAR && drvb.orientation == FRONT) {
+		// speed = -speed;
+	// } else {
+		drvb = orient_toward_direction(drvb, direction);
+	// }
+	if(drvb.orientation == FRONT)
 		drvb = realign(drvb);
 
 	delay(kDecelerationDelay);
-	drvb = forward_dist(drvb, kSquareSize * n_squares - kInertiaDist, kForwardSpeed);
+	drvb = forward_dist(drvb, kSquareSize * n_squares - kInertiaDist, speed);
 
 	return drvb;
 }
-struct Drivebase move_to_square_or_detect(struct Drivebase drvb, int direction, int n_squares, bool& detection)
+struct Drivebase move_to_square_or_detect(struct Drivebase drvb, int direction, int n_squares, int& n_squares_done)
 {
-	Serial.println("Move to square!");
 	delay(kDecelerationDelay);
-	drvb = orient_toward_direction(drvb, direction);
 
-	if(direction == FRONT)
+	double speed = kDetectSpeed;
+	// if(direction == REAR && drvb.orientation == FRONT) {
+	// 	speed = -speed;
+	// } else {
+		drvb = orient_toward_direction(drvb, direction);
+	// }
+	if(drvb.orientation == FRONT)
 		drvb = realign(drvb);
 
 	delay(kDecelerationDelay);
 	double traveled_dist;
-	detection = false;
-	drvb = forward_until_detect(drvb, n_squares*kSquareSize-kInertiaDist, kDetectSpeed, traveled_dist, detection);
+	bool detection = false;
 
+	double dist_to_travel = n_squares*kSquareSize;
+	double x_within_square = drvb.x - drvb.sq_x * kSquareSize - kSquareSize / 2.0;
+	double y_within_square = drvb.y - drvb.sq_y * kSquareSize - kSquareSize / 2.0;
+	switch(direction) {
+	case FRONT: 
+		dist_to_travel -= y_within_square;
+		break;
+	case REAR:
+		dist_to_travel += y_within_square;
+		break;
+	case RIGHT:
+		dist_to_travel -= x_within_square;
+		break;
+	case LEFT:
+		dist_to_travel += x_within_square;
+		break;
+	default:
+		break;
+	}
+
+	drvb = forward_until_detect(drvb, dist_to_travel-kInertiaDist, speed, traveled_dist, detection);
+	n_squares_done = n_squares;
 	if(detection) {// && traveled_dist > 0.02) { // There was a wall
 		delay(kDecelerationDelay);
-		Serial.print("Go back ");
-		Serial.println(traveled_dist);
-		drvb = forward_dist(drvb, fmod(traveled_dist, kSquareSize)+kInertiaDist, -kForwardSpeed);
+		// Serial.print("Go back ");
+		// Serial.println(traveled_dist);
+		double offset_dist = fmod(traveled_dist, kSquareSize);
+		// drvb = forward_dist(drvb, offset_dist-kInertiaDist, -speed);
+		drvb = forward_dist(drvb, min(offset_dist, 0.1), -speed);
+		n_squares_done = (traveled_dist-offset_dist+kSquareSize/2.0) / kSquareSize;
+
 	}
 	return drvb;
 }

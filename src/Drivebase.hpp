@@ -49,6 +49,8 @@ struct Drivebase forward_dist(struct Drivebase drvb, double dist, double speed);
 struct Drivebase forward_until_detect(struct Drivebase drvb, double dist, double speed, double& traveled_dist, bool& detection);
 struct Drivebase turn_right(struct Drivebase drvb, int n_times = 1);
 struct Drivebase turn_left(struct Drivebase drvb, int n_times = 1);
+struct Drivebase realign(struct Drivebase drvb);
+
 
 // Moves the drivebase by increments of squares in one of 
 // 4 directions (LEFT, RIGHT, FRONT, REAR)
@@ -58,7 +60,7 @@ struct Drivebase turn_left(struct Drivebase drvb, int n_times = 1);
 struct Drivebase move_to_square(struct Drivebase drvb, int direction, int n_squares);
 // Tries to move 1 square in a direction, but tries to detect a wall 
 // and moves back to the starting position if there was a wall
-struct Drivebase move_to_square_or_detect(struct Drivebase drvb, int direction, int n_squares, bool& detection);
+struct Drivebase move_to_square_or_detect(struct Drivebase drvb, int direction, int n_squares, int& n_squares_done);
 struct Drivebase orient_toward_direction(struct Drivebase drvb, int direction);
 
 struct Drivebase zero_all(struct Drivebase drvb);

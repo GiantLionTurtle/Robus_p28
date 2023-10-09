@@ -13,7 +13,7 @@
 #define GO_BACK_TO_BEGINING
 
 
-
+static bool is_backTracking = false;
 
 // Each char represents the left and bottom "walls" of 
 // a case
@@ -73,173 +73,171 @@ void init_legalityMatrix()
 			set_legality(i, j, REAR, Legality::Unknown);
 		}
 	}
+
 	// Black walls in the middle
 	for(int i = 1; i < 10; i+=2) {
 		set_legality(1, i, LEFT, Legality::Cannot_go);
 		set_legality(1, i, RIGHT, Legality::Cannot_go);
 	}
+
 	// Outer walls
 	for(int i = 0; i < kFieldWidth+1; ++i) {
 		set_legality(i, 0, REAR, Legality::Cannot_go);
 		set_legality(i, kFieldHeight-1, FRONT, Legality::Cannot_go);
 	}
+
 	for(int i = 0; i < kFieldHeight+1; ++i) {
 		set_legality(0, i, LEFT, Legality::Cannot_go);
 		set_legality(kFieldWidth-1, i, RIGHT, Legality::Cannot_go);
 	}
 }
-
-int combine_unknown_squares(struct Drivebase drvb_sim, int move)
+String to_string(int move)
 {
-	int n_squares = 0;
-	do {
-		if(is_move_legal(drvb_sim.sq_x, drvb_sim.sq_y, move) == Legality::Cannot_go)
-			break;
-		
-		if(move == FRONT) {
-			if(drvb_sim.sq_y >= 9)
-				break;			
-		} else if(is_move_legal(drvb_sim.sq_x, drvb_sim.sq_y, FRONT) != Legality::Cannot_go) {
-			break;
-		}
-		// We are not moving the robot nor changing the main drivebase state
-		// we are only changing the internal state of our copy of the main 
-		// drivebase, which we do not return
-		drvb_sim = update_pos(drvb_sim, kSquareSize, move);
-		n_squares++;
-	} while(1);
-
-	// Dead end protection kind of?
-	if(drvb_sim.sq_y != 9 && move == FRONT) {
-		for(int i = 0; i < 3; ++i) {
-			if(is_move_legal(i, drvb_sim.sq_y, FRONT) != Legality::Cannot_go)
-				return n_squares;
-		}
-		return 0; // Going into a dead end
+	switch(move) {
+	case LEFT: return String("LEFT");
+	case RIGHT: return String("RIGHT");
+	case FRONT: return String("FRONT");
+	case REAR: return String("REAR");
 	}
-	return n_squares;
+	return String("wot");
 }
-struct Drivebase try_move(struct Drivebase drvb, int move, int illegal_move, bool& success)
+
+int how_many_front(Drivebase drvb)
 {
-	if(move == illegal_move) {
-		success = false;
+	int i;
+	for(i = drvb.sq_y; i < kFieldHeight; ++i) {
+		if(is_move_legal(drvb.sq_x, i, FRONT) == Legality::Cannot_go)
+			break;
+	}
+	return i - drvb.sq_y;
+}
+void add_virtual_walls_helper(Drivebase end_drvb, int move, int n_squares)
+{
+	int end_x = end_drvb.sq_x;
+	int end_y = end_drvb.sq_y;
+	int opp_move = opposite_move(move);
+	switch(move) {
+	case FRONT:
+		for(int i = 0; i < n_squares; ++i) {
+			set_legality(end_x, end_y-i, opp_move, Legality::Cannot_go);
+		}
+		break;
+	case REAR:
+		for(int i = 0; i < n_squares; ++i) {
+			set_legality(end_x, end_y+i, opp_move, Legality::Cannot_go);
+		}
+		break;
+	case LEFT:
+		for(int i = 0; i < n_squares; ++i) {
+			set_legality(end_x+i, end_y, opp_move, Legality::Cannot_go);
+		}
+		break;
+	case RIGHT:
+		for(int i = 0; i < n_squares; ++i) {
+			set_legality(end_x-i, end_y, opp_move, Legality::Cannot_go);
+		}
+		break;
+	default:
+		break;
+	}
+}
+
+Drivebase do_move(Drivebase drvb, int move, int n_squares, bool& wall)
+{
+	if(move == opposite_move(get_last_move()) && !is_backTracking) {
+		wall = true;
 		return drvb;
 	}
+	is_backTracking = false;
+	Serial.print("Do move ");
+	Serial.print(drvb.sq_x);
+	Serial.print(",  ");
+	Serial.print(drvb.sq_y);
+	Serial.print(" :: ");
+	Serial.print(to_string(move));
+	Serial.print(" [");
+	Serial.print(n_squares);
+	Serial.println("]");
 
-	int comb_squares = combine_unknown_squares(drvb, move);
+	int done_squares = 0;
+	drvb = move_to_square_or_detect(drvb, move, n_squares, done_squares);
+	Serial.print("Done squares: ");
+	Serial.println(done_squares);
 
-	if(comb_squares > 0) {
-		bool wall = false;
-		int init_sq_x = drvb.sq_x;
-		int init_sq_y = drvb.sq_y;
-		drvb = move_to_square_or_detect(drvb, move, comb_squares, wall);
-
-		drvb = move_to_square_or_detect(drvb, move, comb_squares, wall);
-		
-		set_legality(init_sq_x, init_sq_y, move, wall ? Legality::Cannot_go : Legality::Can_go);
-		success = !wall;
-		delay(kDecelerationDelay);
-	} else {
-		success = false;
+	for(int i = 0; i < done_squares; ++i) {
+		add_move(move);
+	}
+	wall = done_squares < n_squares;
+	if(wall) {
+		Serial.println("WALL!");
+		add_virtual_walls_helper(drvb, move, n_squares);
 	}
 	return drvb;
 }
-struct Drivebase step(struct Drivebase drvb, bool& fail)
+Drivebase do_move_1_square(Drivebase drvb, int move, bool& wall)
 {
-	int auto_fail = opposite_move(get_last_move());
-
-	bool success = false;
-	// Shoot for the stars, try to move forward to the en of the maze
-	int init_sq_y = drvb.sq_y;
-	drvb = try_move(drvb, FRONT, auto_fail, success);
-	if(success) {
-		add_move(FRONT);
-		// set_legality(drvb.sq_x, drvb.sq_y, opposite_move(FRONT), Legality::Cannot_go);
-		return drvb;
+	if(is_move_legal(drvb.sq_x, drvb.sq_y, move) != Legality::Cannot_go) {
+		drvb = do_move(drvb, move, 1, wall);
 	}
-	drvb = try_move(drvb, LEFT, auto_fail, success);
-	if(success) {
-		add_move(LEFT);
-		// set_legality(drvb.sq_x, drvb.sq_y, opposite_move(LEFT), Legality::Cannot_go);
-		return drvb;
-	}
-	drvb = try_move(drvb, RIGHT, auto_fail, success);
-	if(success) {
-		add_move(RIGHT);
-		// set_legality(drvb.sq_x, drvb.sq_y, opposite_move(RIGHT), Legality::Cannot_go);
-		return drvb;
-	}
-	drvb = try_move(drvb, REAR, auto_fail, success);
-	if(success) {
-		add_move(REAR);
-		// set_legality(drvb.sq_x, drvb.sq_y, opposite_move(REAR), Legality::Cannot_go);
-		return drvb;
-	}
-
-	// Manage back
-	int trace_back = retrace_last_move();
-	if(trace_back == -1){
-		fail = true;
-		return drvb; // give up;
-	}
-
-	drvb = move_to_square(drvb, trace_back, 1);
-	// Update Legality matrix
-	set_legality(drvb.sq_x, drvb.sq_y, opposite_move(trace_back), Legality::Cannot_go);
-
 	return drvb;
 }
-struct Drivebase solve2(struct Drivebase drvb, bool& fail)
+Drivebase step(Drivebase drvb, bool& fail)
 {
-	int n_stored = n_stored_moves();
-	Serial.print("N stored: ");
-	Serial.println(n_stored);
-	if(n_stored <= 0) { // Maze is not solved yet
-		while(drvb.sq_y != 9) 
-		{
+	int n_steps = how_many_front(drvb);
+	bool wall = true;
+	if(n_steps != 0) {
+		drvb = do_move(drvb, FRONT, n_steps, wall);
+	}
+	if(!wall) return drvb;
+	drvb = do_move_1_square(drvb, LEFT, wall);
+
+	if(!wall) return drvb;
+	drvb = do_move_1_square(drvb, RIGHT, wall);
+
+	if(!wall) return drvb;
+	drvb = do_move_1_square(drvb, REAR, wall);
+
+	if(!wall) return drvb;
+
+	Serial.print("Traceback!");
+	int opp_last_move = retrace_last_move();
+	if(opp_last_move != -1) {
+		is_backTracking = true;
+		Serial.print(drvb.sq_x);
+		Serial.print(",  ");
+		Serial.print(drvb.sq_y);
+		Serial.print(" :: ");
+		Serial.println(to_string(opp_last_move));
+		drvb = move_to_square(drvb, opp_last_move, 1);
+		set_legality(drvb.sq_x, drvb.sq_y, opposite_move(opp_last_move), Legality::Cannot_go);
+		return drvb;
+	} 
+	Serial.println(" Failed ");
+
+	fail = true;
+	return drvb;
+}
+
+Drivebase solve3(Drivebase drvb)
+{
+	int stored = n_stored_moves();
+	if(stored == 0) {
+		bool fail = false;
+		while(drvb.sq_y != kFieldHeight-1 && !fail) {
 			drvb = step(drvb, fail);
 		}
+		if(fail)
+			Serial.println("T_T");
 	} else {
-		for(int i = 0; i < n_stored; ++i) 
-		{
+		for(int i = 0; i < stored; ++i) {
 			drvb = move_to_square(drvb, stored_move(i), 1);
 		}
 	}
 
-#ifdef GO_BACK_TO_BEGINING
-	delay(1000);
-	n_stored = n_stored_moves();
-	for(int i = n_stored-1; i >= 0; --i) {
-		// don't use retrace_last_move to remember the optimal path
-		// for next time
+	stored = n_stored_moves();
+	for(int i = stored-1; i >= 0; --i) {
 		drvb = move_to_square(drvb, opposite_move(stored_move(i)), 1);
 	}
-#endif
 
 	return drvb;
 }
-void buzzerFin(void)
-{
-	AX_BuzzerON(1000, 200);
-	delay(400);
-	AX_BuzzerON(800, 200);
-	delay(400);
-	AX_BuzzerON(800, 150);
-	delay(200);
-	AX_BuzzerON(1000, 150);
-	delay(200);
-	AX_BuzzerON(1500, 150);
-	delay(200);
-	AX_BuzzerON(240, 400);
-	delay(600);
-	AX_BuzzerON(120, 400);
-	delay(600);
-}
-  struct Drivebase failure(bool& fail)
-{
-	if(fail == true){
-		buzzerFin(); //buzzer function for fail
-	}
-}
-
-

@@ -53,10 +53,9 @@ void setup()
 	// bool detect;
 	// driveBase = move_to_square_or_detect(driveBase, FRONT, 1, detect);
 
-	// Serial.print("Legal: ");
-	// Serial.println(is_move_legal(1, 0, RIGHT));
+	Serial.print("Legal: ");
+	Serial.println(is_move_legal(0, 1, RIGHT));
 	// driveBase= move_to_square(driveBase, REAR, 1);
-
 
 	// for(int i = 0; i < 4; ++i) {
 	// 	// driveBase = turn_right(driveBase, 1);
@@ -65,10 +64,11 @@ void setup()
 
 void loop() 
 {
-	while(!ROBUS_IsBumper(3)) {}
-
-	bool fail = false;
-	driveBase = solve2(driveBase, fail);
+	if(ROBUS_IsBumper(3)) {
+		driveBase = solve3(driveBase);
+	}
+	// driveBase = realign(driveBase);
+	// driveBase = turn_left(driveBase);
 	// bool start = whistle_detection();
 	// if(start)
 	// {

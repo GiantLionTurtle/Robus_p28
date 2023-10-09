@@ -20,6 +20,7 @@ void init_legalityMatrix();
 struct Drivebase solve(struct Drivebase drvb);
 struct Drivebase solve2(struct Drivebase drvb, bool& fail);
 struct Drivebase failure(bool& fail);
+struct Drivebase solve3(struct Drivebase drvb);
 
 //buzzer
 void buzzerFin(void);
