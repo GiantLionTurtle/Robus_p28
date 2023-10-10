@@ -13,7 +13,6 @@
 #define GO_BACK_TO_BEGINING
 
 
-static bool is_backTracking = false;
 
 // Each char represents the left and bottom "walls" of 
 // a case
@@ -144,11 +143,6 @@ void add_virtual_walls_helper(Drivebase end_drvb, int move, int n_squares)
 
 Drivebase do_move(Drivebase drvb, int move, int n_squares, bool& wall)
 {
-	if(move == opposite_move(get_last_move()) && !is_backTracking) {
-		wall = true;
-		return drvb;
-	}
-	is_backTracking = false;
 	Serial.print("Do move ");
 	Serial.print(drvb.sq_x);
 	Serial.print(",  ");
@@ -170,8 +164,9 @@ Drivebase do_move(Drivebase drvb, int move, int n_squares, bool& wall)
 	wall = done_squares < n_squares;
 	if(wall) {
 		Serial.println("WALL!");
-		add_virtual_walls_helper(drvb, move, n_squares);
+		set_legality(drvb.sq_x, drvb.sq_y, move, Legality::Cannot_go); // Actual wall
 	}
+	add_virtual_walls_helper(drvb, move, n_squares); // virtual wall to avoid going
 	return drvb;
 }
 Drivebase do_move_1_square(Drivebase drvb, int move, bool& wall)
@@ -202,13 +197,12 @@ Drivebase step(Drivebase drvb, bool& fail)
 	Serial.print("Traceback!");
 	int opp_last_move = retrace_last_move();
 	if(opp_last_move != -1) {
-		is_backTracking = true;
 		Serial.print(drvb.sq_x);
 		Serial.print(",  ");
 		Serial.print(drvb.sq_y);
 		Serial.print(" :: ");
 		Serial.println(to_string(opp_last_move));
-		drvb = move_to_square(drvb, opp_last_move, 1);
+		drvb = move_to_square(drvb, opp_last_move, 1, true);
 		set_legality(drvb.sq_x, drvb.sq_y, opposite_move(opp_last_move), Legality::Cannot_go);
 		return drvb;
 	} 
@@ -230,14 +224,14 @@ Drivebase solve3(Drivebase drvb)
 			Serial.println("T_T");
 	} else {
 		for(int i = 0; i < stored; ++i) {
-			drvb = move_to_square(drvb, stored_move(i), 1);
+			drvb = move_to_square(drvb, stored_move(i), 1, true);
 		}
 	}
 
-	stored = n_stored_moves();
-	for(int i = stored-1; i >= 0; --i) {
-		drvb = move_to_square(drvb, opposite_move(stored_move(i)), 1);
-	}
+	// stored = n_stored_moves();
+	// for(int i = stored-1; i >= 0; --i) {
+	// 	drvb = move_to_square(drvb, opposite_move(stored_move(i)), 1, true);
+	// }
 
 	return drvb;
 }

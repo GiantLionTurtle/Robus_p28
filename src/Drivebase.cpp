@@ -268,7 +268,7 @@ struct Drivebase forward_until_detect(struct Drivebase drvb, double dist, double
 struct Drivebase turn_right(struct Drivebase drvb, int n_times)
 {
 	static int it = 1;
-	double dist_to_travel = PI * kRobotWidth / 4.0 * (float)n_times;// - (0.01 - (0.005*it++));
+	double dist_to_travel = kCircumference / 4.0 * (float)n_times;// - (0.01 - (0.005*it++));
 	long int init_ticks_right = drvb.right.last_ticks;
 	long int init_ticks_left = drvb.left.last_ticks;
 	drvb = set_motorTime(drvb, millis());
@@ -300,7 +300,7 @@ struct Drivebase turn_right(struct Drivebase drvb, int n_times)
 }
 struct Drivebase turn_left(struct Drivebase drvb, int n_times)
 {
-	double dist_to_travel = PI * kRobotWidth / 4.0 * (float)n_times;
+	double dist_to_travel = kCircumference / 4.0 * (float)n_times;
 	long int init_ticks_right = drvb.right.last_ticks;
 	long int init_ticks_left = drvb.left.last_ticks;
 	
@@ -356,8 +356,10 @@ bool is_fastest_left(int orientation, int target_direction){
 // Tries to make the number of ticks right and left equal
 struct Drivebase realign(struct Drivebase drvb)
 {
-	if(abs(drvb.left.last_ticks - drvb.right.last_ticks) > 200) // cannot fix that
+	if(abs(drvb.left.last_ticks - drvb.right.last_ticks) > kTicksPerRotation) {
 		return drvb;
+	}
+
 	drvb = set_motorTime(drvb, millis());
 
 	while(drvb.left.last_ticks < drvb.right.last_ticks) {
@@ -377,16 +379,16 @@ struct Drivebase realign(struct Drivebase drvb)
 	return zero_all(drvb);
 }
 
-struct Drivebase move_to_square(struct Drivebase drvb, int direction, int n_squares)
+struct Drivebase move_to_square(struct Drivebase drvb, int direction, int n_squares, bool allow_back)
 {
 	delay(kDecelerationDelay);
 
 	double speed = kForwardSpeed;
-	// if(direction == REAR && drvb.orientation == FRONT) {
-		// speed = -speed;
-	// } else {
+	if(direction == REAR && drvb.orientation == FRONT && allow_back) {
+		speed = -speed;
+	} else {
 		drvb = orient_toward_direction(drvb, direction);
-	// }
+	}
 	if(drvb.orientation == FRONT)
 		drvb = realign(drvb);
 
@@ -438,18 +440,23 @@ struct Drivebase move_to_square_or_detect(struct Drivebase drvb, int direction, 
 		delay(kDecelerationDelay);
 		// Serial.print("Go back ");
 		// Serial.println(traveled_dist);
-		double offset_dist = fmod(traveled_dist, kSquareSize);
+
+		double offset_dist = fmod(traveled_dist, kSquareSize)-kInertiaDist;
 		// drvb = forward_dist(drvb, offset_dist-kInertiaDist, -speed);
-		drvb = forward_dist(drvb, min(offset_dist, 0.1), -speed);
+		drvb = forward_dist(drvb, min(offset_dist, 0.08), -speed);
 		n_squares_done = (traveled_dist-offset_dist+kSquareSize/2.0) / kSquareSize;
 
 	}
+	if(drvb.orientation == FRONT)
+		drvb = realign(drvb);
+
 	return drvb;
 }
 struct Drivebase orient_toward_direction(struct Drivebase drvb, int direction)
 {
 	if(drvb.orientation == opposite_move(direction)) {
 		drvb = turn_left(drvb);
+		delay(kDecelerationDelay);
 		drvb = turn_left(drvb);
 		return drvb;
 	} else if(drvb.orientation == direction) {

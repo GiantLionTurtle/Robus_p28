@@ -34,32 +34,6 @@ void setup()
 	driveBase.right.pid = { 2.8, 53.4, 0.055 };
 #endif
 
-	//MOTOR_SetSpeed(RIGHT, 0.5);
-
-	// driveBase = turn_left(driveBase);
-	// delay(500);
-	// driveBase = turn_right(driveBase);
-	// delay(500);
-	//driveBase = forward_dist(driveBase, 2, 0.2);
-
-	// driveBase = solve(driveBase);
-	// // driveBase = forward_dist(driveBase, 0.5, 0.2);
-
-	// driveBase = solve(driveBase);
-	// driveBase= move_to_square(driveBase, REAR, 1);
-	// driveBase = move_to_square_or_detect(driveBase, RIGHT, detect);
-
-	// driveBase= move_to_square(driveBase, FRONT, 1);
-	// bool detect;
-	// driveBase = move_to_square_or_detect(driveBase, FRONT, 1, detect);
-
-	Serial.print("Legal: ");
-	Serial.println(is_move_legal(0, 1, RIGHT));
-	// driveBase= move_to_square(driveBase, REAR, 1);
-
-	// for(int i = 0; i < 4; ++i) {
-	// 	// driveBase = turn_right(driveBase, 1);
-	// }
 }
 
 void loop() 
@@ -67,12 +41,4 @@ void loop()
 	if(ROBUS_IsBumper(3)) {
 		driveBase = solve3(driveBase);
 	}
-	// driveBase = realign(driveBase);
-	// driveBase = turn_left(driveBase);
-	// bool start = whistle_detection();
-	// if(start)
-	// {
-	// 	driveBase = solve2(driveBase);
-	// }
-	// delay(10);
 }
