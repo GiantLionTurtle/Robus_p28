@@ -8,6 +8,8 @@
 #include "ProximityDetector.hpp"
 #include "TraveledPath.hpp"
 
+void buzzerFin();
+
 Drivebase driveBase;
 bool start = false;
 
@@ -26,19 +28,40 @@ void setup()
 	driveBase.left.ID = LEFT;
 	driveBase.right.ID = RIGHT;
 
-#ifdef ROBOT_A
+#ifdef AQUAMAN
 	driveBase.left.pid = { 1.4, 35.5555, 0.03333333 };
 	driveBase.right.pid = { 1.4, 35.5555, 0.03333333 };
 #else
-	driveBase.left.pid = { 2.8, 53.4, 0.055 };
-	driveBase.right.pid = { 2.8, 53.4, 0.055 };
+	driveBase.left.pid = { 1.4, 35.5555, 0.03333333 };
+	driveBase.right.pid = { 1.4, 35.5555, 0.03333333 };
 #endif
 
 }
 
 void loop() 
 {
-	if(ROBUS_IsBumper(3)) {
+	if(whistle_detection()) {
+	// if(ROBUS_IsBumper(3)) {
 		driveBase = solve3(driveBase);
+		buzzerFin();
 	}
+	delay(10);
+}
+
+void buzzerFin()
+{
+	AX_BuzzerON(1000, 200);
+	delay(400);
+	AX_BuzzerON(800, 200);
+	delay(400);
+	AX_BuzzerON(800, 150);
+	delay(200);
+	AX_BuzzerON(1000, 150);
+	delay(200);
+	AX_BuzzerON(1500, 150);
+	delay(200);
+	AX_BuzzerON(240, 400);
+	delay(600);
+	AX_BuzzerON(120, 400);
+	delay(600);
 }

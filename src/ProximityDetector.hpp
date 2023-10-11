@@ -6,8 +6,8 @@
 #include "LibRobus.h"
 #include "Constants.hpp"
 
-#define GREEN_PIN 15
-#define RED_PIN 14
+#define GREEN_PIN 46
+#define RED_PIN 47
 
 
 

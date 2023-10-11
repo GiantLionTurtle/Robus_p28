@@ -26,9 +26,9 @@ void init(double P, double speed_m_s)
 	motorPID.I = 35.5555555555556;
 	motorPID.D = 0.03333333333333;
 	motorPID.P = 4;
-	Serial.begin(9600);
+	// Serial.begin(9600);
 	delay(1000);
-	Serial.println("Begin!\n");
+	// Serial.println("Begin!\n");
 	prev_time_ms = millis();
 	delay(10);
 

@@ -7,8 +7,8 @@
 
 struct Error update_error(struct Error err, double value, double setpoint, double delta_s)
 {
-	// Serial.print("Delta s: ");
-	// Serial.println(delta_s);
+	// // Serial.print("Delta s: ");
+	// // Serial.println(delta_s);
 	Error out;
 	out.error = setpoint - value;
 	out.diff_error = out.error - err.error;

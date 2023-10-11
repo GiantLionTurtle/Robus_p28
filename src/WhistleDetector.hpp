@@ -6,7 +6,7 @@
 #include "LibRobus.h"
 #include "Constants.hpp"
 
-#define WHISTLE_PIN 18
+#define WHISTLE_PIN 49
 
 
 void init_whistle();

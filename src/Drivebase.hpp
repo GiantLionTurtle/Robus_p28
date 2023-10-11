@@ -49,7 +49,7 @@ struct Drivebase forward_dist(struct Drivebase drvb, double dist, double speed);
 struct Drivebase forward_until_detect(struct Drivebase drvb, double dist, double speed, double& traveled_dist, bool& detection);
 struct Drivebase turn_right(struct Drivebase drvb, int n_times = 1);
 struct Drivebase turn_left(struct Drivebase drvb, int n_times = 1);
-struct Drivebase realign(struct Drivebase drvb);
+struct Drivebase realign(struct Drivebase drvb, int diff);
 
 
 // Moves the drivebase by increments of squares in one of 

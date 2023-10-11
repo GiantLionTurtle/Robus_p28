@@ -104,7 +104,7 @@ String to_string(int move)
 int how_many_front(Drivebase drvb)
 {
 	int i;
-	for(i = drvb.sq_y; i < kFieldHeight; ++i) {
+	for(i = drvb.sq_y; i < kFieldHeight; ++i && i - drvb.sq_y < 4) {
 		if(is_move_legal(drvb.sq_x, i, FRONT) == Legality::Cannot_go)
 			break;
 	}
@@ -143,36 +143,38 @@ void add_virtual_walls_helper(Drivebase end_drvb, int move, int n_squares)
 
 Drivebase do_move(Drivebase drvb, int move, int n_squares, bool& wall)
 {
-	Serial.print("Do move ");
-	Serial.print(drvb.sq_x);
-	Serial.print(",  ");
-	Serial.print(drvb.sq_y);
-	Serial.print(" :: ");
-	Serial.print(to_string(move));
-	Serial.print(" [");
-	Serial.print(n_squares);
-	Serial.println("]");
+	// Serial.print("Do move ");
+	// Serial.print(drvb.sq_x);
+	// Serial.print(",  ");
+	// Serial.print(drvb.sq_y);
+	// Serial.print(" :: ");
+	// Serial.print(to_string(move));
+	// Serial.print(" [");
+	// Serial.print(n_squares);
+	// Serial.println("]");
 
 	int done_squares = 0;
 	drvb = move_to_square_or_detect(drvb, move, n_squares, done_squares);
-	Serial.print("Done squares: ");
-	Serial.println(done_squares);
+	// Serial.print("Done squares: ");
+	// Serial.println(done_squares);
 
 	for(int i = 0; i < done_squares; ++i) {
 		add_move(move);
 	}
 	wall = done_squares < n_squares;
 	if(wall) {
-		Serial.println("WALL!");
+		// Serial.println("WALL!");
 		set_legality(drvb.sq_x, drvb.sq_y, move, Legality::Cannot_go); // Actual wall
 	}
-	add_virtual_walls_helper(drvb, move, n_squares); // virtual wall to avoid going
+	add_virtual_walls_helper(drvb, move, done_squares); // virtual wall to avoid going
 	return drvb;
 }
 Drivebase do_move_1_square(Drivebase drvb, int move, bool& wall)
 {
 	if(is_move_legal(drvb.sq_x, drvb.sq_y, move) != Legality::Cannot_go) {
 		drvb = do_move(drvb, move, 1, wall);
+	} else {
+		wall = true;
 	}
 	return drvb;
 }
@@ -183,30 +185,34 @@ Drivebase step(Drivebase drvb, bool& fail)
 	if(n_steps != 0) {
 		drvb = do_move(drvb, FRONT, n_steps, wall);
 	}
+	// Serial.println("Here1");
 	if(!wall) return drvb;
 	drvb = do_move_1_square(drvb, LEFT, wall);
 
+	// Serial.println("Here2");
 	if(!wall) return drvb;
 	drvb = do_move_1_square(drvb, RIGHT, wall);
 
+	// Serial.println("Here3");
 	if(!wall) return drvb;
 	drvb = do_move_1_square(drvb, REAR, wall);
 
+	// Serial.println("Here4");
 	if(!wall) return drvb;
 
-	Serial.print("Traceback!");
+	// Serial.print("Traceback!");
 	int opp_last_move = retrace_last_move();
 	if(opp_last_move != -1) {
-		Serial.print(drvb.sq_x);
-		Serial.print(",  ");
-		Serial.print(drvb.sq_y);
-		Serial.print(" :: ");
-		Serial.println(to_string(opp_last_move));
+		// Serial.print(drvb.sq_x);
+		// Serial.print(",  ");
+		// Serial.print(drvb.sq_y);
+		// Serial.print(" :: ");
+		// Serial.println(to_string(opp_last_move));
 		drvb = move_to_square(drvb, opp_last_move, 1, true);
 		set_legality(drvb.sq_x, drvb.sq_y, opposite_move(opp_last_move), Legality::Cannot_go);
 		return drvb;
 	} 
-	Serial.println(" Failed ");
+	// Serial.println(" Failed ");
 
 	fail = true;
 	return drvb;
@@ -218,20 +224,36 @@ Drivebase solve3(Drivebase drvb)
 	if(stored == 0) {
 		bool fail = false;
 		while(drvb.sq_y != kFieldHeight-1 && !fail) {
+			// Serial.println("Start step");
 			drvb = step(drvb, fail);
+			// Serial.println("End step");
 		}
-		if(fail)
-			Serial.println("T_T");
-	} else {
-		for(int i = 0; i < stored; ++i) {
-			drvb = move_to_square(drvb, stored_move(i), 1, true);
+		drvb = forward_dist(drvb, 0.15, kForwardSpeed);
+		// if(fail)
+			// // Serial.println("T_T");
+	} 
+	else {
+		int n_squares = 1;
+		for(int i = 0; i < stored; i+=n_squares) {
+			int n_squares = 1;
+			while(stored_move(i+n_squares) == stored_move(i)) {
+				n_squares++;
+			}
+			drvb = move_to_square(drvb, stored_move(stored_move(i)), n_squares, true);
 		}
 	}
+	
+	delay(500);
 
-	// stored = n_stored_moves();
-	// for(int i = stored-1; i >= 0; --i) {
-	// 	drvb = move_to_square(drvb, opposite_move(stored_move(i)), 1, true);
-	// }
+	stored = n_stored_moves();
+	int n_squares = 1;
+	for(int i = stored-1; i >= 0; i-=n_squares) {
+		n_squares = 1;
+		while(stored_move(i-n_squares) == stored_move(i)) {
+			n_squares++;
+		}
+		drvb = move_to_square(drvb, opposite_move(stored_move(i)), n_squares, true);
+	}
 
 	return drvb;
 }
