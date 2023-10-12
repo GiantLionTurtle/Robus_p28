@@ -40,9 +40,10 @@ void setup()
 
 void loop() 
 {
-	if(whistle_detection()) {
-	// if(ROBUS_IsBumper(3)) {
+	// if(whistle_detection()) {
+	if(ROBUS_IsBumper(3)) {
 		driveBase = solve3(driveBase);
+		// driveBase = move_to_square(driveBase, FRONT, 1, true);
 		buzzerFin();
 	}
 	delay(10);

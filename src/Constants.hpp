@@ -6,7 +6,7 @@
     All physical constants of the robot in SI units where applicable
 */
 
-//#define AQUAMAN
+#define AQUAMAN
 #ifndef AQUAMAN
 #define BATAMAN
 #endif

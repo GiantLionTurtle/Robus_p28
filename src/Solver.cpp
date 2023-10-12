@@ -77,6 +77,8 @@ void init_legalityMatrix()
 	for(int i = 1; i < 10; i+=2) {
 		set_legality(1, i, LEFT, Legality::Cannot_go);
 		set_legality(1, i, RIGHT, Legality::Cannot_go);
+		set_legality(1, i, FRONT, Legality::Cannot_go);
+		set_legality(1, i, REAR, Legality::Cannot_go);
 	}
 
 	// Outer walls
@@ -242,6 +244,7 @@ Drivebase solve3(Drivebase drvb)
 		}
 	}
 	
+<<<<<<< Updated upstream
 	//delay(1000);
 	// drvb = forward_dist(drvb, 0.15, -kForwardSpeed);
 	// stored = n_stored_moves();
@@ -249,6 +252,15 @@ Drivebase solve3(Drivebase drvb)
 	// for(int i = stored-1; i >= 0; i-= n_squares) {
 	// 	n_squares = 1;
 	// 	while(stored_move(i-n_squares) == stored_move(i) && n_squares <= 2) {
+=======
+	// delay(500);
+
+	// stored = n_stored_moves();
+	// int n_squares = 1;
+	// for(int i = stored-1; i >= 0; i-=n_squares) {
+	// 	n_squares = 1;
+	// 	while(stored_move(i-n_squares) == stored_move(i)) {
+>>>>>>> Stashed changes
 	// 		n_squares++;
 	// 	}
 	// 	drvb = move_to_square(drvb, opposite_move(stored_move(i)), n_squares, true);
