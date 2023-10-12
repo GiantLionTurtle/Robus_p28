@@ -180,7 +180,7 @@ Drivebase do_move_1_square(Drivebase drvb, int move, bool& wall)
 }
 Drivebase step(Drivebase drvb, bool& fail)
 {
-	int n_steps = how_many_front(drvb);
+	int n_steps = min(2, how_many_front(drvb));
 	bool wall = true;
 	if(n_steps != 0) {
 		drvb = do_move(drvb, FRONT, n_steps, wall);
@@ -228,32 +228,31 @@ Drivebase solve3(Drivebase drvb)
 			drvb = step(drvb, fail);
 			// Serial.println("End step");
 		}
-		drvb = forward_dist(drvb, 0.15, kForwardSpeed);
 		// if(fail)
 			// // Serial.println("T_T");
 	} 
 	else {
 		int n_squares = 1;
-		for(int i = 0; i < stored; i+=n_squares) {
-			int n_squares = 1;
-			while(stored_move(i+n_squares) == stored_move(i)) {
+		for(int i = 0; i < stored; i+= n_squares) {
+			n_squares = 1;
+			while(stored_move(i+n_squares) == stored_move(i) && n_squares <= 2) {
 				n_squares++;
 			}
-			drvb = move_to_square(drvb, stored_move(stored_move(i)), n_squares, true);
+			drvb = move_to_square(drvb, stored_move(i), n_squares, true);
 		}
 	}
 	
-	delay(500);
-
-	stored = n_stored_moves();
-	int n_squares = 1;
-	for(int i = stored-1; i >= 0; i-=n_squares) {
-		n_squares = 1;
-		while(stored_move(i-n_squares) == stored_move(i)) {
-			n_squares++;
-		}
-		drvb = move_to_square(drvb, opposite_move(stored_move(i)), n_squares, true);
-	}
+	//delay(1000);
+	// drvb = forward_dist(drvb, 0.15, -kForwardSpeed);
+	// stored = n_stored_moves();
+	// int n_squares = 1;
+	// for(int i = stored-1; i >= 0; i-= n_squares) {
+	// 	n_squares = 1;
+	// 	while(stored_move(i-n_squares) == stored_move(i) && n_squares <= 2) {
+	// 		n_squares++;
+	// 	}
+	// 	drvb = move_to_square(drvb, opposite_move(stored_move(i)), n_squares, true);
+	// }
 
 	return drvb;
 }

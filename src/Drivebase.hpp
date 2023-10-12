@@ -58,6 +58,9 @@ struct Drivebase realign(struct Drivebase drvb, int diff);
 // it still gets to the center of the destination square with
 // respect to it's move direction
 struct Drivebase move_to_square(struct Drivebase drvb, int direction, int n_squares, bool allow_back = false);
+struct Drivebase realign_right(struct Drivebase drvb, int diff);
+struct Drivebase realign_left(struct Drivebase drvb, int diff);
+struct Drivebase realign(struct Drivebase drvb, int diff);
 // Tries to move 1 square in a direction, but tries to detect a wall 
 // and moves back to the starting position if there was a wall
 struct Drivebase move_to_square_or_detect(struct Drivebase drvb, int direction, int n_squares, int& n_squares_done);
