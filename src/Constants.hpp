@@ -38,6 +38,9 @@ constexpr double kTurnOffset = 0.02;
 
 using time_t = long unsigned int;
 
+constexpr int kCup_servoId = 0;
+constexpr int kArm_servoId = 1;
+
 
 
 #endif
