@@ -25,6 +25,17 @@ struct Drivebase {
 	double x{ 0.75 }, y { 0.25 }; // Position in meters, from the bottom left corner of the field
 };
 
+// Action that the drivebase can do (high level)
+struct DrivebaseActionState {
+	enum FollowingTargets { FollowArc, FollowLine };
+
+	FollowingTargets follow;
+
+	// Arc or line to follow
+	// What is an arc, what is a line? 
+	// How to follow them?
+};
+
 // Conversion for encoders to distance (meters)
 double ticks_to_dist(int32_t ticks);
 double accel_dist(double accel, double target_speed);
