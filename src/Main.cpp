@@ -10,6 +10,8 @@
 #include "RobotState.hpp"
 #include "GameState.hpp"
 #include "ActionState.hpp"
+#include "HardwareState.hpp"
+#include "sensors.hpp"
 
 SensorState sensorState;
 SensorState prevSensorState;
@@ -40,13 +42,13 @@ void loop()
 	if(ROBUS_IsBumper(3)) {
 		sensorState = get_sensors();
 
-		p28::tie(robotState, gameState) = compute_robotGame_state(prevSensorState, sensorState, robotState, gameState);
+		// p28::tie(robotState, gameState) = compute_robotGame_state(prevSensorState, sensorState, robotState, gameState);
 
-		actionState = generate_actionState(robotState, gameState);
+		// actionState = generate_actionState(robotState, gameState);
 
 		hardwareState = generate_hardwareState(actionState);
 
-		set_hardware(hardwareState);
+		set_hardwareState(hardwareState);
 
 		prevSensorState = sensorState;
 
