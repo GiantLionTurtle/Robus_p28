@@ -62,6 +62,7 @@ struct Vec2_any {
 
 using Vec2 = Vec2_any<float>;
 using i32Vec2 = Vec2_any<int32_t>;
+using boolVec2 = Vec2_any<bool>;
 template<typename T>
 using ValTarg = Vec2_any<T>;
 
