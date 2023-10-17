@@ -11,8 +11,8 @@ struct Error update_error(struct Error err, double value, double setpoint, doubl
 	// // Serial.println(delta_s);
 	Error out;
 	out.error = setpoint - value;
-	out.diff_error = out.error - err.error;
-	out.sum_error = err.sum_error * 0.999 + out.error * delta_s;
+	out.diff_error = (out.error - err.error);// / delta_s;
+	out.sum_error = err.sum_error + out.error * delta_s;
 	return out;
 }
 double get(struct PID const& pid, struct Error const& error)

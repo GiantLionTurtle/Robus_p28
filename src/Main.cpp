@@ -13,6 +13,21 @@ void buzzerFin();
 Drivebase driveBase;
 bool start = false;
 
+void init_drivebase()
+{
+	driveBase = Drivebase{};
+	driveBase.left.ID = LEFT;
+	driveBase.right.ID = RIGHT;
+
+#ifdef AQUAMAN
+	driveBase.left.pid = { 1.4, 35.5555, 0.03333333 };
+	driveBase.right.pid = { 1.4, 35.5555, 0.03333333 };
+#else
+	driveBase.left.pid = { 1.4, 35.5555, 0.03333333 };
+	driveBase.right.pid = { 1.4, 35.5555, 0.03333333 };
+#endif
+}
+
 void setup()
 {
 	BoardInit();
@@ -25,25 +40,38 @@ void setup()
 	// buzzerFin();
 
 	delay(1000);
-	driveBase.left.ID = LEFT;
-	driveBase.right.ID = RIGHT;
-
-#ifdef AQUAMAN
-	driveBase.left.pid = { 1.4, 35.5555, 0.03333333 };
-	driveBase.right.pid = { 1.4, 35.5555, 0.03333333 };
-#else
-	driveBase.left.pid = { 1.4, 35.5555, 0.03333333 };
-	driveBase.right.pid = { 1.4, 35.5555, 0.03333333 };
-#endif
 
 }
 
 void loop() 
 {
-	// if(whistle_detection()) {
-	if(ROBUS_IsBumper(3)) {
+	if(whistle_detection()) {
+	// if(ROBUS_IsBumper(3)) {
+		init_drivebase();
 		driveBase = solve3(driveBase);
 		// driveBase = move_to_square(driveBase, FRONT, 1, true);
+		driveBase = move_to_square(driveBase, FRONT, 1);
+		delay(kDecelerationDelay);
+		if(driveBase.sq_x == 2) {
+			driveBase = move_to_square(driveBase, LEFT, 1);
+		}
+		delay(kDecelerationDelay);
+		if(driveBase.sq_x == 0) {
+			driveBase = move_to_square(driveBase, RIGHT, 1);
+		}
+		while(ticks_to_dist(driveBase.left.last_ticks - driveBase.right.last_ticks) > kCircumference/4) {
+			driveBase = turn_left(driveBase);
+		}
+		while(ticks_to_dist(driveBase.right.last_ticks - driveBase.left.last_ticks) > kCircumference/4) {
+			driveBase = turn_right(driveBase);
+		}
+		delay(kDecelerationDelay);
+		driveBase = realign(driveBase, 0);
+
+		for(int i = 0; i < 3; ++i) {
+			driveBase = move_to_square(driveBase, REAR, 3, true);
+		}
+		driveBase = move_to_square(driveBase, REAR, 2, true);
 		buzzerFin();
 	}
 	delay(10);
