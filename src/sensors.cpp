@@ -13,5 +13,6 @@ struct SensorState get_sensors(){
     newSensorState.bumpersState = {ROBUS_IsBumper(0),ROBUS_IsBumper(1)};
     //newSensorState.IRSensor = {PIN_IRSENSOR};
     newSensorState.proximityDetector = wall_detection();
+    //newSensorState.colorDetector = color detection function;
 }
 
