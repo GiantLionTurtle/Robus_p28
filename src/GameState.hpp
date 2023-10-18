@@ -2,7 +2,6 @@
 #ifndef P28_GAMESTATE_HPP_
 #define P28_GAMESTATE_HPP_
 
-#include "Robot.hpp"
 #include "Utils/Pair.hpp"
 #include "sensors.hpp"
 
@@ -26,11 +25,10 @@ struct GameState {
 
 	// How the mission is going (if not in race mode)
 	MissionState missionState;
-};
 
-Pair<Robot, GameState> compute_robotGame_state(
-								SensorState prevSensState, SensorState currSensState, 
-								Robot robState, GameState gmState);
+	// Compute the next gamestate from sensor data deltas
+	GameState next(SensorState prevSensState, SensorState currSensState) const;
+};
 
 } // !p28
 

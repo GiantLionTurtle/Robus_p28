@@ -91,7 +91,7 @@ float comp_accel_dist(float accel, float currSpeed, float targSpeed)
 	return (targSpeed - currSpeed) / accel / 2.0;
 }
 
-// struct Motor get_motor_speed(struct Motor motor, float delta_s)
+// Motor get_motor_speed(struct Motor motor, float delta_s)
 // {
 // 	int32_t current_ticks = ENCODER_Read(motor.ID);
 // 	int32_t ticks_diff = current_ticks - motor.last_ticks;
@@ -99,7 +99,7 @@ float comp_accel_dist(float accel, float currSpeed, float targSpeed)
 // 	motor.last_ticks = current_ticks;
 // 	return motor;
 // }
-// struct Motor update_motor_at_speed(struct Motor motor, float set_speed, long int time_ms)
+// Motor update_motor_at_speed(struct Motor motor, float set_speed, long int time_ms)
 // {
 // 	long int diff_time_ms = time_ms - motor.last_time_ms;
 // 	float delta_s = static_cast<float>(diff_time_ms) / 1000.0f;
@@ -113,28 +113,18 @@ float comp_accel_dist(float accel, float currSpeed, float targSpeed)
 // 	return motor;
 // }
 
-// struct Drivebase zero_all(struct Drivebase drvb)
-// {
-// 	MOTOR_SetSpeed(LEFT, 0.0);
-// 	MOTOR_SetSpeed(RIGHT, 0.0);
-
-// 	drvb.left.speed = 0.0;
-// 	drvb.right.speed = 0.0;
-// 	return drvb;
-// }
-// struct Drivebase set_motorTime(struct Drivebase drvb, long int time_ms)
-// {
-// 	drvb.left.last_time_ms = time_ms;
-// 	drvb.right.last_time_ms = time_ms;
-// 	return drvb;
-// }
+DrivebaseState DrivebaseState::update(mt::i32Vec2 prevEncTicks, mt::i32Vec2 currEncTicks, float delta_s) const
+{
+	// &&Figureout&&;
+	return *this;
+}
 
 Pair<mt::Vec2, Drivebase> Drivebase::hardware_output(PathSegment const& follow, unsigned long time_ms, float delta_s) const
 {
 	if(state.waitUntil > time_ms)
 		return { mt::Vec2(0.0), *this }; // Don't move if the drivebase should be waiting for actions
 
-	// Figure out how to follow a segment
+	// &&Figureout&& out how to follow a segment
 	mt::Vec2 motor_speeds;
 
 	return { motor_speeds, *this };

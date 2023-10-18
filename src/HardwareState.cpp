@@ -24,7 +24,7 @@ Pair<HardwareState, Robot> generate_hardwareState(ActionState actState, Robot ro
     if (actState.releaseCup) {
         gen_hwst.cupAngle = kCup_openAngle;
     }
-    tie(gen_hwst.motors, robot.drvb) = robot.drvb.hardware_output(actState.path.current(), robot.millis, robot.delta_s);
+    tie(gen_hwst.motors, robot.drvb) = robot.drvb.hardware_output(actState.path.current(), robot.time_ms, robot.delta_s);
     return { gen_hwst, robot };
 }
 

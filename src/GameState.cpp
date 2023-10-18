@@ -1,39 +1,25 @@
 
 #include "GameState.hpp"
+#include "Constants.hpp"
 
 namespace p28 {
 
-
-// Adjust the drivebase with additional info such as the position in the field
-DrivebaseState adjustDrivebase(DrivebaseState drvbState, SensorState const&  currSensState, 
-								GameState const&  prevRobot, GameState const&  robot);
 Pair<int, int> compute_zoneLane(SensorState  const& prevSensState, SensorState const&  currSensState, GameState const&  gmState);
 Objective compute_knockCup_state(GameState const& gmState);
 
-Pair<Robot, GameState> compute_robotGame_state(
-								SensorState prevSensState, SensorState currSensState, 
-								Robot prevRobot, GameState gmState)
+GameState GameState::next(SensorState prevSensState, SensorState currSensState) const
 {
-	GameState newGmState = gmState;
-	Robot newRobot = prevRobot;
-
-	// Compute delta time
-	newRobot.millis = millis();
-	newRobot.delta_s = static_cast<float>(newRobot.millis - prevRobot.millis) / 1000.f;
+	GameState newGmState = *this;
 
 	// Figure out where we are in game zones
-	tie(newGmState.zone, newGmState.lane) = compute_zoneLane(prevSensState, currSensState, gmState);
+	tie(newGmState.zone, newGmState.lane) = compute_zoneLane(prevSensState, currSensState, newGmState);
 
 	// Figure out what to do now
-	newGmState.missionState.knock_cup = compute_knockCup_state(gmState);
+	newGmState.missionState.knock_cup = compute_knockCup_state(newGmState);
 	// ping pong
 	// shortcut
+	return newGmState;
 
-	// Adjust drivebase with sensors
-	newRobot.drvb.state = adjustDrivebase(newRobot.drvb.state, currSensState, gmState, newGmState);
-
-
-    return { newRobot, newGmState };
 }
 
 // Try to deduce de lane based on the color sensor
@@ -48,11 +34,7 @@ int comp_lane(COLOR color)
 	}
 	return -1;
 }
-DrivebaseState adjustDrivebase(DrivebaseState drvbState, SensorState const& currSensState, 
-								GameState const& prevRobot, GameState const& robot)
-{
-	return drvbState;
-}
+
 Pair<int, int> compute_zoneLane(SensorState const& prevSensState, SensorState const& currSensState, GameState const& gmState)
 {
 	int zone = gmState.zone;

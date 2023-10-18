@@ -21,6 +21,7 @@ SensorState prevSensorState;
 
 Robot robot;
 GameState gameState;
+GameState prevGameState;
 
 ActionState actionState;
 HardwareState hardwareState;
@@ -48,9 +49,8 @@ void loop()
 			// No data is fed, this is a read function
 			sensorState = get_sensors();
 
-			// Robot is updated along with the gameState
-			// To adjust it's state with known parameters of the game
-			p28::tie(robot, gameState) = compute_robotGame_state(prevSensorState, sensorState, robot, gameState);
+			gameState = prevGameState.next(prevSensorState, sensorState);
+			robot = robot.next(prevSensorState, sensorState, prevGameState, gameState);
 
 			// Robot is fed to ensure the generated actions
 			// are aligned with the physical reality of the robot
@@ -64,8 +64,9 @@ void loop()
 			// Only processed data is fed, it is a write function
 			set_hardwareState(hardwareState);
 
-			// Keep the previous sensor state for useful deltas
+			// Keep the previous sensor and game states for useful deltas
 			prevSensorState = sensorState;
+			prevGameState = gameState;
 
 			// Pause for a bit to allow everything to catch up 
 			delay(kControlLoopDelay);

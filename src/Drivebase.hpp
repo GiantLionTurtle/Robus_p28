@@ -23,6 +23,9 @@ struct DrivebaseState {
 
 	// A point in time in ms, used to stop the path following as long as millis() < waitUntil
 	unsigned long waitUntil { 0 }; 
+
+	// Create a new drivebase state from encoder ticks alone
+	DrivebaseState update(mt::i32Vec2 prevEncTicks, mt::i32Vec2 currEncTicks, float delta_s) const;
 };
 
 // Action that the drivebase can do (high level)
