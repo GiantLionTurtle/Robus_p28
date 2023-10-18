@@ -38,8 +38,16 @@ constexpr double kTurnOffset = 0.02;
 
 using time_t = long unsigned int;
 
+// Cup holder constants
 constexpr int kCup_servoId = 0;
+constexpr int kCup_openAngle = 15;
+constexpr int kCup_closeAngle = 0;
+
+// Cup knocker arm constants
 constexpr int kArm_servoId = 1;
+constexpr int kArm_openAngle = 90;
+constexpr int kArm_closeAngle = 0;
+
 
 
 
