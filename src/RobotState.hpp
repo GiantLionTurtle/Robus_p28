@@ -3,12 +3,15 @@
 #define P28_ROBOTSTATE_HPP_
 
 #include "Utils/Vec.hpp"
+#include "Drivebase.hpp"
 
 namespace p28 {
 
 // Essentialy proprioception for the robot
 struct RobotState {
     float delta_s; // Delta time in second since last iteration
+
+    DrivebaseState drvbState;
 };
 
 } // !p28

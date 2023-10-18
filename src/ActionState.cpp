@@ -1,11 +1,37 @@
 
 #include "ActionState.hpp"
+#include "Drivebase.hpp"
 
 namespace p28 {
 
-ActionState generate_actionState(RobotState robState, GameState gmState)
+DrivebasePath gen_ballSwervePath(RobotState const& robState)
 {
-    return ActionState();
+	
+}
+void ballSwerve_helper(ActionState& actState, RobotState const& robState, Objective obj_state)
+{
+	if(obj_state == Objective::Start) {
+		actState.path = gen_ballSwervePath(robState);
+	} else if(obj_state == Objective::UnderWay && actState.path.index == kCupRelease_pathIndex) {
+		actState.releaseCup = true;
+	}
+}
+
+ActionState generate_actionState(ActionState prevActState, RobotState robState, GameState gmState)
+{
+	ActionState actState;
+	actState.path = prevActState.path.update_path(robState.drvbState);
+
+	// Cup zone?
+	if(gmState.missionState.knock_cup == Objective::UnderWay) {
+		actState.openArm = true;
+	}
+
+	if(gmState.missionState.trap_ball != Objective::Todo) {
+		ballSwerve_helper(actState, robState, gmState.missionState.trap_ball);
+	}
+
+	return actState;
 }
 
 } // !p28

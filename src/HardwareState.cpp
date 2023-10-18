@@ -23,6 +23,7 @@ HardwareState generate_hardwareState(ActionState actState)
     if (actState.releaseCup) {
         gen_hwst.cupAngle = kCup_openAngle;
     }
+    return gen_hwst;
 }
 
 } // !p28

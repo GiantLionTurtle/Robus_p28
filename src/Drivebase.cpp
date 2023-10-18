@@ -23,7 +23,7 @@ bool threePoints_ccw(mt::Vec2 A, mt::Vec2 B, mt::Vec2 C)
 	return (C.y-A.y) * (B.x-A.x) > (B.y-A.y) * (C.x-A.x);
 }
 
-DrivebaseActionState::DrivebaseActionState(DrivebaseState drvbState, p28::mt::Vec2 targPos_, float targSpeed_, p28::mt::Vec2 targHeading_)
+PathSegment::PathSegment(DrivebaseState drvbState, p28::mt::Vec2 targPos_, float targSpeed_, p28::mt::Vec2 targHeading_)
 	: targPos(targPos_)
 	, targSpeed(targSpeed_)
 {
@@ -53,14 +53,14 @@ DrivebaseActionState::DrivebaseActionState(DrivebaseState drvbState, p28::mt::Ve
 		pathRadius = -pathRadius;
 	}
 }
-DrivebaseActionState::DrivebaseActionState(p28::mt::Vec2 targPos_, float targSpeed_)
+PathSegment::PathSegment(p28::mt::Vec2 targPos_, float targSpeed_)
 	: targPos(targPos_)
 	, targSpeed(targSpeed_)
 	, pathRadius(10000000) // Arbitrary big radius (infinite)
 {
 
 }
-DrivebaseActionState::DrivebaseActionState(p28::mt::Vec2 targPos_, float targSpeed_, float pathRadius_)
+PathSegment::PathSegment(p28::mt::Vec2 targPos_, float targSpeed_, float pathRadius_)
 	: targPos(targPos_)
 	, targSpeed(targSpeed_)
 	, pathRadius(pathRadius_)
@@ -68,8 +68,20 @@ DrivebaseActionState::DrivebaseActionState(p28::mt::Vec2 targPos_, float targSpe
 
 }
 
-// Public functions
+DrivebasePath DrivebasePath::update_path(DrivebaseState drvbState) const
+{
+	if(mt::epsilon_equal(drvbState.pos, current().targPos, kPathFollower_epsilon2)) {
+		DrivebasePath out = *this;
+		out.index++;
+		if(index >= path.size())
+			return {};
+		return out;
+	}
+	return *this;
+}
 
+
+// Public functions
 float ticks_to_dist(int32_t ticks)
 {
 	return static_cast<float>(ticks) / 3200 * TWO_PI * kWheelRadius;
@@ -117,4 +129,4 @@ struct Drivebase set_motorTime(struct Drivebase drvb, long int time_ms)
 	return drvb;
 }
 
-}
+} // !p28

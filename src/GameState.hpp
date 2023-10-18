@@ -7,20 +7,21 @@
 #include "sensors.hpp"
 
 namespace p28 {
+	
+enum class Objective : char { Todo, Start, UnderWay, Done };
 
 struct MissionState {
-	// Mission objectives if the robot is not in race mode
-    bool must_knock_glass { true };
-    bool must_trap_ball { true };
-    bool must_do_one_turn { true };
-    bool must_do_one_shortcut_turn { true };
 
-	// If >= 0, the current step (arc, line) to swerve around the ping pong ball
-	int swerve_ball_step { -1 };
+	// Mission objectives if the robot is not in race mode
+	Objective knock_cup { Objective::Todo };
+	Objective trap_ball { Objective::Todo };
+	Objective one_cw_turn { Objective::Todo };
+	Objective one_cw_shortcut_turn { Objective::Todo };
 };
 
 struct GameState {
 	int zone; // The zone the robot is currently in
+	int lane; // 0->3, 0 being closest to center
 	bool in_race; // In race or in qualifications
 
 	// How the mission is going (if not in race mode)

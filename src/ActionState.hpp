@@ -13,10 +13,10 @@ struct ActionState {
 	bool openArm { false };
 	bool releaseCup { false };
 
-	DrivebaseActionState drvbActionState;
+	DrivebasePath path;
 };
 
-ActionState generate_actionState(RobotState robState, GameState gmState);
+ActionState generate_actionState(ActionState prevActState, RobotState robState, GameState gmState);
 
 } // !p28
 

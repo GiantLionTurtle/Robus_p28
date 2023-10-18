@@ -48,14 +48,13 @@ void loop()
 
 		p28::tie(robotState, gameState) = compute_robotGame_state(prevSensorState, sensorState, robotState, gameState);
 
-		actionState = generate_actionState(robotState, gameState);
+		actionState = generate_actionState(actionState, robotState, gameState);
 
 		hardwareState = generate_hardwareState(actionState);
 
 		set_hardwareState(hardwareState);
 
 		prevSensorState = sensorState;
-
 		delay(kControlLoopDelay);
 	}
 	Serial.println(static_cast<int>(get_color()));

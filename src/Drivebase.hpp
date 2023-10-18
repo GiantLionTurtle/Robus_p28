@@ -9,6 +9,10 @@
 #include "Constants.hpp"
 #include "Utils/Vec.hpp"
 
+#include "Utils/Vector.hpp"
+#include "Utils/Pair.hpp"
+#include "Utils/Vec.hpp"
+
 namespace p28 {
 
 struct Motor {
@@ -22,8 +26,6 @@ struct Motor {
 struct Drivebase {
 	struct Motor left;
 	struct Motor right;
-
-	float x{ 0.75 }, y { 0.25 }; // Position in meters, from the bottom left corner of the field
 };
 struct DrivebaseState {
     p28::mt::Vec2 pos; // Position in m
@@ -33,7 +35,7 @@ struct DrivebaseState {
 };
 
 // Action that the drivebase can do (high level)
-struct DrivebaseActionState {
+struct PathSegment {
 	p28::mt::Vec2 targPos { 0.0 }; // Target position 
 	float targSpeed { 0.0 }; // Speed at the target position
 
@@ -42,11 +44,24 @@ struct DrivebaseActionState {
 	 // - -> clockwise
 	float pathRadius { 0.0 };
 
-	DrivebaseActionState() = default;
-	DrivebaseActionState(DrivebaseState drvbState, p28::mt::Vec2 targPos_, float targSpeed_, p28::mt::Vec2 targHeading_);
-	DrivebaseActionState(p28::mt::Vec2 targPos_, float targSpeed_);
-	DrivebaseActionState(p28::mt::Vec2 targPos_, float targSpeed_, float pathRadius_);
+	PathSegment() = default;
+	PathSegment(DrivebaseState drvbState, p28::mt::Vec2 targPos_, float targSpeed_, p28::mt::Vec2 targHeading_);
+	PathSegment(p28::mt::Vec2 targPos_, float targSpeed_);
+	PathSegment(p28::mt::Vec2 targPos_, float targSpeed_, float pathRadius_);
 };
+
+// Arcs to follow and delays after it's done
+
+struct DrivebasePath {
+    Vector<Pair<PathSegment, unsigned int>> path;
+    unsigned int index { 0 };
+
+	PathSegment current() const { return path[index].first; }
+
+	DrivebasePath update_path(DrivebaseState drvbState) const;
+};
+
+
 
 // Conversion for encoders to distance (meters)
 float ticks_to_dist(int32_t ticks);

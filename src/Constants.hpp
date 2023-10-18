@@ -2,14 +2,11 @@
 #ifndef P28_CONSTANTS_HPP_
 #define P28_CONSTANTS_HPP_
 
+#include "CompileFlags.hpp"
+
 /*
     All physical constants of the robot in SI units where applicable
 */
-
-//#define AQUAMAN
-#ifndef AQUAMAN
-#define BATAMAN
-#endif
 
 namespace p28 {
 
@@ -40,15 +37,21 @@ constexpr float kTurnOffset = 0.02;
 
 using time_t = long unsigned int;
 
+// Square of the precision of the path follower
+constexpr float kPathFollower_epsilon2 = 0.02;
+
 // Cup holder constants
 constexpr int kCup_servoId = 0;
 constexpr int kCup_openAngle = 15;
 constexpr int kCup_closeAngle = 0;
+constexpr int kCupRelease_pathIndex = 3; // After which arc of the maneuver should the cup be dropped?
 
 // Cup knocker arm constants
 constexpr int kArm_servoId = 1;
 constexpr int kArm_openAngle = 90;
 constexpr int kArm_closeAngle = 0;
+
+
 
 enum class COLOR { RED, GREEN, BLUE, YELLOW, BLACK, WHITE };
 
