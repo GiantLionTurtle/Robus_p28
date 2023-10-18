@@ -17,6 +17,7 @@ enum kBumperId : uint8_t  { kLeftBumper = 0, kRightBumper = 1, kFrontBumper = 2,
 
 #ifdef AQUAMAN
 constexpr double kRobotWidth = 0.187;              // m
+constexpr double kRobotWidth = 0.1865;              // m
 #else
 constexpr double kRobotWidth = 0.1850;              // m
 #endif

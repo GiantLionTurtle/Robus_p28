@@ -1,3 +1,5 @@
+#include <LibRobus.h>
+#include <ColorSensor.hpp>
 
 #include <Arduino.h>
 #include "LibRobus.h"
@@ -31,6 +33,7 @@ void setup()
 
 	init_detector();
 	init_whistle();
+	init_color_sensor();
 
 	delay(1000);
 
@@ -39,7 +42,7 @@ void setup()
 void loop() 
 {
 	// if(whistle_detection()) {
-	if(ROBUS_IsBumper(3)) {
+	/*if(ROBUS_IsBumper(3)) {
 		sensorState = get_sensors();
 
 		// p28::tie(robotState, gameState) = compute_robotGame_state(prevSensorState, sensorState, robotState, gameState);
@@ -53,24 +56,7 @@ void loop()
 		prevSensorState = sensorState;
 
 		delay(kControlLoopDelay);
-	}
-	delay(10);
-}
-
-void buzzerFin()
-{
-	AX_BuzzerON(1000, 200);
-	delay(400);
-	AX_BuzzerON(800, 200);
-	delay(400);
-	AX_BuzzerON(800, 150);
-	delay(200);
-	AX_BuzzerON(1000, 150);
-	delay(200);
-	AX_BuzzerON(1500, 150);
-	delay(200);
-	AX_BuzzerON(240, 400);
-	delay(600);
-	AX_BuzzerON(120, 400);
-	delay(600);
+	}*/
+	Serial.println(get_color());
+	delay(100);
 }
