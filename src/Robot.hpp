@@ -8,10 +8,11 @@
 namespace p28 {
 
 // Essentialy proprioception for the robot
-struct RobotState {
-    float delta_s; // Delta time in second since last iteration
-
-    DrivebaseState drvbState;
+struct Robot {
+	float delta_s; // Delta time in second since last iteration
+	unsigned long millis; // Time of the system
+	
+	Drivebase drvb;
 };
 
 } // !p28

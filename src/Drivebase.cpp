@@ -91,42 +91,53 @@ float comp_accel_dist(float accel, float currSpeed, float targSpeed)
 	return (targSpeed - currSpeed) / accel / 2.0;
 }
 
-struct Motor get_motor_speed(struct Motor motor, float delta_s)
-{
-	int32_t current_ticks = ENCODER_Read(motor.ID);
-	int32_t ticks_diff = current_ticks - motor.last_ticks;
-	motor.speed = ticks_to_dist(ticks_diff) / delta_s;
-	motor.last_ticks = current_ticks;
-	return motor;
-}
-struct Motor update_motor_at_speed(struct Motor motor, float set_speed, long int time_ms)
-{
-	long int diff_time_ms = time_ms - motor.last_time_ms;
-	float delta_s = static_cast<float>(diff_time_ms) / 1000.0f;
+// struct Motor get_motor_speed(struct Motor motor, float delta_s)
+// {
+// 	int32_t current_ticks = ENCODER_Read(motor.ID);
+// 	int32_t ticks_diff = current_ticks - motor.last_ticks;
+// 	motor.speed = ticks_to_dist(ticks_diff) / delta_s;
+// 	motor.last_ticks = current_ticks;
+// 	return motor;
+// }
+// struct Motor update_motor_at_speed(struct Motor motor, float set_speed, long int time_ms)
+// {
+// 	long int diff_time_ms = time_ms - motor.last_time_ms;
+// 	float delta_s = static_cast<float>(diff_time_ms) / 1000.0f;
 
-	motor.last_time_ms = time_ms;
-	motor = get_motor_speed(motor, delta_s);
-	motor.error = update_error(motor.error, motor.speed, set_speed, delta_s);
-	float harware_set = get(motor.pid, motor.error);
+// 	motor.last_time_ms = time_ms;
+// 	motor = get_motor_speed(motor, delta_s);
+// 	motor.error = update_error(motor.error, motor.speed, set_speed, delta_s);
+// 	float harware_set = get(motor.pid, motor.error);
 
-	MOTOR_SetSpeed(motor.ID, harware_set);
-	return motor;
-}
+// 	MOTOR_SetSpeed(motor.ID, harware_set);
+// 	return motor;
+// }
 
-struct Drivebase zero_all(struct Drivebase drvb)
+// struct Drivebase zero_all(struct Drivebase drvb)
+// {
+// 	MOTOR_SetSpeed(LEFT, 0.0);
+// 	MOTOR_SetSpeed(RIGHT, 0.0);
+
+// 	drvb.left.speed = 0.0;
+// 	drvb.right.speed = 0.0;
+// 	return drvb;
+// }
+// struct Drivebase set_motorTime(struct Drivebase drvb, long int time_ms)
+// {
+// 	drvb.left.last_time_ms = time_ms;
+// 	drvb.right.last_time_ms = time_ms;
+// 	return drvb;
+// }
+
+Pair<mt::Vec2, Drivebase> Drivebase::hardware_output(PathSegment const& follow, unsigned long time_ms, float delta_s) const
 {
-	MOTOR_SetSpeed(LEFT, 0.0);
-	MOTOR_SetSpeed(RIGHT, 0.0);
+	if(state.waitUntil > time_ms)
+		return { mt::Vec2(0.0), *this }; // Don't move if the drivebase should be waiting for actions
 
-	drvb.left.speed = 0.0;
-	drvb.right.speed = 0.0;
-	return drvb;
-}
-struct Drivebase set_motorTime(struct Drivebase drvb, long int time_ms)
-{
-	drvb.left.last_time_ms = time_ms;
-	drvb.right.last_time_ms = time_ms;
-	return drvb;
+	// Figure out how to follow a segment
+	mt::Vec2 motor_speeds;
+
+	return { motor_speeds, *this };
 }
 
 } // !p28

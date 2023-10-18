@@ -2,6 +2,7 @@
 #include "HardwareState.hpp"
 #include <LibRobus.h>
 #include "Constants.hpp"
+#include "Robot.hpp"
 
 namespace p28 {
 
@@ -14,7 +15,7 @@ void set_hardwareState (HardwareState hwst)
     SERVO_SetAngle (kCup_servoId, hwst.cupAngle);  //Sets the angle of the servomotor controlling the cup "holder"
 }
 
-HardwareState generate_hardwareState(ActionState actState)
+Pair<HardwareState, Robot> generate_hardwareState(ActionState actState, Robot robot)
 {
     HardwareState gen_hwst;
     if (actState.openArm) {
@@ -23,7 +24,8 @@ HardwareState generate_hardwareState(ActionState actState)
     if (actState.releaseCup) {
         gen_hwst.cupAngle = kCup_openAngle;
     }
-    return gen_hwst;
+    tie(gen_hwst.motors, robot.drvb) = robot.drvb.hardware_output(actState.path.current(), robot.millis, robot.delta_s);
+    return { gen_hwst, robot };
 }
 
 } // !p28

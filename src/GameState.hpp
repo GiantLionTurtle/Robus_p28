@@ -2,12 +2,12 @@
 #ifndef P28_GAMESTATE_HPP_
 #define P28_GAMESTATE_HPP_
 
-#include "RobotState.hpp"
+#include "Robot.hpp"
 #include "Utils/Pair.hpp"
 #include "sensors.hpp"
 
 namespace p28 {
-	
+
 enum class Objective : char { Todo, Start, UnderWay, Done };
 
 struct MissionState {
@@ -20,17 +20,17 @@ struct MissionState {
 };
 
 struct GameState {
-	int zone; // The zone the robot is currently in
-	int lane; // 0->3, 0 being closest to center
-	bool in_race; // In race or in qualifications
+	int zone { 0 }; // The zone the robot is currently in
+	int lane { 0 }; // 0->3, 0 being closest to center
+	bool over { false };
 
 	// How the mission is going (if not in race mode)
 	MissionState missionState;
 };
 
-Pair<RobotState, GameState> compute_robotGame_state(
+Pair<Robot, GameState> compute_robotGame_state(
 								SensorState prevSensState, SensorState currSensState, 
-								RobotState robState, GameState gmState);
+								Robot robState, GameState gmState);
 
 } // !p28
 

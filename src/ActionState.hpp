@@ -3,7 +3,7 @@
 #define P28_ACTIONSTATE_HPP_
 
 #include "Drivebase.hpp"
-#include "RobotState.hpp"
+#include "Robot.hpp"
 #include "GameState.hpp"
 
 namespace p28 {
@@ -16,7 +16,7 @@ struct ActionState {
 	DrivebasePath path;
 };
 
-ActionState generate_actionState(ActionState prevActState, RobotState robState, GameState gmState);
+ActionState generate_actionState(ActionState prevActState, Robot robState, GameState gmState);
 
 } // !p28
 

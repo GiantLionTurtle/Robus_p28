@@ -14,7 +14,7 @@ struct HardwareState {
 
 void set_hardwareState(struct HardwareState hwst);
 
-HardwareState generate_hardwareState(ActionState actState);
+Pair<HardwareState, Robot> generate_hardwareState(ActionState actState, Robot robot);
 
 } // !p28
 

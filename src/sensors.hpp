@@ -10,7 +10,6 @@ namespace p28 {
 //#define PIN_LINEDETECTOR to be defined when connected on the robot
 
 struct SensorState{ 
-    unsigned long millis; // time in milliseconds
     p28::mt::i32Vec2 encoders_ticks; //number of ticks of right & left encoders:vector (left = 0,right = 1)
     p28::mt::boolVec2 bumpersState; // State of the right and left bumper (left,right)
     int IRSensor; // TO BE DEFINED

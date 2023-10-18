@@ -4,11 +4,11 @@
 
 namespace p28 {
 
-DrivebasePath gen_ballSwervePath(RobotState const& robState)
+DrivebasePath gen_ballSwervePath(Robot const& robState)
 {
-	
+
 }
-void ballSwerve_helper(ActionState& actState, RobotState const& robState, Objective obj_state)
+void ballSwerve_helper(ActionState& actState, Robot const& robState, Objective obj_state)
 {
 	if(obj_state == Objective::Start) {
 		actState.path = gen_ballSwervePath(robState);
@@ -17,10 +17,10 @@ void ballSwerve_helper(ActionState& actState, RobotState const& robState, Object
 	}
 }
 
-ActionState generate_actionState(ActionState prevActState, RobotState robState, GameState gmState)
+ActionState generate_actionState(ActionState prevActState, Robot robState, GameState gmState)
 {
 	ActionState actState;
-	actState.path = prevActState.path.update_path(robState.drvbState);
+	actState.path = prevActState.path.update_path(robState.drvb.state);
 
 	// Cup zone?
 	if(gmState.missionState.knock_cup == Objective::UnderWay) {
