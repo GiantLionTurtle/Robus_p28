@@ -2,6 +2,8 @@
 #ifndef P28_GAMESTATE_HPP_
 #define P28_GAMESTATE_HPP_
 
+namespace p28 {
+
 struct MissionState {
 	// Mission objectives if the robot is not in race mode
     bool must_knock_glass { true };
@@ -20,5 +22,7 @@ struct GameState {
 	// How the mission is going (if not in race mode)
 	MissionState missionState;
 };
+
+}
 
 #endif

@@ -3,6 +3,8 @@
 #include <LibRobus.h>
 #include "Constants.hpp"
 
+namespace p28 {
+
 void set_hardwareState (HardwareState hwst)
 {
     MOTOR_SetSpeed (RIGHT, hwst.motors.right);      //Sets the motors speed according to the hardware state received
@@ -21,7 +23,6 @@ HardwareState generate_hardwareState(ActionState actState)
     if (actState.releaseCup) {
         gen_hwst.cupAngle = kCup_openAngle;
     }
-    
-    
-
 }
+
+} // !p28

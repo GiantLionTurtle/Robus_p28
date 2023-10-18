@@ -3,6 +3,8 @@
 
 #include <Constants.hpp>
 
+namespace p28 {
+
 struct RGB{
     float red;
     float green;
@@ -12,5 +14,7 @@ struct RGB{
 void init_color_sensor();
 RGB get_rgb();
 COLOR get_color();
+
+} // !p28
 
 #endif

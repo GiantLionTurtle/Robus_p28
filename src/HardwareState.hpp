@@ -4,6 +4,8 @@
 #include "Utils/Vec.hpp"
 #include "ActionState.hpp"
 
+namespace p28 {
+
 struct HardwareState {
 	p28::mt::Vec2 motors; // Values from [-1,1]
 	int armAngle { kArm_closeAngle };   //angle of the arm 
@@ -13,5 +15,7 @@ struct HardwareState {
 void set_hardwareState(struct HardwareState hwst);
 
 HardwareState generate_hardwareState(ActionState actState);
+
+} // !p28
 
 #endif

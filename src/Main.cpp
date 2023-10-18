@@ -7,13 +7,14 @@
 #include "Drivebase.hpp"
 #include "WhistleDetector.hpp"
 #include "ProximityDetector.hpp"
-#include "TraveledPath.hpp"
 
 #include "RobotState.hpp"
 #include "GameState.hpp"
 #include "ActionState.hpp"
 #include "HardwareState.hpp"
 #include "sensors.hpp"
+
+using namespace p28;
 
 SensorState sensorState;
 SensorState prevSensorState;
@@ -57,6 +58,6 @@ void loop()
 
 		delay(kControlLoopDelay);
 	}*/
-	Serial.println(get_color());
+	Serial.println(static_cast<int>(get_color()));
 	delay(100);
 }

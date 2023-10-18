@@ -1,6 +1,8 @@
 #ifndef P28_SENSORS_HPP_
 #define P28_SENSORS_HPP_
 
+namespace p28 {
+
 #include "Utils/Vec.hpp"
 
 // #define PIN_IRSENSOR  to be defined when connected on the  robot
@@ -19,6 +21,8 @@ struct SensorState{
 };
 
 SensorState get_sensors();
+
+} // !p28
 
 #endif
 

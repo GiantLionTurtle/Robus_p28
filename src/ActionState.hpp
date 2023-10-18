@@ -4,6 +4,8 @@
 
 #include "Drivebase.hpp"
 
+namespace p28 {
+
 // Somewhat abstract actions the robot can take
 struct ActionState {
 	bool openArm { false };
@@ -11,5 +13,7 @@ struct ActionState {
 
 	DrivebaseActionState drvbActionState;
 };
+
+} // !p28
 
 #endif

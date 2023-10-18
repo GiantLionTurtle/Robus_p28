@@ -5,6 +5,7 @@
 #include <Arduino.h>
 #include "ProximityDetector.hpp"
 
+namespace p28 {
 
 struct SensorState get_sensors(){
     SensorState newSensorState;
@@ -15,4 +16,6 @@ struct SensorState get_sensors(){
     newSensorState.proximityDetector = wall_detection();
     //newSensorState.colorDetector = color detection function;
 }
+
+} // !p28
 

@@ -2,7 +2,6 @@
 #include "Field.hpp"
 #include <LibRobus.h>
 #include "ProximityDetector.hpp"
-#include "TraveledPath.hpp"
 
 namespace p28 {
 
@@ -71,16 +70,16 @@ DrivebaseActionState::DrivebaseActionState(p28::mt::Vec2 targPos_, float targSpe
 
 // Public functions
 
-double ticks_to_dist(int32_t ticks)
+float ticks_to_dist(int32_t ticks)
 {
 	return static_cast<float>(ticks) / 3200 * TWO_PI * kWheelRadius;
 }
-double comp_accel_dist(double accel, double currSpeed, double targSpeed)
+float comp_accel_dist(float accel, float currSpeed, float targSpeed)
 {
 	return (targSpeed - currSpeed) / accel / 2.0;
 }
 
-struct Motor get_motor_speed(struct Motor motor, double delta_s)
+struct Motor get_motor_speed(struct Motor motor, float delta_s)
 {
 	int32_t current_ticks = ENCODER_Read(motor.ID);
 	int32_t ticks_diff = current_ticks - motor.last_ticks;
@@ -88,15 +87,15 @@ struct Motor get_motor_speed(struct Motor motor, double delta_s)
 	motor.last_ticks = current_ticks;
 	return motor;
 }
-struct Motor update_motor_at_speed(struct Motor motor, double set_speed, long int time_ms)
+struct Motor update_motor_at_speed(struct Motor motor, float set_speed, long int time_ms)
 {
 	long int diff_time_ms = time_ms - motor.last_time_ms;
-	double delta_s = static_cast<float>(diff_time_ms) / 1000.0f;
+	float delta_s = static_cast<float>(diff_time_ms) / 1000.0f;
 
 	motor.last_time_ms = time_ms;
 	motor = get_motor_speed(motor, delta_s);
 	motor.error = update_error(motor.error, motor.speed, set_speed, delta_s);
-	double harware_set = get(motor.pid, motor.error);
+	float harware_set = get(motor.pid, motor.error);
 
 	MOTOR_SetSpeed(motor.ID, harware_set);
 	return motor;

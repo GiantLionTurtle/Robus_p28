@@ -4,9 +4,13 @@
 
 #include "Utils/Vec.hpp"
 
+namespace p28 {
+
 // Essentialy proprioception for the robot
 struct RobotState {
     float delta_s; // Delta time in second since last iteration
 };
+
+} // !p28
 
 #endif

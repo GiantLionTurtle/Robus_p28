@@ -4,7 +4,7 @@
 #include "Constants.hpp"
 #include "ProximityDetector.hpp"
 
-
+namespace p28 {
 
 void init_detector()
 {
@@ -18,3 +18,5 @@ bool wall_detection()
     bool green = !digitalRead(GREEN_PIN);
     return (red || green);
 }
+
+} // !p28
