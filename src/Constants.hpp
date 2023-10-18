@@ -49,7 +49,7 @@ constexpr int kArm_servoId = 1;
 constexpr int kArm_openAngle = 90;
 constexpr int kArm_closeAngle = 0;
 
-
+enum COLOR {RED, GREEN, BLUE, YELLOW, BLACK, WHITE};
 
 
 #endif
