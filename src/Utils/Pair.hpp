@@ -13,6 +13,7 @@ struct Pair {
 	T1_ first;
 	T2_ second;
 
+    Pair() = default;
 	Pair(T1_ first_, T2_ second_)
 		: first(first_)
 		, second(second_)

@@ -2,6 +2,10 @@
 #ifndef P28_GAMESTATE_HPP_
 #define P28_GAMESTATE_HPP_
 
+#include "RobotState.hpp"
+#include "Utils/Pair.hpp"
+#include "sensors.hpp"
+
 namespace p28 {
 
 struct MissionState {
@@ -23,6 +27,10 @@ struct GameState {
 	MissionState missionState;
 };
 
-}
+Pair<RobotState, GameState> compute_robotGame_state(
+								SensorState prevSensState, SensorState currSensState, 
+								RobotState robState, GameState gmState);
+
+} // !p28
 
 #endif

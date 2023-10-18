@@ -43,12 +43,12 @@ void setup()
 void loop() 
 {
 	// if(whistle_detection()) {
-	/*if(ROBUS_IsBumper(3)) {
+	if(ROBUS_IsBumper(3)) {
 		sensorState = get_sensors();
 
-		// p28::tie(robotState, gameState) = compute_robotGame_state(prevSensorState, sensorState, robotState, gameState);
+		p28::tie(robotState, gameState) = compute_robotGame_state(prevSensorState, sensorState, robotState, gameState);
 
-		// actionState = generate_actionState(robotState, gameState);
+		actionState = generate_actionState(robotState, gameState);
 
 		hardwareState = generate_hardwareState(actionState);
 
@@ -57,7 +57,7 @@ void loop()
 		prevSensorState = sensorState;
 
 		delay(kControlLoopDelay);
-	}*/
+	}
 	Serial.println(static_cast<int>(get_color()));
 	delay(100);
 }
