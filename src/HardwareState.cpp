@@ -4,6 +4,7 @@
 #include "Constants.hpp"
 
 
+
 void set_hardwareState (HardwareState hwst)
 {
     MOTOR_SetSpeed (RIGHT, hwst.motors.right);      //Sets the motors speed according to the hardware state received
@@ -15,5 +16,14 @@ void set_hardwareState (HardwareState hwst)
 
 HardwareState generate_hardwareState(ActionState actState)
 {
+    HardwareState gen_hwst;
+    if (actState.openArm == true){
+        gen_hwst.angleArm = ANGLEARM;
+    }
+    if (actState.releaseCup == true){
+        gen_hwst.angleCup = ANGLECUP;
+    }
     
+    
+
 }

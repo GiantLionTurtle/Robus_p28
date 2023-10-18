@@ -3,11 +3,13 @@
 
 #include "Utils/Vec.hpp"
 #include "ActionState.hpp"
+const int ANGLEARM = 15;
+const int ANGLECUP = 15;
 
 struct HardwareState {
 p28::mt::Vec2 motors; // Values from [-1,1]
-int angleArm;   //angle of the arm 
-int angleCup;   //angle of the servomotor that holds the cup
+int angleArm {0};   //angle of the arm 
+int angleCup {0};   //angle of the servomotor that holds the cup
 };
 
 void set_hardwareState(struct HardwareState hwst);
