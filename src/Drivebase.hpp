@@ -7,8 +7,9 @@
 
 #include "PID.hpp"
 #include "Constants.hpp"
+#include "Utils/Vec.hpp"
 
-
+namespace p28 {
 
 struct Motor {
 	int ID;
@@ -24,16 +25,27 @@ struct Drivebase {
 
 	double x{ 0.75 }, y { 0.25 }; // Position in meters, from the bottom left corner of the field
 };
+struct DrivebaseState {
+    p28::mt::Vec2 pos; // Position in m
+    p28::mt::Vec2 heading; // Heading with a length of velocity (m/s)
+
+    p28::mt::Vec2 wheelsVelocities; // Velocity in m/s of each wheel
+};
 
 // Action that the drivebase can do (high level)
 struct DrivebaseActionState {
-	enum FollowingTargets { FollowArc, FollowLine };
+	p28::mt::Vec2 targPos { 0.0 }; // Target position 
+	float targSpeed { 0.0 }; // Speed at the target position
 
-	FollowingTargets follow;
+	 // Radius of the arc path
+	 // + -> anticlockwise
+	 // - -> clockwise
+	float pathRadius { 0.0 };
 
-	// Arc or line to follow
-	// What is an arc, what is a line? 
-	// How to follow them?
+	DrivebaseActionState() = default;
+	DrivebaseActionState(DrivebaseState drvbState, p28::mt::Vec2 targPos_, float targSpeed_, p28::mt::Vec2 targHeading_);
+	DrivebaseActionState(p28::mt::Vec2 targPos_, float targSpeed_);
+	DrivebaseActionState(p28::mt::Vec2 targPos_, float targSpeed_, float pathRadius_);
 };
 
 // Conversion for encoders to distance (meters)
@@ -55,6 +67,6 @@ struct Drivebase set_motorTime(struct Drivebase drvb, long int time_ms);
 
 // double velocity_profile(double target_vel, double dist_to_travel, double current_dist, double time_since_start);
 
-
+}
 
 #endif

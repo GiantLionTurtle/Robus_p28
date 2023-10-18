@@ -4,25 +4,70 @@
 #include "ProximityDetector.hpp"
 #include "TraveledPath.hpp"
 
+namespace p28 {
 
-// Helper functions
+struct Line {
+	mt::Vec2 origin;
+	mt::Vec2 dir;
+};
 
-/**
- * @brief updates the position (in meters) of the robot
- * given a distance travelled along a field direction
- * 
- * @param dist Distance that the robot just travelled
- * @param direction Direction in which the robot travelled
- * @param x
- * x position of the robot on a 2D plane 
- * @param y 
- * y position of the robot on a 2D plane
- */
-void update_pos(double dist, int direction, double& x, double& y);
-// move; LEFT or RIGHT, changes the robot direction
-// direction is !!! RELATIVE TO THE FIELD !!! 
-void update_orientation(int move, int& direction);
+mt::Vec2 lineLine_intersection(Line const& l1, Line const& l2)
+{
+	mt::Vec2 originDiff = l1.origin - l2.origin;
+	float dirCross = mt::cross(l1.dir, l2.dir);
 
+	return l1.origin + l1.dir * mt::cross(l2.dir, originDiff) / dirCross;
+}
+// Are three points aranged in a ccw fashion?
+bool threePoints_ccw(mt::Vec2 A, mt::Vec2 B, mt::Vec2 C)
+{
+	return (C.y-A.y) * (B.x-A.x) > (B.y-A.y) * (C.x-A.x);
+}
+
+DrivebaseActionState::DrivebaseActionState(DrivebaseState drvbState, p28::mt::Vec2 targPos_, float targSpeed_, p28::mt::Vec2 targHeading_)
+	: targPos(targPos_)
+	, targSpeed(targSpeed_)
+{
+	// Compute the arc that takes us from the current position 
+	// to the target position at a heading
+
+	// Step 1 compute radius
+	mt::Vec2 currentToTarget = targPos - drvbState.pos;
+
+	// Line1, perpendicular to the line from current pos to target pos
+	Line line1 { drvbState.pos + currentToTarget/2.0f, 
+				{-currentToTarget.y, currentToTarget.x} };
+
+	// Line2, perpendicular to tangeant to the arc, going through the target position
+	Line line2 { targPos, { -targHeading_.y, targHeading_.x } };
+
+	mt::Vec2 circleCenter = lineLine_intersection(line1, line2);
+
+	// Find a radius, if negative, it means the left wheel should go 
+	// faster than the right wheel
+	pathRadius = mt::magnitude(circleCenter - targPos);
+
+	// Step 2 cw or ccw
+	
+	// is the target heading pointing cw or ccw
+	if(!threePoints_ccw(circleCenter, targPos, targPos + targHeading_)) {
+		pathRadius = -pathRadius;
+	}
+}
+DrivebaseActionState::DrivebaseActionState(p28::mt::Vec2 targPos_, float targSpeed_)
+	: targPos(targPos_)
+	, targSpeed(targSpeed_)
+	, pathRadius(10000000) // Arbitrary big radius (infinite)
+{
+
+}
+DrivebaseActionState::DrivebaseActionState(p28::mt::Vec2 targPos_, float targSpeed_, float pathRadius_)
+	: targPos(targPos_)
+	, targSpeed(targSpeed_)
+	, pathRadius(pathRadius_)
+{
+
+}
 
 // Public functions
 
@@ -71,4 +116,6 @@ struct Drivebase set_motorTime(struct Drivebase drvb, long int time_ms)
 	drvb.left.last_time_ms = time_ms;
 	drvb.right.last_time_ms = time_ms;
 	return drvb;
+}
+
 }
