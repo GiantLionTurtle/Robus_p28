@@ -3,6 +3,8 @@
 #include "sensors.hpp"
 #include <Arduino.h>
 #include "ProximityDetector.hpp"
+#include "ColorSensor.hpp"
+#include "Constants.hpp"
 
 namespace p28 {
 
@@ -13,8 +15,8 @@ SensorState get_sensors()
     newSensorState.bumpersState = { ROBUS_IsBumper(LEFT), ROBUS_IsBumper(RIGHT) };
     //newSensorState.IRSensor = {PIN_IRSENSOR};
     newSensorState.proximityDetector = wall_detection();
-    //newSensorState.colorDetector = color detection function;
-
+    newSensorState.colorDetector = get_color();
+    //newSensorState.lineDetector = lineDetector functions
     return newSensorState;
 }
 

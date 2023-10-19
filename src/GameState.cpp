@@ -39,15 +39,15 @@ Pair<int, int> compute_zoneLane(SensorState const& prevSensState, SensorState co
 {
 	int zone = gmState.zone;
 	int lane = gmState.lane;
-	if(currSensState.colorDetector == static_cast<int>(COLOR::BLACK)) {
+	if(currSensState.colorDetector == COLOR::BLACK){
 		zone = 2;
-	} else if(currSensState.colorDetector == static_cast<int>(COLOR::WHITE) 
-			&& prevSensState.colorDetector != static_cast<int>(COLOR::WHITE)) {
+	} else if(currSensState.colorDetector == COLOR::WHITE
+			&& prevSensState.colorDetector != COLOR::WHITE) {
 		zone = 6;
 	} else {
-		lane = comp_lane(static_cast<COLOR>(currSensState.colorDetector));
+		lane = comp_lane(currSensState.colorDetector);
 
-		if(prevSensState.colorDetector == static_cast<int>(COLOR::WHITE))
+		if(prevSensState.colorDetector == COLOR::WHITE)
 			zone = 9;
 	}
 	return { zone, lane };

@@ -14,7 +14,6 @@ struct RGB{
 void init_color_sensor();
 RGB get_rgb();
 COLOR get_color();
-
+String toString(COLOR color);
 } // !p28
-
 #endif
