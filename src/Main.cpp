@@ -57,6 +57,5 @@ void loop()
 
 		delay(kControlLoopDelay);
 	}*/
-	Serial.println(get_color());
 	delay(100);
 }

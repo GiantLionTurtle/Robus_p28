@@ -13,4 +13,5 @@ void init_color_sensor();
 RGB get_rgb();
 bool equal_color(float col1, float col2, float treshold);
 COLOR get_color();
+String toString(COLOR color);
 #endif
