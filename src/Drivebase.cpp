@@ -129,4 +129,12 @@ Pair<mt::Vec2, Drivebase> Drivebase::hardware_output(PathSegment const& follow, 
 	return { motor_speeds, *this };
 }
 
+//makes the robot turn following a circular arc
+p28::mt::Vec2 arcTurnToDest(PathSegment pathSegment){
+	float leftWheel = abs (kAngularVelocity * (pathSegment.pathRadius - kRobotWidth_2));   // speed of the interior wheel in m/s 
+	float rightWheel = abs (kAngularVelocity * (pathSegment.pathRadius + kRobotWidth_2));   //speed of the exteriorwheel in m/s 
+	p28::mt::Vec2 speedBothMotor = {rightWheel,leftWheel};
+	return speedBothMotor;
+}
+
 } // !p28
