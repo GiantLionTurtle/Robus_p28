@@ -84,7 +84,7 @@ DrivebasePath DrivebasePath::update_path(DrivebaseState drvbState) const
 // Public functions
 float ticks_to_dist(int32_t ticks)
 {
-	return static_cast<float>(ticks) / 3200 * TWO_PI * kWheelRadius;
+	return static_cast<float>(ticks) / kTicksPerRotation * TWO_PI * kWheelRadius;
 }
 float comp_accel_dist(float accel, float currSpeed, float targSpeed)
 {
