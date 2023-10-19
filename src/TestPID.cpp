@@ -7,12 +7,12 @@
 #include "PID.hpp"
 #include "Drivebase.hpp"
 
+namespace p28 {
 
-
-void init(double P, double speed_m_s)
+void init(float P, float speed_m_s)
 {
     unsigned long prev_time_ms;
-    double set_speed = 0.4; // m/s
+    float set_speed = 0.4; // m/s
     Error left_velocity_error;
     Error right_velocity_error;
 
@@ -35,19 +35,19 @@ void init(double P, double speed_m_s)
 
     unsigned long time_ms = millis();
 
-	double delta_s = static_cast<float>(time_ms - prev_time_ms) / 1000.0f;
+	float delta_s = static_cast<float>(time_ms - prev_time_ms) / 1000.0f;
 
 	uint32_t left_current_ticks = ENCODER_Read(LEFT);
-	double left_current_speed = ticks_to_dist(left_current_ticks-left_prev_ticks) / delta_s;
+	float left_current_speed = ticks_to_dist(left_current_ticks-left_prev_ticks) / delta_s;
 	left_velocity_error = update_error(left_velocity_error, left_current_speed, set_speed, delta_s);
 
-	double left_motorset = get(motorPID, left_velocity_error);
+	float left_motorset = get(motorPID, left_velocity_error);
 
 	uint32_t right_current_ticks = ENCODER_Read(RIGHT);
-	double right_current_speed = ticks_to_dist(right_current_ticks-right_prev_ticks) / delta_s;
+	float right_current_speed = ticks_to_dist(right_current_ticks-right_prev_ticks) / delta_s;
 	right_velocity_error = update_error(right_velocity_error, right_current_speed, set_speed, delta_s);
 
-	double right_motorset = get(motorPID, right_velocity_error);
+	float right_motorset = get(motorPID, right_velocity_error);
 
 
 	MOTOR_SetSpeed(LEFT, left_motorset);
@@ -60,3 +60,4 @@ void init(double P, double speed_m_s)
 	delay(10);
 }
 
+}

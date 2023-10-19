@@ -2,22 +2,22 @@
 #ifndef P28_PID_HPP_
 #define P28_PID_HPP_
 
-
+namespace p28 {
 
 struct PID {
-	double P;
-	double I;
-	double D;
+	float P;
+	float I;
+	float D;
 };
 struct Error {
-	double error { 0.0 };
-	double diff_error { 0.0 };
-	double sum_error { 0.0 };
+	float error { 0.0 };
+	float diff_error { 0.0 };
+	float sum_error { 0.0 };
 };
 
-struct Error update_error(struct Error err, double value, double setpoint, double delta_s);
-double get(struct PID const& pid, struct Error const& error);
+struct Error update_error(struct Error err, float value, float setpoint, float delta_s);
+float get(struct PID const& pid, struct Error const& error);
 
-
+} // !p28
 
 #endif

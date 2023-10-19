@@ -2,8 +2,8 @@
 #ifndef P28_FIELD_HPP_
 #define P28_FIELD_HPP_
 
+namespace p28 {
 
-// Here lie functions & structures to manage the legalmovesmatrix
-
+} // !p28
 
 #endif

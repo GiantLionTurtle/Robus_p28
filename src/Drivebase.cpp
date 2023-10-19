@@ -2,73 +2,132 @@
 #include "Field.hpp"
 #include <LibRobus.h>
 #include "ProximityDetector.hpp"
-#include "TraveledPath.hpp"
 
+namespace p28 {
 
-// Helper functions
+struct Line {
+	mt::Vec2 origin;
+	mt::Vec2 dir;
+};
 
-/**
- * @brief updates the position (in meters) of the robot
- * given a distance travelled along a field direction
- * 
- * @param dist Distance that the robot just travelled
- * @param direction Direction in which the robot travelled
- * @param x
- * x position of the robot on a 2D plane 
- * @param y 
- * y position of the robot on a 2D plane
- */
-void update_pos(double dist, int direction, double& x, double& y);
-// move; LEFT or RIGHT, changes the robot direction
-// direction is !!! RELATIVE TO THE FIELD !!! 
-void update_orientation(int move, int& direction);
+mt::Vec2 lineLine_intersection(Line const& l1, Line const& l2)
+{
+	mt::Vec2 originDiff = l1.origin - l2.origin;
+	float dirCross = mt::cross(l1.dir, l2.dir);
+
+	return l1.origin + l1.dir * mt::cross(l2.dir, originDiff) / dirCross;
+}
+// Are three points aranged in a ccw fashion?
+bool threePoints_ccw(mt::Vec2 A, mt::Vec2 B, mt::Vec2 C)
+{
+	return (C.y-A.y) * (B.x-A.x) > (B.y-A.y) * (C.x-A.x);
+}
+
+PathSegment::PathSegment(DrivebaseState drvbState, p28::mt::Vec2 targPos_, float targSpeed_, p28::mt::Vec2 targHeading_)
+	: targPos(targPos_)
+	, targSpeed(targSpeed_)
+{
+	// Compute the arc that takes us from the current position 
+	// to the target position at a heading
+
+	// Step 1 compute radius
+	mt::Vec2 currentToTarget = targPos - drvbState.pos;
+
+	// Line1, perpendicular to the line from current pos to target pos
+	Line line1 { drvbState.pos + currentToTarget/2.0f, 
+				{-currentToTarget.y, currentToTarget.x} };
+
+	// Line2, perpendicular to tangeant to the arc, going through the target position
+	Line line2 { targPos, { -targHeading_.y, targHeading_.x } };
+
+	mt::Vec2 circleCenter = lineLine_intersection(line1, line2);
+
+	// Find a radius, if negative, it means the left wheel should go 
+	// faster than the right wheel
+	pathRadius = mt::magnitude(circleCenter - targPos);
+
+	// Step 2 cw or ccw
+	
+	// is the target heading pointing cw or ccw
+	if(!threePoints_ccw(circleCenter, targPos, targPos + targHeading_)) {
+		pathRadius = -pathRadius;
+	}
+}
+PathSegment::PathSegment(p28::mt::Vec2 targPos_, float targSpeed_)
+	: targPos(targPos_)
+	, targSpeed(targSpeed_)
+	, pathRadius(10000000) // Arbitrary big radius (infinite)
+{
+
+}
+PathSegment::PathSegment(p28::mt::Vec2 targPos_, float targSpeed_, float pathRadius_)
+	: targPos(targPos_)
+	, targSpeed(targSpeed_)
+	, pathRadius(pathRadius_)
+{
+
+}
+
+DrivebasePath DrivebasePath::update_path(DrivebaseState drvbState) const
+{
+	if(mt::epsilon_equal(drvbState.pos, current().targPos, kPathFollower_epsilon2)) {
+		DrivebasePath out = *this;
+		out.index++;
+		if(index >= path.size())
+			return {};
+		return out;
+	}
+	return *this;
+}
 
 
 // Public functions
-
-double ticks_to_dist(int32_t ticks)
+float ticks_to_dist(int32_t ticks)
 {
 	return static_cast<float>(ticks) / 3200 * TWO_PI * kWheelRadius;
 }
-double comp_accel_dist(double accel, double currSpeed, double targSpeed)
+float comp_accel_dist(float accel, float currSpeed, float targSpeed)
 {
 	return (targSpeed - currSpeed) / accel / 2.0;
 }
 
-struct Motor get_motor_speed(struct Motor motor, double delta_s)
-{
-	int32_t current_ticks = ENCODER_Read(motor.ID);
-	int32_t ticks_diff = current_ticks - motor.last_ticks;
-	motor.speed = ticks_to_dist(ticks_diff) / delta_s;
-	motor.last_ticks = current_ticks;
-	return motor;
-}
-struct Motor update_motor_at_speed(struct Motor motor, double set_speed, long int time_ms)
-{
-	long int diff_time_ms = time_ms - motor.last_time_ms;
-	double delta_s = static_cast<float>(diff_time_ms) / 1000.0f;
+// Motor get_motor_speed(struct Motor motor, float delta_s)
+// {
+// 	int32_t current_ticks = ENCODER_Read(motor.ID);
+// 	int32_t ticks_diff = current_ticks - motor.last_ticks;
+// 	motor.speed = ticks_to_dist(ticks_diff) / delta_s;
+// 	motor.last_ticks = current_ticks;
+// 	return motor;
+// }
+// Motor update_motor_at_speed(struct Motor motor, float set_speed, long int time_ms)
+// {
+// 	long int diff_time_ms = time_ms - motor.last_time_ms;
+// 	float delta_s = static_cast<float>(diff_time_ms) / 1000.0f;
 
-	motor.last_time_ms = time_ms;
-	motor = get_motor_speed(motor, delta_s);
-	motor.error = update_error(motor.error, motor.speed, set_speed, delta_s);
-	double harware_set = get(motor.pid, motor.error);
+// 	motor.last_time_ms = time_ms;
+// 	motor = get_motor_speed(motor, delta_s);
+// 	motor.error = update_error(motor.error, motor.speed, set_speed, delta_s);
+// 	float harware_set = get(motor.pid, motor.error);
 
-	MOTOR_SetSpeed(motor.ID, harware_set);
-	return motor;
-}
+// 	MOTOR_SetSpeed(motor.ID, harware_set);
+// 	return motor;
+// }
 
-struct Drivebase zero_all(struct Drivebase drvb)
+DrivebaseState DrivebaseState::update(mt::i32Vec2 prevEncTicks, mt::i32Vec2 currEncTicks, float delta_s) const
 {
-	MOTOR_SetSpeed(LEFT, 0.0);
-	MOTOR_SetSpeed(RIGHT, 0.0);
+	// &&Figureout&&;
+	return *this;
+}
 
-	drvb.left.speed = 0.0;
-	drvb.right.speed = 0.0;
-	return drvb;
-}
-struct Drivebase set_motorTime(struct Drivebase drvb, long int time_ms)
+Pair<mt::Vec2, Drivebase> Drivebase::hardware_output(PathSegment const& follow, unsigned long time_ms, float delta_s) const
 {
-	drvb.left.last_time_ms = time_ms;
-	drvb.right.last_time_ms = time_ms;
-	return drvb;
+	if(state.waitUntil > time_ms)
+		return { mt::Vec2(0.0), *this }; // Don't move if the drivebase should be waiting for actions
+
+	// &&Figureout&& out how to follow a segment
+	mt::Vec2 motor_speeds;
+
+	return { motor_speeds, *this };
 }
+
+} // !p28

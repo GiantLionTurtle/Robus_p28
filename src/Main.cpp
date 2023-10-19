@@ -7,19 +7,21 @@
 #include "Drivebase.hpp"
 #include "WhistleDetector.hpp"
 #include "ProximityDetector.hpp"
-#include "TraveledPath.hpp"
 
-#include "RobotState.hpp"
+#include "Robot.hpp"
 #include "GameState.hpp"
 #include "ActionState.hpp"
 #include "HardwareState.hpp"
 #include "sensors.hpp"
 
+using namespace p28;
+
 SensorState sensorState;
 SensorState prevSensorState;
 
-RobotState robotState;
+Robot robot;
 GameState gameState;
+GameState prevGameState;
 
 ActionState actionState;
 HardwareState hardwareState;
@@ -42,20 +44,34 @@ void setup()
 void loop() 
 {
 	// if(whistle_detection()) {
-	/*if(ROBUS_IsBumper(3)) {
-		sensorState = get_sensors();
+	if(ROBUS_IsBumper(3)) {
+		while(!gameState.over) {
+			// No data is fed, this is a read function
+			sensorState = get_sensors();
 
-		// p28::tie(robotState, gameState) = compute_robotGame_state(prevSensorState, sensorState, robotState, gameState);
+			gameState = prevGameState.next(prevSensorState, sensorState);
+			robot = robot.next(prevSensorState, sensorState, prevGameState, gameState);
 
-		// actionState = generate_actionState(robotState, gameState);
+			// Robot is fed to ensure the generated actions
+			// are aligned with the physical reality of the robot
+			actionState = generate_actionState(actionState, robot, gameState);
 
-		hardwareState = generate_hardwareState(actionState);
+			// Create the data to send to the hardware
+			// the robot is fed and outputed to keep track
+			// of the motors and follow paths
+			tie(hardwareState, robot) = generate_hardwareState(actionState, robot);
 
-		set_hardwareState(hardwareState);
+			// Only processed data is fed, it is a write function
+			set_hardwareState(hardwareState);
 
-		prevSensorState = sensorState;
+			// Keep the previous sensor and game states for useful deltas
+			prevSensorState = sensorState;
+			prevGameState = gameState;
 
-		delay(kControlLoopDelay);
-	}*/
+			// Pause for a bit to allow everything to catch up 
+			delay(kControlLoopDelay);
+		}
+	}
+	Serial.println(static_cast<int>(get_color()));
 	delay(100);
 }
