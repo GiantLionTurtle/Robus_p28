@@ -90,33 +90,32 @@ float comp_accel_dist(float accel, float currSpeed, float targSpeed)
 {
 	return (targSpeed - currSpeed) / accel / 2.0;
 }
+mt::Vec2 ticks_to_dist(mt::i32Vec2 Ticks)
+{
+	return {ticks_to_dist(Ticks.left), ticks_to_dist(Ticks.right)};
+}
 
-// Motor get_motor_speed(struct Motor motor, float delta_s)
-// {
-// 	int32_t current_ticks = ENCODER_Read(motor.ID);
-// 	int32_t ticks_diff = current_ticks - motor.last_ticks;
-// 	motor.speed = ticks_to_dist(ticks_diff) / delta_s;
-// 	motor.last_ticks = current_ticks;
-// 	return motor;
-// }
-// Motor update_motor_at_speed(struct Motor motor, float set_speed, long int time_ms)
-// {
-// 	long int diff_time_ms = time_ms - motor.last_time_ms;
-// 	float delta_s = static_cast<float>(diff_time_ms) / 1000.0f;
+mt::Vec2 get_motor_speed(mt::i32Vec2 prevEncTicks, mt::i32Vec2 currEncTicks, float delta_s)
+{
+	mt::i32Vec2 ticks_diff = currEncTicks - prevEncTicks;
+	mt::Vec2 motor_speed = ticks_to_dist(ticks_diff) / delta_s;
+	return motor_speed;
+}
+Pair<Motor, float> update_motor_at_speed(Motor motor, float set_speed,float actual_speed, float delta_s)
+{
+	motor.error = update_error(motor.error, actual_speed, set_speed, delta_s);
+	float hardware_set = get(motor.pid, motor.error);
 
-// 	motor.last_time_ms = time_ms;
-// 	motor = get_motor_speed(motor, delta_s);
-// 	motor.error = update_error(motor.error, motor.speed, set_speed, delta_s);
-// 	float harware_set = get(motor.pid, motor.error);
-
-// 	MOTOR_SetSpeed(motor.ID, harware_set);
-// 	return motor;
-// }
+	MOTOR_SetSpeed(motor.ID, hardware_set);
+	return {motor, hardware_set};
+}
 
 DrivebaseState DrivebaseState::update(mt::i32Vec2 prevEncTicks, mt::i32Vec2 currEncTicks, float delta_s) const
 {
-	// &&Figureout&&;
-	return *this;
+	// &&Figureout&&; 
+	DrivebaseState new_drvbState;
+	new_drvbState.wheelsVelocities = get_motor_speed(prevEncTicks, currEncTicks, delta_s);
+	return new_drvbState;
 }
 
 Pair<mt::Vec2, Drivebase> Drivebase::hardware_output(PathSegment const& follow, unsigned long time_ms, float delta_s) const

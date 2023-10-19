@@ -16,10 +16,10 @@
 namespace p28 {
 
 struct DrivebaseState {
-	p28::mt::Vec2 pos; // Position in m
-    p28::mt::Vec2 heading; // Heading with a length of velocity (m/s)
+	mt::Vec2 pos; // Position in m
+    mt::Vec2 heading; // Heading with a length of velocity (m/s)
 
-    p28::mt::Vec2 wheelsVelocities; // Velocity in m/s of each wheel
+    mt::Vec2 wheelsVelocities; // Velocity in m/s of each wheel
 
 	// A point in time in ms, used to stop the path following as long as millis() < waitUntil
 	unsigned long waitUntil { 0 }; 
@@ -73,12 +73,15 @@ struct Drivebase {
 
 // Conversion for encoders to distance (meters)
 float ticks_to_dist(int32_t ticks);
+mt::Vec2 ticks_to_dist(mt::i32Vec2 bothTicks);
 float accel_dist(float accel, float target_speed);
+
 
 // Functions that move the robot must return 
 // the part of the robot that has been moved
 // with a modified state
 struct Motor get_motor_speed(struct Motor motor, float delta_s);
+mt::Vec2 get_motor_speed(mt::i32Vec2 prevEncTicks, mt::i32Vec2 currEncTicks, float delta_s);
 struct Motor update_motor_at_speed(struct Motor motor, float speed, long int time_ms);
 
 
