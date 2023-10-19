@@ -2,6 +2,8 @@
 #define P28_SENSORS_HPP_
 
 #include "Utils/Vec.hpp"
+#include "Constants.hpp"
+
 
 namespace p28 {
 
@@ -15,7 +17,7 @@ struct SensorState {
     int IRSensor; // &&Figureout&&
     bool proximityDetector; // value of 1 or 0
     int lineDetector; // &&Figureout&& TO BE DEFINED DEPENDING HOW IT WORKS AND ITS RESPONSE
-    int colorDetector; // &&Figureout&& TO BE DEFINED DEPENDING OF ITS RESPONSE
+    p28::COLOR colorDetector; // assign a color depending on the color detector response
     
 };
 
