@@ -13,11 +13,26 @@
 #include "Utils/Pair.hpp"
 #include "Utils/Vec.hpp"
 
+/*
+	How the drivebase should work:
+
+	1. PathSegments are fed one at a time (end point, end heading, end velocity)
+	2. The drivebase computes an arc to complete the segment
+	3. The drivebase tries to follow said arcs using
+		a. Forward kinematics
+		b. Acceleration motion profiles
+		c. Heading pid
+	4. The drivebase uses inverse kinematics to understand it's position
+	5. The new position is agremented with other sensors outside the drivebase code's scope
+	6. The new position is used in step 2
+*/
+
 namespace p28 {
 
 struct DrivebaseState {
 	mt::Vec2 pos; // Position in m
-    mt::Vec2 heading; // Heading with a length of velocity (m/s)
+    mt::Vec2 heading; // Normalised heading
+	float velocity;
 
     mt::Vec2 wheelsVelocities; // Velocity in m/s of each wheel
 
@@ -28,20 +43,28 @@ struct DrivebaseState {
 	DrivebaseState update(mt::i32Vec2 prevEncTicks, mt::i32Vec2 currEncTicks, float delta_s) const;
 };
 
+
+struct Arc {
+	mt::Vec2 tengeantStart;
+	mt::Vec2 end;
+	float radius;
+	float length;
+};
+struct Line {
+	mt::Vec2 origin;
+	mt::Vec2 dir;
+
+	mt::Vec2 line_intersection(Line const& l2) const;
+};
+
 // Action that the drivebase can do (high level)
 struct PathSegment {
-	p28::mt::Vec2 targPos { 0.0 }; // Target position 
+	mt::Vec2 targPos { 0.0 }; // Target position 
+	mt::Vec2 targHeading { 0.0 };
 	float targSpeed { 0.0 }; // Speed at the target position
 
-	 // Radius of the arc path
-	 // + -> anticlockwise
-	 // - -> clockwise
-	float pathRadius { 0.0 };
-
 	PathSegment() = default;
-	PathSegment(DrivebaseState drvbState, p28::mt::Vec2 targPos_, float targSpeed_, p28::mt::Vec2 targHeading_);
-	PathSegment(p28::mt::Vec2 targPos_, float targSpeed_);
-	PathSegment(p28::mt::Vec2 targPos_, float targSpeed_, float pathRadius_);
+	PathSegment(mt::Vec2 targPos_, mt::Vec2 targHeading_, float targSpeed_);
 };
 
 // Arcs to follow and delays after it's done
@@ -77,18 +100,12 @@ mt::Vec2 ticks_to_dist(mt::i32Vec2 bothTicks);
 float accel_dist(float accel, float target_speed);
 
 
-// Functions that move the robot must return 
-// the part of the robot that has been moved
-// with a modified state
-struct Motor get_motor_speed(struct Motor motor, float delta_s);
 mt::Vec2 get_motor_speed(mt::i32Vec2 prevEncTicks, mt::i32Vec2 currEncTicks, float delta_s);
-struct Motor update_motor_at_speed(struct Motor motor, float speed, long int time_ms);
+Pair<Motor, float> update_motor_at_speed(Motor motor, float set_speed,float actual_speed, float delta_s);
 
-
-struct Drivebase zero_all(struct Drivebase drvb);
-struct Drivebase set_motorTime(struct Drivebase drvb, long int time_ms);
-
-
+float velocity_for_point(float current_velocity, float target_velocity, float dist_to_target, float allowed_accel);
+Arc arc_from_targetHeading(mt::Vec2 start, mt::Vec2 end, mt::Vec2 end_heading);
+mt::Vec2 arcTurnToDest(Arc arc, float angularVelocity);
 
 // float velocity_profile(float target_vel, float dist_to_travel, float current_dist, float time_since_start);
 

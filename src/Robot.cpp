@@ -8,8 +8,8 @@ namespace p28 {
 DrivebaseState adjustDrivebase(DrivebaseState drvbState, SensorState const&  currSensState, 
 								GameState const&  prevRobot, GameState const&  robot);
 
-Robot Robot::next(  SensorState prevSensState, SensorState currSensState, 
-				    GameState prevGmState, GameState gmState) const
+Robot Robot::generate_next(  SensorState prevSensState, SensorState currSensState, 
+				   			 GameState prevGmState, GameState gmState) const
 {
 
 	Robot newRobot = *this;

@@ -5,6 +5,18 @@
 #include "Utils/Pair.hpp"
 #include "sensors.hpp"
 
+/*
+	How GameState should work
+
+	1. GameState is initialized, each mission is marked as todo if it must be done
+	2. GameState creates an updated copy of itself using the sensors's information
+		a. It digest sensors information into game langage (lane, zone, etc.)
+		b. It decides the stat of each objective (underway, done, todo, starting)
+		c. It decides if the program should terminate
+	3. Specific actions to accomplish the objectives are outside the scope of this structure
+		-> see ActionState.hpp
+*/
+
 namespace p28 {
 
 enum class Objective : char { Todo, Start, UnderWay, Done };
@@ -27,7 +39,7 @@ struct GameState {
 	MissionState missionState;
 
 	// Compute the next gamestate from sensor data deltas
-	GameState next(SensorState prevSensState, SensorState currSensState) const;
+	GameState generate_next(SensorState prevSensState, SensorState currSensState) const;
 };
 
 } // !p28

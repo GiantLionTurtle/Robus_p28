@@ -17,10 +17,12 @@ void ballSwerve_helper(ActionState& actState, Robot const& robState, Objective o
 	}
 }
 
-ActionState generate_actionState(ActionState prevActState, Robot robState, GameState gmState)
+ActionState ActionState::generate_next(Robot robState, GameState gmState) const
 {
 	ActionState actState;
-	actState.path = prevActState.path.update_path(robState.drvb.state);
+	actState.path = path.update_path(robState.drvb.state);
+
+	// &&Figureout&& how to hook the drivebase code here
 
 	// Cup zone?
 	if(gmState.missionState.knock_cup == Objective::UnderWay) {

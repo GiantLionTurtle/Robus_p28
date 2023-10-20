@@ -7,7 +7,7 @@ namespace p28 {
 Pair<int, int> compute_zoneLane(SensorState  const& prevSensState, SensorState const&  currSensState, GameState const&  gmState);
 Objective compute_knockCup_state(GameState const& gmState);
 
-GameState GameState::next(SensorState prevSensState, SensorState currSensState) const
+GameState GameState::generate_next(SensorState prevSensState, SensorState currSensState) const
 {
 	GameState newGmState = *this;
 
@@ -56,6 +56,7 @@ Pair<int, int> compute_zoneLane(SensorState const& prevSensState, SensorState co
 Objective compute_knockCup_state(GameState const& gmState)
 {
 	// Knock cup (not valid because it will open way before and close way after)
+	// &&Figureout&&
 	if(gmState.missionState.knock_cup == Objective::Todo && gmState.zone >= 2) {
 		return Objective::UnderWay;
 	} else if(gmState.missionState.knock_cup == Objective::UnderWay && gmState.zone >= 6) {

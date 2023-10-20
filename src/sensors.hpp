@@ -4,6 +4,15 @@
 #include "Utils/Vec.hpp"
 #include "Constants.hpp"
 
+/*
+    How SensorsState should work
+
+    It is meant as a full representation of the robot 
+
+    1. It is constructed using all the semi-raw data from the various sensors
+    2. It puts that in a more digestible fashion such as more useful types (COLOR, Vec2)
+*/
+
 
 namespace p28 {
 

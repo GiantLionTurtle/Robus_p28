@@ -4,6 +4,15 @@
 #include "Utils/Vec.hpp"
 #include "ActionState.hpp"
 
+/*
+	How hardware state should work
+
+	1. It is generated using an ActionState and a robot copy
+		a. It translates the commanded actions into real actual commands such as motor values
+		b. It updates the robot because it needs the feedback from the motors <== needs to change
+	2. It is writen to the hardware using LibRobus core code
+*/
+
 namespace p28 {
 
 struct HardwareState {

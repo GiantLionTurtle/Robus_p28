@@ -7,6 +7,15 @@
 #include "sensors.hpp"
 #include "GameState.hpp"
 
+/*
+	How the Robot should work
+
+	This structure is meant as a representation of systems that
+	need their state be updated and kept (think Drivebase)
+
+	1. It generates a new copy of itself using sensor data and gamestate data
+	2. It contains timing information (true time [ms] & delta time [s])
+*/
 
 namespace p28 {
 
@@ -18,8 +27,8 @@ struct Robot {
 	Drivebase drvb;
 
 	// Compute the next robot state from delta of the sensors and the game state
-	Robot next(SensorState prevSensState, SensorState currSensState, 
-				GameState prevGmState, GameState gmState) const;
+	Robot generate_next(SensorState prevSensState, SensorState currSensState, 
+						GameState prevGmState, GameState gmState) const;
 };
 
 } // !p28
