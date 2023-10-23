@@ -10,11 +10,11 @@
 
 #include "Robot.hpp"
 #include "GameState.hpp"
-#include "ActionState.hpp"
 #include "HardwareState.hpp"
 #include "sensors.hpp"
 
 #include "TestPID.hpp"
+#include "Iteration_time.hpp"
 
 using namespace p28;
 
@@ -25,8 +25,9 @@ Robot robot;
 GameState gameState;
 GameState prevGameState;
 
-ActionState actionState;
 HardwareState hardwareState;
+
+Iteration_time it_time;
 
 void buzzerFin();
 
@@ -36,8 +37,8 @@ void setup()
 	delay(1000);
 	Serial.println("Begin!");
 
-	robot.drvb.left.pid = { 1.4, 35.5555, 0.03333333 };
-	robot.drvb.right.pid = { 1.4, 35.5555, 0.03333333 };
+	robot.drvb.concrete.left.pid = { 1.4, 35.5555, 0.03333333 };
+	robot.drvb.concrete.right.pid = { 1.4, 35.5555, 0.03333333 };
 
 	init_detector();
 	init_whistle();
@@ -49,6 +50,7 @@ void setup()
 	// // TestPID::Ziegler_Nichols(1.8, 0.3);
 	// PID pid { 1.4, 35.5555, 0.03333333 };
 	// TestPID::test_pid_straightLine(pid, pid, 0.3);
+	it_time = it_time.current();
 }
 
 void loop() 
@@ -56,20 +58,19 @@ void loop()
 	// if(whistle_detection()) {
 	if(ROBUS_IsBumper(3)) {
 		while(!gameState.over) {
+			delay(kControlLoopDelay);
+
 			// No data is fed, this is a read function
 			sensorState = get_sensors();
+			it_time = it_time.current();
 
 			gameState = prevGameState.generate_next(prevSensorState, sensorState);
-			robot = robot.generate_next(prevSensorState, sensorState, prevGameState, gameState);
-
-			// Robot is fed to ensure the generated actions
-			// are aligned with the physical reality of the robot
-			actionState = actionState.generate_next(robot, gameState);
+			robot = robot.generate_next(prevSensorState, sensorState, prevGameState, gameState, it_time);
 
 			// Create the data to send to the hardware
 			// the robot is fed and outputed to keep track
 			// of the motors and follow paths
-			tie(hardwareState, robot) = generate_hardwareState(actionState, robot);
+			hardwareState = generate_hardwareState(robot);
 
 			// Only processed data is fed, it is a write function
 			set_hardwareState(hardwareState);
@@ -79,7 +80,6 @@ void loop()
 			prevGameState = gameState;
 
 			// Pause for a bit to allow everything to catch up 
-			delay(kControlLoopDelay);
 		}
 	}
 	// Serial.println(static_cast<int>(get_color()));

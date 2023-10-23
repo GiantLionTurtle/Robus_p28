@@ -12,6 +12,7 @@
 #include "Utils/Vector.hpp"
 #include "Utils/Pair.hpp"
 #include "Utils/Vec.hpp"
+#include "Iteration_time.hpp"
 
 /*
 	How the drivebase should work:
@@ -40,7 +41,9 @@ struct DrivebaseState {
 	unsigned long waitUntil { 0 }; 
 
 	// Create a new drivebase state from encoder ticks alone
-	DrivebaseState update(mt::i32Vec2 prevEncTicks, mt::i32Vec2 currEncTicks, float delta_s) const;
+	DrivebaseState update_kinematics(mt::i32Vec2 prevEncTicks, mt::i32Vec2 currEncTicks, float delta_s) const;
+
+	mt::Vec2 get_motor_speed(mt::i32Vec2 prevEncTicks, mt::i32Vec2 currEncTicks, float delta_s) const;
 };
 
 
@@ -74,40 +77,43 @@ struct DrivebasePath {
     unsigned int index { 0 };
 
 	PathSegment current() const { return path[index].first; }
-
-	DrivebasePath update_path(DrivebaseState drvbState) const;
 };
 
 
 struct Motor {
-	int ID;
 	PID pid;
 	Error error;
-	int32_t last_ticks { 0 };
+
+	float hardware_output() const;
+};
+
+struct DrivebaseConcrete {
+	Motor left;
+	Motor right;
+
+	PID headingPID;
+	Error headingError;
+
+	DrivebaseConcrete update(mt::Vec2 actualWheelVelocities, mt::Vec2 desiredWheelVelocities, Iteration_time it_time) const;
+	mt::Vec2 hardware_output() const;
 };
 
 struct Drivebase {
-	Motor left;
-	Motor right;
+	DrivebaseConcrete concrete;
 	DrivebaseState state;
+	DrivebasePath path;
 
-	Pair<mt::Vec2, Drivebase> hardware_output(PathSegment const& follow, unsigned long time_ms, float delta_s) const;
+	void update_path();
+	DrivebaseConcrete update_concrete(Iteration_time it_time);
 };
 
 // Conversion for encoders to distance (meters)
 float ticks_to_dist(int32_t ticks);
 mt::Vec2 ticks_to_dist(mt::i32Vec2 bothTicks);
-float accel_dist(float accel, float target_speed);
-
-
-mt::Vec2 get_motor_speed(mt::i32Vec2 prevEncTicks, mt::i32Vec2 currEncTicks, float delta_s);
-Pair<Motor, float> update_motor_at_speed(Motor motor, float set_speed,float actual_speed, float delta_s);
 
 float velocity_for_point(float current_velocity, float target_velocity, float dist_to_target, float allowed_accel);
 Arc arc_from_targetHeading(mt::Vec2 start, mt::Vec2 end, mt::Vec2 end_heading);
 mt::Vec2 arcTurnToDest(Arc arc, float angularVelocity);
-
-// float velocity_profile(float target_vel, float dist_to_travel, float current_dist, float time_since_start);
 
 } // !p28
 

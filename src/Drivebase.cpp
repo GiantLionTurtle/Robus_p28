@@ -56,60 +56,51 @@ PathSegment::PathSegment(mt::Vec2 targPos_, mt::Vec2 targHeading_, float targSpe
 
 }
 
-DrivebasePath DrivebasePath::update_path(DrivebaseState drvbState) const
+
+float Motor::hardware_output() const
 {
-	if(mt::epsilon_equal(drvbState.pos, current().targPos, kPathFollower_epsilon2)) {
-		DrivebasePath out = *this;
-		out.index++;
-		if(index >= path.size())
-			return {};
-		return out;
-	}
-	return *this;
+	return get(pid, error);
 }
 
-
-// Public functions
-float ticks_to_dist(int32_t ticks)
-{
-	return static_cast<float>(ticks) / kTicksPerRotation * TWO_PI * kWheelRadius;
-}
-float comp_accel_dist(float accel, float currSpeed, float targSpeed)
-{
-	return (targSpeed - currSpeed) / accel / 2.0;
-}
-mt::Vec2 ticks_to_dist(mt::i32Vec2 Ticks)
-{
-	return {ticks_to_dist(Ticks.left), ticks_to_dist(Ticks.right)};
-}
-
-mt::Vec2 get_motor_speed(mt::i32Vec2 prevEncTicks, mt::i32Vec2 currEncTicks, float delta_s)
-{
-	mt::i32Vec2 ticks_diff = currEncTicks - prevEncTicks;
-	mt::Vec2 motor_speed = ticks_to_dist(ticks_diff) / delta_s;
-	return motor_speed;
-}
-Pair<Motor, float> update_motor_at_speed(Motor motor, float set_speed,float actual_speed, float delta_s)
-{
-	motor.error = update_error(motor.error, actual_speed, set_speed, delta_s);
-	float hardware_set = get(motor.pid, motor.error);
-
-	return {motor, hardware_set};
-}
-
-
-DrivebaseState DrivebaseState::update(mt::i32Vec2 prevEncTicks, mt::i32Vec2 currEncTicks, float delta_s) const
+DrivebaseState DrivebaseState::update_kinematics(mt::i32Vec2 prevEncTicks, mt::i32Vec2 currEncTicks, float delta_s) const
 {
 	// &&Figureout&&; 
 	DrivebaseState new_drvbState;
 	new_drvbState.wheelsVelocities = get_motor_speed(prevEncTicks, currEncTicks, delta_s);
 	return new_drvbState;
 }
-
-Pair<mt::Vec2, Drivebase> Drivebase::hardware_output(PathSegment const& follow, unsigned long time_ms, float delta_s) const
+mt::Vec2 DrivebaseState::get_motor_speed(mt::i32Vec2 prevEncTicks, mt::i32Vec2 currEncTicks, float delta_s) const
 {
-	if(state.waitUntil > time_ms)
-		return { mt::Vec2(0.0), *this }; // Don't move if the drivebase should be waiting for actions
+	mt::i32Vec2 ticks_diff = currEncTicks - prevEncTicks;
+	mt::Vec2 motor_speed = ticks_to_dist(ticks_diff) / delta_s;
+	return motor_speed;
+}
+
+DrivebaseConcrete DrivebaseConcrete::update(mt::Vec2 actualWheelVelocities, mt::Vec2 desiredWheelVelocities, Iteration_time it_time) const
+{
+	DrivebaseConcrete out = *this;
+	out.left.error = update_error(left.error, actualWheelVelocities.left, desiredWheelVelocities.left, it_time.delta_s);
+	out.right.error = update_error(right.error, actualWheelVelocities.right, desiredWheelVelocities.right, it_time.delta_s);
+	return out;
+}
+
+mt::Vec2 DrivebaseConcrete::hardware_output() const
+{
+	return { left.hardware_output(), right.hardware_output() };
+}
+void Drivebase::update_path()
+{
+	if(mt::epsilon_equal(state.pos, path.current().targPos, kPathFollower_epsilon2)) {
+		path.index++;
+	}
+}
+DrivebaseConcrete Drivebase::update_concrete(Iteration_time it_time)
+{
+	// Don't move if the drivebase should be waiting for actions	
+	if(state.waitUntil > it_time.time_ms || path.index >= path.path.size())
+		return concrete.update(state.wheelsVelocities, {0.0f}, it_time);
+
+	PathSegment follow = path.current();
 
 	// 1. Find the arc that takes us from our current position to
 	// the target position with a target heading
@@ -129,8 +120,10 @@ Pair<mt::Vec2, Drivebase> Drivebase::hardware_output(PathSegment const& follow, 
 	// 4. Correct for the heading error
 	// &&Figureout&&
 
-	return { motor_speeds, *this };
+
+	return concrete.update(state.wheelsVelocities, motor_speeds, it_time);
 }
+
 
 // Create an arc that can be followed by the robot
 Arc arc_from_targetHeading(mt::Vec2 start, mt::Vec2 end, mt::Vec2 end_heading)
@@ -154,6 +147,16 @@ mt::Vec2 arcTurnToDest(Arc arc, float angularVelocity)
 	float rightWheel 	= abs(angularVelocity * ( arc.radius + kRobotWidth_2 ));   //speed of the exteriorwheel in m/s 
 	mt::Vec2 speedBothMotor = { rightWheel, leftWheel };
 	return speedBothMotor;
+}
+
+// Public functions
+float ticks_to_dist(int32_t ticks)
+{
+	return static_cast<float>(ticks) / kTicksPerRotation * TWO_PI * kWheelRadius;
+}
+mt::Vec2 ticks_to_dist(mt::i32Vec2 Ticks)
+{
+	return {ticks_to_dist(Ticks.left), ticks_to_dist(Ticks.right)};
 }
 
 } // !p28

@@ -2,7 +2,8 @@
 #define P28_HARDWARESTATE_HPP_
 
 #include "Utils/Vec.hpp"
-#include "ActionState.hpp"
+#include "Robot.hpp"
+#include "Constants.hpp"
 
 /*
 	How hardware state should work
@@ -23,7 +24,7 @@ struct HardwareState {
 
 void set_hardwareState(struct HardwareState hwst);
 
-Pair<HardwareState, Robot> generate_hardwareState(ActionState actState, Robot robot);
+HardwareState generate_hardwareState(Robot robot);
 
 } // !p28
 

@@ -6,7 +6,7 @@ Repo pour le robot robus de l'équipe p28
 
 ### Base mobile
 
-* Étape 1 de Drivebase::hardware_output: implementer arc_from_targetHeading dans Drivebase.cpp -- Julien
+* Étape 1 de Drivebase::update_concrete: implementer arc_from_targetHeading dans Drivebase.cpp -- Julien
     * Un Arc doit contenir un rayon, 
     * Un point de fin
     * Un vecteur tangeant au point de début
@@ -14,11 +14,11 @@ Repo pour le robot robus de l'équipe p28
 
 * Tester les maths de calcul d'arcs -- Théo
 
-* Étape 2 de Drivebase::hardware_output, implémenter la fonction velocity_for_point qui calcule le profil d'accélération (voir fig.1)
+* Étape 2 de Drivebase::update_concrete, implémenter la fonction velocity_for_point qui calcule le profil d'accélération (voir fig.1)
 
-* Etape 5 de Drivebase::hardware_output: 
+* Etape 5 de Drivebase::update_concrete: 
 
-* Étape 4 de Drivebase::hardware_output: Implementer un PID pour corriger l'angle -- Théo
+* Étape 4 de Drivebase::update_concrete: Implementer un PID pour corriger l'angle -- Théo
 
 * Mettre à jour la base mobile avec les données de zones lorsque non-ambigu
     * Utiliser une intersection de ligne (ligne de séparation de 2 zones) + ligne définie par la position du robot + sa direction
