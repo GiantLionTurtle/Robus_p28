@@ -9,7 +9,7 @@
 #endif
 
 // Uncomment to enable additional prints
-// #define DEBUG_MODE
+#define DEBUG_MODE
 
 // Uncomment to enable race mode vs qualification mode
 // #define RACE_MODE

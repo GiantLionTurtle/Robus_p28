@@ -16,6 +16,8 @@
 #include "TestPID.hpp"
 #include "Iteration_time.hpp"
 
+#include "UnitTests.hpp"
+
 using namespace p28;
 
 SensorState sensorState;
@@ -50,7 +52,10 @@ void setup()
 	// // TestPID::Ziegler_Nichols(1.8, 0.3);
 	// PID pid { 1.4, 35.5555, 0.03333333 };
 	// TestPID::test_pid_straightLine(pid, pid, 0.3);
+
 	it_time = it_time.current();
+
+	// Tests::vector_maths();
 }
 
 void loop() 

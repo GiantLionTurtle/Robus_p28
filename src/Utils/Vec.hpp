@@ -158,6 +158,14 @@ inline T distance(Vec2_any<T> const& first, Vec2_any<T> const& second)
 	return sqrt(distance2(first, second));
 }
 
+// Angle between two vectors in radians, [-pi, pi], < 0 means clockwise
+template<typename T>
+inline T signed_angle(Vec2_any<T> const& lhs, Vec2_any<T> const& rhs)
+{
+	// https://stackoverflow.com/questions/5188561/signed-angle-between-two-3d-vectors-with-same-origin-within-the-same-plane
+	return atan2(cross(lhs, rhs), dot(lhs, rhs));
+}
+
 // ----- Comparisons & access ----- //
 template<typename T>
 inline bool operator==(Vec2_any<T> const& lhs, Vec2_any<T>  const& rhs)
