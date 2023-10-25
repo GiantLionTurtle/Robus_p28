@@ -62,11 +62,40 @@ float Motor::hardware_output() const
 	return get(pid, error);
 }
 
+float DrivebaseState::velocity() const
+{
+	if(trajectory_radius == kInfinity) {
+		return wheelsVelocities.left; // Going in a perfect straigth line, both weels go at the drivebase velocity
+	} else {
+		return angular_velocity * trajectory_radius;
+	}
+}
 DrivebaseState DrivebaseState::update_kinematics(mt::i32Vec2 prevEncTicks, mt::i32Vec2 currEncTicks, float delta_s) const
 {
-	// &&Figureout&&; 
+	// Do read
+	// https://www.eecs.yorku.ca/course_archive/2017-18/W/4421/lectures/Wheeled%20robots%20forward%20kinematics.pdf
+
 	DrivebaseState new_drvbState;
-	new_drvbState.wheelsVelocities = get_motor_speed(prevEncTicks, currEncTicks, delta_s);
+	mt::Vec2 wheelVels = get_motor_speed(prevEncTicks, currEncTicks, delta_s);;
+	new_drvbState.wheelsVelocities = wheelVels;
+	new_drvbState.waitUntil = waitUntil; // Keep timer up
+
+	// Solving for velocity 
+	// Page 11
+	if(wheelVels.left == wheelVels.right) {
+		new_drvbState.trajectory_radius = kInfinity; // Not particulary a fan of div by 0
+		new_drvbState.angular_velocity = 0;
+	} else {
+		new_drvbState.trajectory_radius = kRobotWidth_2 * (wheelVels.right+wheelVels.left) / (wheelVels.right-wheelVels.left);
+		new_drvbState.angular_velocity = (wheelVels.right-wheelVels.left) / kRobotWidth;
+	}
+
+	// Forward kinematics
+	// page 20
+
+	new_drvbState.pos += (wheelVels.left+wheelVels.right) * heading * delta_s;
+	new_drvbState.heading = rotate(heading, 1/kRobotWidth * (wheelVels.right - wheelVels.left) * delta_s);
+
 	return new_drvbState;
 }
 mt::Vec2 DrivebaseState::get_motor_speed(mt::i32Vec2 prevEncTicks, mt::i32Vec2 currEncTicks, float delta_s) const
@@ -86,9 +115,6 @@ DrivebaseConcrete DrivebaseConcrete::update(mt::Vec2 actualWheelVelocities, mt::
 	// The heading error doesn't need to know the actual heading angle, only the
 	// difference between target vector and current vector + goal is 0.0
 	out.headingError = update_error(headingError, mt::signed_angle(currentHeading, targetHeading), 0.0, it_time.delta_s);
-
-
-	// Forward kinematics
 
 	return out;
 }
@@ -117,7 +143,7 @@ DrivebaseConcrete Drivebase::update_concrete(Iteration_time it_time) const
 
 	// 2. Find the angular velocity that should be reached this iteration
 	// Assum we are going in a straight line of length arc.length
-	float velocity = velocity_for_point(state.velocity, follow.targSpeed, arc.length, kAccel);
+	float velocity = velocity_for_point(state.velocity(), follow.targSpeed, arc.length, kAccel);
 
 	// Transform m/s into rad/s
 	float angularVelocity = velocity / arc.radius;

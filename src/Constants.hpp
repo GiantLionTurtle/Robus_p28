@@ -35,6 +35,8 @@ constexpr float kMinSpeed = 0.04;
 constexpr float kAccelDist = 0.2;
 constexpr float kTurnOffset = 0.02;
 
+constexpr float kInfinity = 100000;
+
 using time_t = long unsigned int;
 
 // Square of the precision of the path follower

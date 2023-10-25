@@ -58,6 +58,43 @@ struct Vec2_any {
 		}
 		return T();
 	}
+
+	inline Vec2_any<T>& operator+=(Vec2_any<T> const& other)
+	{
+		x += other.x;
+		y += other.y;
+		return *this;
+	}
+	inline Vec2_any<T>& operator+=(T scalar)
+	{
+		x += scalar;
+		y += scalar;
+		return *this;
+	}
+	inline Vec2_any<T>& operator-=(Vec2_any<T> const& other)
+	{
+		x -= other.x;
+		y -= other.y;
+		return *this;
+	}
+	inline Vec2_any<T>& operator-=(T scalar)
+	{
+		x -= scalar;
+		y -= scalar;
+		return *this;
+	}
+	inline Vec2_any<T>& operator*=(T scalar)
+	{
+		x *= scalar;
+		y *= scalar;
+		return *this;
+	}
+	inline Vec2_any<T>& operator/=(T scalar)
+	{
+		x /= scalar;
+		y /= scalar;
+		return *this;
+	}
 };
 
 using Vec2 = Vec2_any<float>;
@@ -158,12 +195,20 @@ inline T distance(Vec2_any<T> const& first, Vec2_any<T> const& second)
 	return sqrt(distance2(first, second));
 }
 
-// Angle between two vectors in radians, [-pi, pi], < 0 means clockwise
+// Smallest angle between two vectors in radians, [-pi, pi], < 0 means clockwise
 template<typename T>
 inline T signed_angle(Vec2_any<T> const& lhs, Vec2_any<T> const& rhs)
 {
 	// https://stackoverflow.com/questions/5188561/signed-angle-between-two-3d-vectors-with-same-origin-within-the-same-plane
 	return atan2(cross(lhs, rhs), dot(lhs, rhs));
+}
+// Counter clockwise angle between two vectors
+template<typename T>
+inline T angle(Vec2_any<T> const& lhs, Vec2_any<T> const& rhs)
+{
+	// https://math.stackexchange.com/questions/2718543/how-to-calculate-the-angle-between-2-vectors-in-a-plane
+	Vec2_any<T> perp_lhs(-lhs.y, lhs.x);
+	return atan2(dot(rhs, perp_lhs), dot(lhs, rhs));
 }
 
 // ----- Comparisons & access ----- //

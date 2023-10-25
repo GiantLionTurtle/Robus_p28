@@ -7,11 +7,11 @@
 
 #include "PID.hpp"
 #include "Constants.hpp"
-#include "Utils/Vec.hpp"
+#include "Utils/Vec2.hpp"
 
 #include "Utils/Vector.hpp"
 #include "Utils/Pair.hpp"
-#include "Utils/Vec.hpp"
+#include "Utils/Vec2.hpp"
 #include "Iteration_time.hpp"
 
 /*
@@ -33,12 +33,16 @@ namespace p28 {
 struct DrivebaseState {
 	mt::Vec2 pos; // Position in m
     mt::Vec2 heading; // Normalised heading
-	float velocity;
+	float angular_velocity;
+	float trajectory_radius;
 
     mt::Vec2 wheelsVelocities; // Velocity in m/s of each wheel
 
 	// A point in time in ms, used to stop the path following as long as millis() < waitUntil
 	unsigned long waitUntil { 0 }; 
+
+	// Returns the overall velocity of the drivebase
+	float velocity() const;
 
 	// Create a new drivebase state from encoder ticks alone
 	DrivebaseState update_kinematics(mt::i32Vec2 prevEncTicks, mt::i32Vec2 currEncTicks, float delta_s) const;

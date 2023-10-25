@@ -1,7 +1,7 @@
 #ifndef P28_SENSORS_HPP_
 #define P28_SENSORS_HPP_
 
-#include "Utils/Vec.hpp"
+#include "Utils/Vec2.hpp"
 #include "Constants.hpp"
 
 /*

@@ -1,7 +1,7 @@
 #ifndef P28_HARDWARESTATE_HPP_
 #define P28_HARDWARESTATE_HPP_
 
-#include "Utils/Vec.hpp"
+#include "Utils/Vec2.hpp"
 #include "Robot.hpp"
 #include "Constants.hpp"
 
