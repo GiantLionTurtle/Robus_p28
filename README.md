@@ -14,14 +14,14 @@ Repo pour le robot robus de l'équipe p28
 
 * Tester les maths de calcul d'arcs -- Théo
 
-* Étape 2 de Drivebase::update_concrete, implémenter la fonction velocity_for_point qui calcule le profil d'accélération (voir fig.1)
+* ~~ Étape 2 de Drivebase::update_concrete, implémenter la fonction velocity_for_point qui calcule le profil d'accélération (voir fig.1) ~~
 
-* Etape 5 de Drivebase::update_concrete: 
-
-* Étape 4 de Drivebase::update_concrete: Implementer un PID pour corriger l'angle -- Théo
+* ~~ Étape 4 de Drivebase::update_concrete: Implementer un PID pour corriger l'angle -- Théo ~~
 
 * Mettre à jour la base mobile avec les données de zones lorsque non-ambigu
     * Utiliser une intersection de ligne (ligne de séparation de 2 zones) + ligne définie par la position du robot + sa direction
+
+* Déterminer le changement de position du robot selon la vitesse des roues
 
 ### Logique de jeu
 
@@ -44,4 +44,4 @@ Repo pour le robot robus de l'équipe p28
 
 * Ajouter une fonction print() à SensorsState et à HardwareState
 
-* Changer la façon dont le flot de données se produit pour la base mobile ==> gen_hardwareState ne devrait pas mettre à jour le robot! -- Théo
+* ~~ Changer la façon dont le flot de données se produit pour la base mobile ==> gen_hardwareState ne devrait pas mettre à jour le robot! -- Théo ~~

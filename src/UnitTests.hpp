@@ -8,6 +8,11 @@ namespace Tests {
 
 void vector_maths();
 
+// void bumpers();
+// void proximity_detector();
+// void distance_detectors();
+// void color_sensor();
+
 } // !Tests
 
 } // !p28

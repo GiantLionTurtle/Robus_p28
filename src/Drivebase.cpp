@@ -76,11 +76,20 @@ mt::Vec2 DrivebaseState::get_motor_speed(mt::i32Vec2 prevEncTicks, mt::i32Vec2 c
 	return motor_speed;
 }
 
-DrivebaseConcrete DrivebaseConcrete::update(mt::Vec2 actualWheelVelocities, mt::Vec2 desiredWheelVelocities, Iteration_time it_time) const
+DrivebaseConcrete DrivebaseConcrete::update(mt::Vec2 actualWheelVelocities, mt::Vec2 desiredWheelVelocities, 
+											mt::Vec2 currentHeading, mt::Vec2 targetHeading, Iteration_time it_time) const
 {
 	DrivebaseConcrete out = *this;
 	out.left.error = update_error(left.error, actualWheelVelocities.left, desiredWheelVelocities.left, it_time.delta_s);
 	out.right.error = update_error(right.error, actualWheelVelocities.right, desiredWheelVelocities.right, it_time.delta_s);
+
+	// The heading error doesn't need to know the actual heading angle, only the
+	// difference between target vector and current vector + goal is 0.0
+	out.headingError = update_error(headingError, mt::signed_angle(currentHeading, targetHeading), 0.0, it_time.delta_s);
+
+
+	// Forward kinematics
+
 	return out;
 }
 
@@ -94,11 +103,11 @@ void Drivebase::update_path()
 		path.index++;
 	}
 }
-DrivebaseConcrete Drivebase::update_concrete(Iteration_time it_time)
+DrivebaseConcrete Drivebase::update_concrete(Iteration_time it_time) const
 {
 	// Don't move if the drivebase should be waiting for actions	
 	if(state.waitUntil > it_time.time_ms || path.index >= path.path.size())
-		return concrete.update(state.wheelsVelocities, {0.0f}, it_time);
+		return concrete.update(state.wheelsVelocities, {0.0f}, {1.0f}, {1.0f}, it_time);
 
 	PathSegment follow = path.current();
 
@@ -118,10 +127,14 @@ DrivebaseConcrete Drivebase::update_concrete(Iteration_time it_time)
 	mt::Vec2 motor_speeds = arcTurnToDest(arc, angularVelocity);
 
 	// 4. Correct for the heading error
-	// &&Figureout&&
+	motor_speeds = correct_heading(motor_speeds);
 
-
-	return concrete.update(state.wheelsVelocities, motor_speeds, it_time);
+	return concrete.update(state.wheelsVelocities, motor_speeds, state.heading, arc.tengeantStart, it_time);
+}
+mt::Vec2 Drivebase::correct_heading(mt::Vec2 staged_wheelVelocities) const
+{
+	float velocity_offset = get(concrete.headingPID, concrete.headingError);
+	return staged_wheelVelocities + mt::Vec2(-velocity_offset, velocity_offset);
 }
 
 

@@ -41,6 +41,7 @@ void setup()
 
 	robot.drvb.concrete.left.pid = { 1.4, 35.5555, 0.03333333 };
 	robot.drvb.concrete.right.pid = { 1.4, 35.5555, 0.03333333 };
+	robot.drvb.concrete.headingPID = { 0.5, 0.0, 0.0 };
 
 	init_detector();
 	init_whistle();
@@ -60,9 +61,10 @@ void setup()
 
 void loop() 
 {
-	// if(whistle_detection()) {
-	if(ROBUS_IsBumper(3)) {
+	if(whistle_detection()) {
+	// if(ROBUS_IsBumper(3)) {
 		while(!gameState.over) {
+			// Pause for a bit to allow everything to catch up 
 			delay(kControlLoopDelay);
 
 			// No data is fed, this is a read function
@@ -83,8 +85,6 @@ void loop()
 			// Keep the previous sensor and game states for useful deltas
 			prevSensorState = sensorState;
 			prevGameState = gameState;
-
-			// Pause for a bit to allow everything to catch up 
 		}
 	}
 	// Serial.println(static_cast<int>(get_color()));

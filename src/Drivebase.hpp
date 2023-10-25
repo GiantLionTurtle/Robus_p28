@@ -94,7 +94,8 @@ struct DrivebaseConcrete {
 	PID headingPID;
 	Error headingError;
 
-	DrivebaseConcrete update(mt::Vec2 actualWheelVelocities, mt::Vec2 desiredWheelVelocities, Iteration_time it_time) const;
+	DrivebaseConcrete update(mt::Vec2 actualWheelVelocities, mt::Vec2 desiredWheelVelocities,
+								mt::Vec2 currentHeading, mt::Vec2 targetHeading, Iteration_time it_time) const;
 	mt::Vec2 hardware_output() const;
 };
 
@@ -104,7 +105,11 @@ struct Drivebase {
 	DrivebasePath path;
 
 	void update_path();
-	DrivebaseConcrete update_concrete(Iteration_time it_time);
+	DrivebaseConcrete update_concrete(Iteration_time it_time) const;
+
+	// Return new wheel velocities from the wheel velocities needed
+	// to follow the arc + known heading error
+	mt::Vec2 correct_heading(mt::Vec2 staged_wheelVelocities) const;
 };
 
 // Conversion for encoders to distance (meters)
