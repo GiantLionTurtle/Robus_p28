@@ -55,6 +55,9 @@ void setup()
 	// TestPID::test_pid_straightLine(pid, pid, 0.3);
 
 	it_time = it_time.current();
+	SensorState sensState = get_sensors();
+	gameState = GameState::initial(sensState);
+	prevSensorState = sensorState;
 
 	// Tests::vector_maths();
 	// Tests::forward_kinematics();
@@ -73,7 +76,7 @@ void loop()
 			sensorState = get_sensors();
 			it_time = it_time.current();
 
-			gameState = prevGameState.generate_next(prevSensorState, sensorState);
+			gameState = prevGameState.generate_next(prevSensorState, sensorState, robot.drvb.state);
 			robot = robot.generate_next(prevSensorState, sensorState, prevGameState, gameState, it_time);
 
 			// Create the data to send to the hardware

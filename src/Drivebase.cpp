@@ -4,19 +4,6 @@
 
 namespace p28 {
 
-mt::Vec2 Line::line_intersection(Line const& l2) const
-{
-	mt::Vec2 originDiff = origin - l2.origin;
-	float dirCross = mt::cross(dir, l2.dir);
-
-	return origin + dir * mt::cross(l2.dir, originDiff) / dirCross;
-}
-// Are three points aranged in a ccw fashion?
-bool threePoints_ccw(mt::Vec2 A, mt::Vec2 B, mt::Vec2 C)
-{
-	return (C.y-A.y) * (B.x-A.x) > (B.y-A.y) * (C.x-A.x);
-}
-
 // PathSegment::PathSegment(DrivebaseState drvbState, mt::Vec2 targPos_, float targSpeed_, mt::Vec2 targHeading_)
 // 	: targPos(targPos_)
 // 	, targSpeed(targSpeed_)
@@ -97,6 +84,11 @@ DrivebaseState DrivebaseState::update_kinematics(mt::i32Vec2 prevEncTicks, mt::i
 	new_drvbState.heading = rotate(heading, 1/kRobotWidth * (wheelVels.right - wheelVels.left) * delta_s);
 
 	return new_drvbState;
+}
+DrivebaseState DrivebaseState::intersect_line(mt::Line ln) const
+{
+	DrivebaseState out = *this;
+	out.pos = ln.line_intersection(mt::Line{.origin=pos, .dir=heading});
 }
 mt::Vec2 DrivebaseState::get_motor_speed(mt::i32Vec2 prevEncTicks, mt::i32Vec2 currEncTicks, float delta_s) const
 {

@@ -21,12 +21,14 @@ namespace p28 {
 //#define PIN_LINEDETECTOR to be defined when connected on the robot
 
 struct SensorState { 
-    p28::mt::i32Vec2 encoders_ticks; //number of ticks of right & left encoders:vector (left = 0,right = 1)
-    p28::mt::boolVec2 bumpersState; // State of the right and left bumper (left,right)
-    int IRSensor; // &&Figureout&&
+    mt::i32Vec2 encoders_ticks; //number of ticks of right & left encoders:vector (left = 0,right = 1)
+    mt::boolVec2 bumpersState; // State of the right and left bumper (left,right)
+    float frontIR_dist;
+    float backIR_dist;
+
     bool proximityDetector; // value of 1 or 0
     int lineDetector; // &&Figureout&& TO BE DEFINED DEPENDING HOW IT WORKS AND ITS RESPONSE
-    p28::COLOR colorDetector; // assign a color depending on the color detector response
+    COLOR colorDetector; // assign a color depending on the color detector response
     
 };
 

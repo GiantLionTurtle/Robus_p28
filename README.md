@@ -24,6 +24,8 @@ Repo pour le robot robus de l'équipe p28
 
 * ~~Déterminer le changement de position du robot selon la vitesse des roues~~
 
+* Trouver comment suivre une ligne
+
 ### Logique de jeu
 
 * Ajouter un capteur IR pour la détection du verre dans SensorsState -- Mathieu
@@ -38,6 +40,11 @@ Repo pour le robot robus de l'équipe p28
 
 * Faire la structure de l'objectif shortcut
     * Créer dynamiquement un DrivebasePath
+
+### Terrain
+
+* Mesurer les posision des zones et les mettre dans les constantes de terrain
+* Mesurer les intersection entre les zones et les mettre dans les constantes de terrain
 
 ### Misc
 

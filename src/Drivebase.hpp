@@ -13,6 +13,7 @@
 #include "Utils/Pair.hpp"
 #include "Utils/Vec2.hpp"
 #include "Iteration_time.hpp"
+#include "Utils/Geometry.hpp"
 
 /*
 	How the drivebase should work:
@@ -53,6 +54,11 @@ struct DrivebaseState {
 
 	// Create a new drivebase state from encoder ticks alone
 	DrivebaseState update_kinematics(mt::i32Vec2 prevEncTicks, mt::i32Vec2 currEncTicks, float delta_s) const;
+	
+	// Returns the drivebasestate if it were at the position
+	// of the intersection between a line and the ray formed
+	// by it's position and it's heading
+	DrivebaseState intersect_line(mt::Line ln) const;
 
 	mt::Vec2 get_motor_speed(mt::i32Vec2 prevEncTicks, mt::i32Vec2 currEncTicks, float delta_s) const;
 };
@@ -62,12 +68,6 @@ struct Arc {
 	mt::Vec2 end;
 	float radius;
 	float length;
-};
-struct Line {
-	mt::Vec2 origin;
-	mt::Vec2 dir;
-
-	mt::Vec2 line_intersection(Line const& l2) const;
 };
 
 // Action that the drivebase can do (high level)

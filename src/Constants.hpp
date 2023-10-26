@@ -53,6 +53,8 @@ constexpr int kArm_servoId = 1;
 constexpr int kArm_openAngle = 90;
 constexpr int kArm_closeAngle = 0;
 
+constexpr float kIRSensor_apartDist = 0.2;
+
 
 
 enum class COLOR { RED, GREEN, BLUE, YELLOW, BLACK, WHITE };
