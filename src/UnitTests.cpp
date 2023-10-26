@@ -64,6 +64,85 @@ void vector_maths()
 	print_successRate(successes, n_trials);
 }
 
+bool epsilon_equal(DrivebaseState st1, DrivebaseState st2, float epsilon)
+{
+	return 	mt::epsilon_equal(st1.pos, st2.pos, epsilon) && 
+			mt::epsilon_equal(st1.heading, st2.heading, epsilon);
+}
+void forward_kinematics()
+{
+	struct Trial {
+		DrivebaseState init;
+		mt::i32Vec2 encTicks;
+		float delta_s;
+		DrivebaseState expected;
+	};
+
+	const int n_trials = 1;
+	Trial trials[n_trials] {
+		Trial { .init=DrivebaseState{}, .encTicks=dist_to_ticks(mt::Vec2(1.0)), .delta_s=2.0, .expected=DrivebaseState(mt::Vec2(0.0, 1.0))}
+	};
+
+	Serial.println("Testing forward kinematics");
+	// https://onlinemschool.com/math/assistance/vector/angl/
+	int successes = 0;
+	for(int i = 0; i < n_trials; ++i) {
+		DrivebaseState out = trials[i].init.update_kinematics(mt::i32Vec2(0), trials[i].encTicks, trials[i].delta_s);
+		if(epsilon_equal(out, trials[i].expected, 0.0001f)) {
+			successes++;
+		} else {
+			Serial.print("Failed ind=");
+			Serial.println(i);
+		}
+	}
+	print_successRate(successes, n_trials);
+}
+
+void print_helper_accelProfile(float time, float current_vel, float traveled_dist)
+{
+	Serial.print(time);
+	Serial.print(",  ");
+	Serial.print(current_vel);
+	Serial.print(",  ");
+	Serial.println(traveled_dist, 8);
+
+}
+void acceleration_profile()
+{
+	// Use the output of this test in a spreadsheet to check the acceleration profile
+
+	struct Trial {
+		float init_vel;
+		float end_vel;
+		float dist_to_travel;
+		float accel;
+		float time_step;
+	};
+
+	const int n_trials = 4;
+	Trial trials[n_trials] {
+		Trial{ .init_vel=0.0, .end_vel=0.0, .dist_to_travel=5.0, .accel=0.5, .time_step=0.05 },
+		Trial{ .init_vel=0.0, .end_vel=0.0, .dist_to_travel=5.0, .accel=1.3, .time_step=0.05 },
+		Trial { .init_vel=1.2, .end_vel=1.9, .dist_to_travel=3.0, .accel=1.3, .time_step=0.05 },
+		Trial { .init_vel=1.9, .end_vel=0.8, .dist_to_travel=2.5, .accel=1.2, .time_step=0.05 }
+	};
+
+	for(int i = 0; i < n_trials; ++i) {
+		Serial.print(" --- Start test ");
+		Serial.print(i);
+		Serial.println(" ---");
+		float traveled_dist = 0;
+		float current_vel = trials[i].init_vel;
+		float time = 0;
+		while(traveled_dist < trials[i].dist_to_travel && !mt::epsilon_equal(traveled_dist, trials[i].dist_to_travel, 0.001f)) {
+			traveled_dist += current_vel * trials[i].time_step;
+			time += trials[i].time_step;
+
+			current_vel = velocity_for_point(current_vel, trials[i].end_vel, trials[i].dist_to_travel-traveled_dist, trials[i].accel, trials[i].time_step);
+			print_helper_accelProfile(time, current_vel, traveled_dist);
+		}
+	}
+}
 
 } // !Tests
 

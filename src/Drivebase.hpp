@@ -31,15 +31,22 @@
 namespace p28 {
 
 struct DrivebaseState {
-	mt::Vec2 pos; // Position in m
-    mt::Vec2 heading; // Normalised heading
-	float angular_velocity;
-	float trajectory_radius;
+	mt::Vec2 pos { 0.0, 0.0 }; // Position in m
+    mt::Vec2 heading { 0.0, 1.0 }; // Normalised heading
+	float angular_velocity { 0.0 };
+	float trajectory_radius { 0.0 };
 
-    mt::Vec2 wheelsVelocities; // Velocity in m/s of each wheel
+    mt::Vec2 wheelsVelocities { 0.0 }; // Velocity in m/s of each wheel
 
 	// A point in time in ms, used to stop the path following as long as millis() < waitUntil
 	unsigned long waitUntil { 0 }; 
+
+	DrivebaseState() = default;
+	DrivebaseState(mt::Vec2 pos_)
+		: pos(pos_)
+	{
+
+	}
 
 	// Returns the overall velocity of the drivebase
 	float velocity() const;
@@ -49,7 +56,6 @@ struct DrivebaseState {
 
 	mt::Vec2 get_motor_speed(mt::i32Vec2 prevEncTicks, mt::i32Vec2 currEncTicks, float delta_s) const;
 };
-
 
 struct Arc {
 	mt::Vec2 tengeantStart;
@@ -119,8 +125,11 @@ struct Drivebase {
 // Conversion for encoders to distance (meters)
 float ticks_to_dist(int32_t ticks);
 mt::Vec2 ticks_to_dist(mt::i32Vec2 bothTicks);
+// Conversion distance (meters) to encoder ticks
+int32_t dist_to_ticks(float dist);
+mt::i32Vec2 dist_to_ticks(mt::Vec2 dist);
 
-float velocity_for_point(float current_velocity, float target_velocity, float dist_to_target, float allowed_accel);
+float velocity_for_point(float current_velocity, float target_velocity, float dist_to_target, float allowed_accel, float delta_s);
 Arc arc_from_targetHeading(mt::Vec2 start, mt::Vec2 end, mt::Vec2 end_heading);
 mt::Vec2 arcTurnToDest(Arc arc, float angularVelocity);
 

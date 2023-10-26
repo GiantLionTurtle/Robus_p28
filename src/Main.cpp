@@ -57,6 +57,8 @@ void setup()
 	it_time = it_time.current();
 
 	// Tests::vector_maths();
+	// Tests::forward_kinematics();
+	// Tests::acceleration_profile();
 }
 
 void loop() 

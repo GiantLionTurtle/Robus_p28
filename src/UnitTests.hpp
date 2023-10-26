@@ -13,6 +13,10 @@ void vector_maths();
 // void distance_detectors();
 // void color_sensor();
 
+void forward_kinematics();
+
+void acceleration_profile();
+
 } // !Tests
 
 } // !p28

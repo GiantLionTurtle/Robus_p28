@@ -76,7 +76,7 @@ DrivebaseState DrivebaseState::update_kinematics(mt::i32Vec2 prevEncTicks, mt::i
 	// https://www.eecs.yorku.ca/course_archive/2017-18/W/4421/lectures/Wheeled%20robots%20forward%20kinematics.pdf
 
 	DrivebaseState new_drvbState;
-	mt::Vec2 wheelVels = get_motor_speed(prevEncTicks, currEncTicks, delta_s);;
+	mt::Vec2 wheelVels = get_motor_speed(prevEncTicks, currEncTicks, delta_s);
 	new_drvbState.wheelsVelocities = wheelVels;
 	new_drvbState.waitUntil = waitUntil; // Keep timer up
 
@@ -143,7 +143,7 @@ DrivebaseConcrete Drivebase::update_concrete(Iteration_time it_time) const
 
 	// 2. Find the angular velocity that should be reached this iteration
 	// Assum we are going in a straight line of length arc.length
-	float velocity = velocity_for_point(state.velocity(), follow.targSpeed, arc.length, kAccel);
+	float velocity = velocity_for_point(state.velocity(), follow.targSpeed, arc.length, kAccel, it_time.delta_s);
 
 	// Transform m/s into rad/s
 	float angularVelocity = velocity / arc.radius;
@@ -173,9 +173,21 @@ Arc arc_from_targetHeading(mt::Vec2 start, mt::Vec2 end, mt::Vec2 end_heading)
 }
 
 // Gives a velocity that tries to follow a trapezoidal acceleration patern
-float velocity_for_point(float current_velocity, float target_velocity, float dist_to_target, float allowed_accel)
+float velocity_for_point(float current_velocity, float target_velocity, float dist_to_target, float allowed_accel, float delta_s)
 {
-	// &&Figureout&&
+	// See fig.1
+	float decel = allowed_accel;
+	float accel = allowed_accel-0.01;
+	float velocity_diff = abs(target_velocity - current_velocity);
+	float time_to_target_velocity = velocity_diff / decel;
+	float dist_to_target_velocity = min(target_velocity, current_velocity) * time_to_target_velocity + // Zone A
+									velocity_diff * (time_to_target_velocity) / 2; // Zone B
+
+	if(dist_to_target >= dist_to_target_velocity) {
+		return min(current_velocity + accel * delta_s, kMaxVel);
+	} else {
+		return max(current_velocity - decel * delta_s, target_velocity);
+	}
 }
 //makes the robot turn following a circular arc
 mt::Vec2 arcTurnToDest(Arc arc, float angularVelocity)
@@ -195,7 +207,15 @@ float ticks_to_dist(int32_t ticks)
 }
 mt::Vec2 ticks_to_dist(mt::i32Vec2 Ticks)
 {
-	return {ticks_to_dist(Ticks.left), ticks_to_dist(Ticks.right)};
+	return { ticks_to_dist(Ticks.left), ticks_to_dist(Ticks.right) };
+}
+int32_t dist_to_ticks(float dist)
+{
+	return dist / (TWO_PI * kWheelRadius) * kTicksPerRotation;
+}
+mt::i32Vec2 dist_to_ticks(mt::Vec2 dist)
+{
+	return { dist_to_ticks(dist.left), dist_to_ticks(dist.right) };
 }
 
 } // !p28
