@@ -159,22 +159,39 @@ mt::Vec2 Drivebase::correct_heading(mt::Vec2 staged_wheelVelocities) const
 // Create an arc that can be followed by the robot
 Arc arc_from_targetHeading(mt::Vec2 start, mt::Vec2 end, mt::Vec2 end_heading)
 {
+	// See fig.3
+	if(end_heading == mt::normalize(end-start)) { // Protect against overflow and div by 0
+		return Arc{ .tengeantStart=end_heading, .end=end, .radius=kInfinity, .length=mt::distance(end, start) };
+	}
+
 	Arc arcTGH;
-	arcTGH.tengeantStart = start;
 	arcTGH.end = end;
+
 	mt::Vec2 vecStartEnd = end - start;
-	mt::Vec2 orientationCenterEnd = {end_heading.y,-end_heading.x};
+	mt::Vec2 orientationCenterEnd = { end_heading.y,-end_heading.x };
+	mt::Line line_end_center { .origin=end, .dir=orientationCenterEnd};
+	mt::Line line_mid_startend_center {.origin=vecStartEnd/2.0f+start, .dir={-vecStartEnd.y, vecStartEnd.x}};
+
+	mt::Vec2 center = line_end_center.line_intersection(line_mid_startend_center);
+
+	mt::Vec2 center_to_end = end-center;
+	mt::Vec2 center_to_start = start-center;
+
 	float angleRadius_CenterEnd = angle(orientationCenterEnd,vecStartEnd);
 	arcTGH.radius = (magnitude(vecStartEnd)/2)/(cos(angleRadius_CenterEnd));
-	float circleLength = 2*PI*arcTGH.radius;
-	float angleArc =((PI-angleRadius_CenterEnd)*2);
-	arcTGH.length = circleLength * (angleArc/(2*PI));
+
+	float circumference = 2*PI*abs(arcTGH.radius);
+	float angleArc = mt::angle(center_to_start, center_to_end);
+	
+	arcTGH.tengeantStart = mt::normalize(mt::ccw_perpendicular(center_to_start));
+
+	if(arcTGH.radius < 0.0f) { // If we are going clock wise
+		angleArc = 2*PI-angleArc; // The angle is the complement of ccw angle
+		arcTGH.tengeantStart = -arcTGH.tengeantStart; // Reverse start heading;		
+	}
+	
+	arcTGH.length = circumference * (angleArc/(2*PI));
 	return arcTGH;
-
-
-	// &&Figureout&&
-	// Essentialy the code from the defunct PathSegment constructor
-	// + length
 }
 
 // Gives a velocity that tries to follow a trapezoidal acceleration patern

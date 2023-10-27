@@ -17,6 +17,8 @@ void forward_kinematics();
 
 void acceleration_profile();
 
+void arc_generation();
+
 } // !Tests
 
 } // !p28

@@ -62,6 +62,7 @@ void setup()
 	// Tests::vector_maths();
 	// Tests::forward_kinematics();
 	// Tests::acceleration_profile();
+	Tests::arc_generation();
 }
 
 void loop() 

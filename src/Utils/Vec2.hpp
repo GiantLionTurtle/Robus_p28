@@ -187,7 +187,9 @@ inline T magnitude(Vec2_any<T> const& vec)
 template<typename T>
 inline T distance2(Vec2_any<T> const& first, Vec2_any<T> const& second)
 {
-	return dot(first, second);
+	float x_ = second.x-first.x;
+	float y_ = second.y-first.y;
+	return x_*x_ + y_*y_;
 }
 template<typename T>
 inline T distance(Vec2_any<T> const& first, Vec2_any<T> const& second)
@@ -221,7 +223,7 @@ inline bool operator==(Vec2_any<T> const& lhs, Vec2_any<T>  const& rhs)
 template<typename T>
 bool epsilon_equal(T const& lhs, T const& rhs, T epsilon)
 {
-	return lhs+epsilon > rhs && lhs-epsilon < rhs;
+	return lhs+epsilon >= rhs && lhs-epsilon <= rhs;
 }
 template<typename T>
 inline bool epsilon_equal(Vec2_any<T> const& lhs, Vec2_any<T>  const& rhs, T epsilon)
@@ -230,6 +232,12 @@ inline bool epsilon_equal(Vec2_any<T> const& lhs, Vec2_any<T>  const& rhs, T eps
 }
 
 // ----- Transformations ----- //
+template<typename T>
+inline Vec2_any<T> operator-(Vec2_any<T> const& vec)
+{
+	return mt::Vec2{-vec.x, -vec.y};
+}
+
 template<typename T>
 inline Vec2_any<T> rotate(Vec2_any<T> const& vec, T const& angle_rad)
 {
@@ -242,10 +250,32 @@ inline Vec2_any<T> rotate(Vec2_any<T> const& vec, T const& angle_rad)
 	return { vec.x * cos_ - vec.y * sin_, vec.x * sin_ + vec.y * cos_ };
 }
 template<typename T>
+inline Vec2_any<T> ccw_perpendicular(Vec2_any<T> const& vec)
+{
+	return mt::Vec2{ -vec.y, vec.x };
+}
+template<typename T>
+inline Vec2_any<T> cw_perpendicular(Vec2_any<T> const& vec)
+{
+	return -ccw_perpendicular(vec);
+}
+
+template<typename T>
 inline Vec2_any<T> normalize(Vec2_any<T> const& vec)
 {
 	T mag = magnitude(vec);
 	return { vec.x / mag, vec.y / mag };
+}
+
+// Print
+template<typename T>
+inline void print(Vec2_any<T> const& vec, int decimals=2)
+{
+	Serial.print("[");
+	Serial.print(vec.x, decimals);
+	Serial.print(",  ");
+	Serial.print(vec.y, decimals);
+	Serial.print("]");
 }
 
 } // !mt

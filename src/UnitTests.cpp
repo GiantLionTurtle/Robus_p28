@@ -144,6 +144,60 @@ void acceleration_profile()
 	}
 }
 
+bool arcs_equal(Arc a1, Arc a2, float epsilon)
+{
+	return 	mt::epsilon_equal(a1.end, a2.end, epsilon) && 
+			mt::epsilon_equal(a1.tengeantStart, a2.tengeantStart, epsilon) &&
+			mt::epsilon_equal(a1.radius, a2.radius, epsilon) &&
+			 mt::epsilon_equal(a1.length, a2.length, epsilon);
+}
+void print_arc(Arc arc)
+{
+	print(arc.tengeantStart, 4);
+	Serial.print(",  ");
+	print(arc.end, 4);
+	Serial.print(",  ");
+	Serial.print(arc.radius, 4);
+	Serial.print(",  ");
+	Serial.println(arc.length, 4);
+}
+void arc_generation()
+{
+	struct Trial {
+		mt::Vec2 start, end, end_heading;
+		Arc expected;
+	};
+
+	const int n_trials = 3;
+	Trial trials[n_trials] = {
+		Trial { .start=mt::Vec2(0.0, 0.0), .end=mt::Vec2(0.0, 1.0), .end_heading=mt::Vec2(1.0, 0.0), 
+					.expected=Arc{.tengeantStart=mt::Vec2(-1.0, 0.0), .end=mt::Vec2(0.0, 1.0), .radius=-0.5, .length=0.5*PI } },
+		Trial { .start=mt::Vec2(0.0, 0.0), .end=mt::Vec2(0.0, 1.0), .end_heading=mt::Vec2(-1.0, 0.0), 
+					.expected=Arc{.tengeantStart=mt::Vec2(1.0, 0.0), .end=mt::Vec2(0.0, 1.0), .radius=0.5, .length=0.5*PI } },
+
+
+		// Straigth line
+		Trial { .start=mt::Vec2(2.0, 2.0), .end=mt::Vec2(4, 4), .end_heading=mt::normalize(mt::Vec2(1, 1)), 
+					.expected=Arc{.tengeantStart=mt::normalize(mt::Vec2(1, 1)), .end=mt::Vec2(4.0, 4.0), .radius=kInfinity, .length=sqrt(8) } },
+	};
+
+	Serial.println(" --- Testing arc generation --- ");
+	int successes = 0;
+	for(int i = 0; i < n_trials; ++i) {
+		Arc out = arc_from_targetHeading(trials[i].start, trials[i].end, trials[i].end_heading);
+		if(arcs_equal(out, trials[i].expected, 0.001)) {
+			successes++;
+		} else {
+			print_arc(out);
+
+			Serial.print(" --- Failed test ");
+			Serial.print(i);
+			Serial.println(" --- ");
+		}
+	}
+	print_successRate(successes, n_trials);
+}
+
 } // !Tests
 
 } // !p28

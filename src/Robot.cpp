@@ -69,6 +69,7 @@ DrivebaseState adjustDrivebase(DrivebaseState drvbState, SensorState const& curr
 		
 	*/
 
+#ifdef ENABLE_ZONESWITCH_DRIVEBASE_ADJUSTMENTS
 	// Zone change
 	if(prevGmState.zone == 1 && gmState.zone == 2) {
 		return drvbState.intersect_line(Field::zone_1_to_2_line);
@@ -82,12 +83,17 @@ DrivebaseState adjustDrivebase(DrivebaseState drvbState, SensorState const& curr
 	if(prevGmState.zone == 8 && gmState.zone == 9) {
 		return drvbState.intersect_line(Field::zone_8_to_9_line);
 	}
+#endif
 
+#ifndef FORCE_WALL_ALIGN
 	// Ir alignment
 	if(prevGmState.zone == 0 && gmState.zone == 0 && abs(mt::signed_angle(mt::Vec2(0.0, 1.0), drvbState.heading)) < PI/2) {
+#endif
 		drvbState.heading = heading_from_ir(mt::Vec2(0.0, 1.0), currSensState);
 		return drvbState;
+#ifndef FORCE_WALL_ALIGN
 	}
+#endif
 
 	if(prevGmState.zone == 4 && gmState.zone == 4 && abs(mt::signed_angle(mt::Vec2(0.0, -1.0), drvbState.heading) < PI/2)) {
 		drvbState.heading = heading_from_ir(mt::Vec2(0.0, -1.0), currSensState);
