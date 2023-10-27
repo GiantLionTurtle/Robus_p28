@@ -159,6 +159,19 @@ mt::Vec2 Drivebase::correct_heading(mt::Vec2 staged_wheelVelocities) const
 // Create an arc that can be followed by the robot
 Arc arc_from_targetHeading(mt::Vec2 start, mt::Vec2 end, mt::Vec2 end_heading)
 {
+	Arc arcTGH;
+	arcTGH.tengeantStart = start;
+	arcTGH.end = end;
+	mt::Vec2 vecStartEnd = end - start;
+	mt::Vec2 orientationCenterEnd = {end_heading.y,-end_heading.x};
+	float angleRadius_CenterEnd = angle(orientationCenterEnd,vecStartEnd);
+	arcTGH.radius = (magnitude(vecStartEnd)/2)/(cos(angleRadius_CenterEnd));
+	float circleLength = 2*PI*arcTGH.radius;
+	float angleArc =((PI-angleRadius_CenterEnd)*2);
+	arcTGH.length = circleLength * (angleArc/(2*PI));
+	return arcTGH;
+
+
 	// &&Figureout&&
 	// Essentialy the code from the defunct PathSegment constructor
 	// + length
