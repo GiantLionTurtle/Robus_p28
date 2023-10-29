@@ -2,6 +2,7 @@
 #include "GameState.hpp"
 #include "Constants.hpp"
 #include "Field.hpp"
+#include "sensors.hpp"
 
 namespace p28 {
 
@@ -69,7 +70,7 @@ Pair<int, int> compute_zoneLane(SensorState const& prevSensState, SensorState co
 	return { zone, lane };
 }
 
-Objective compute_knockCup_state(GameState const& gmState)
+Objective compute_knockCup_state(GameState const& gmState, SensorState cupIR)
 {
 	// Knock cup (not valid because it will open way before and close way after)
 	// &&Figureout&&
