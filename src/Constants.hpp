@@ -31,7 +31,7 @@ constexpr float kTurnAccel = 0.3;
 constexpr unsigned int kDecelerationDelay = 50; // ms, time to stop the robot
 constexpr float kMaxAngularVelocity = 5.0; // rad/s
 constexpr float kForwardSpeed = 0.62;
-constexpr float kMinVel = 0.04;
+constexpr float kMinSpeed = 0.04;
 constexpr float kAccelDist = 0.2;
 constexpr float kTurnOffset = 0.02;
 
@@ -40,7 +40,7 @@ constexpr float kInfinity = 100000;
 using time_t = long unsigned int;
 
 // Square of the precision of the path follower
-constexpr float kPathFollower_epsilon2 = 0.004; // 2cm clearance
+constexpr float kPathFollower_epsilon2 = 0.02;
 
 // Cup holder constants
 constexpr int kCup_servoId = 0;
@@ -53,8 +53,9 @@ constexpr int kArm_servoId = 1;
 constexpr int kArm_openAngle = 90;
 constexpr int kArm_closeAngle = 0;
 
-constexpr float kIRSensor_apartDist = 0.2;
-
+// position of the center of the arc of the turns
+// one full turn mission constants
+constexpr unsigned int kOneCWTurn_startTime = 20000;
 
 
 enum class COLOR { RED, GREEN, BLUE, YELLOW, BLACK, WHITE };

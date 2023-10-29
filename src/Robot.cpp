@@ -115,7 +115,7 @@ mt::Vec2 heading_from_ir(mt::Vec2 baseVec, SensorState const& sensState)
 {
 	// See fig.4
 	float dist_diff = abs(sensState.backIR_dist - sensState.frontIR_dist);
-	float heading_angle = asin(dist_diff/kIRSensor_apartDist);
+	float heading_angle = 0.0;//asin(dist_diff/kIRSensor_apartDist);
 	return mt::rotate(baseVec, heading_angle);
 }
 

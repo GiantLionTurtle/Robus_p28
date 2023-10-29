@@ -27,7 +27,7 @@ namespace p28 {
         if(index >=0 && index <8)
         {
             int irRead = analogRead(PIN_IR[index]);
-            if(irRead >= BLACK_TRESH)
+            if(irRead >= BLACK_TRESH && irRead<=BASIC_TRESH)
             {
                 state = 1;
             }
