@@ -2,6 +2,7 @@
 #include "GameState.hpp"
 #include "Constants.hpp"
 #include "Field.hpp"
+#include "sensors.hpp"
 
 
 namespace p28 {
