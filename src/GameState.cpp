@@ -27,6 +27,7 @@ GameState GameState::generate_next(SensorState prevSensState, SensorState currSe
 
 
 	// Figure out what to do now
+	newGmState.missionState.one_cw_turn = compute_one_cw_turn_state(newGmState,*this);
 	newGmState.missionState.knock_cup = compute_knockCup_state(newGmState);
 	// ping pong
 	// shortcut
@@ -93,6 +94,20 @@ Objective compute_one_cw_turn_state(GameState const& gmState,GameState const& pr
 	}
 	else if (gmState.missionState.one_cw_turn == Objective::UnderWay && gmState.zone == 9 && previousGmState.zone == 8 ){
 		return Objective::Done;
+
 	}
+	return gmState.missionState.one_cw_turn;
+}
+Objective compute_one_cw_shortCut_state(GameState const& gmState,GameState const& previousGmState){
+	if(gmState.zone == 5 && gmState.missionState.one_cw_turn == Objective::Done){
+		return Objective::Start;
+	}
+	else if (gmState.missionState.one_cw_shortcut_turn == Objective::Start){
+		return Objective::UnderWay;
+	}
+	else if(gmState.missionState.one_cw_shortcut_turn == Objective::UnderWay && gmState.zone == 9 && previousGmState.zone == Field::kshortcutZone){
+		return Objective::Done;
+	}
+	return gmState.missionState.one_cw_shortcut_turn;
 }
 } // !p28
