@@ -221,14 +221,19 @@ inline bool operator==(Vec2_any<T> const& lhs, Vec2_any<T>  const& rhs)
 }
 
 template<typename T>
-bool epsilon_equal(T const& lhs, T const& rhs, T epsilon)
+inline bool epsilon_equal(T const& lhs, T const& rhs, T epsilon)
 {
 	return lhs+epsilon >= rhs && lhs-epsilon <= rhs;
 }
 template<typename T>
 inline bool epsilon_equal(Vec2_any<T> const& lhs, Vec2_any<T>  const& rhs, T epsilon)
 {
-	return epsilon_equal(lhs.x, rhs.x, epsilon) && epsilon_equal(lhs.y, lhs.y, epsilon);
+	return epsilon_equal(distance(lhs, rhs), 0.0f, epsilon);
+}
+template<typename T>
+inline bool epsilon_equal2(Vec2_any<T> const& lhs, Vec2_any<T>  const& rhs, T epsilon2)
+{
+	return epsilon_equal(distance2(lhs, rhs), 0.0f, epsilon2);
 }
 
 // ----- Transformations ----- //
@@ -270,6 +275,15 @@ inline Vec2_any<T> normalize(Vec2_any<T> const& vec)
 // Print
 template<typename T>
 inline void print(Vec2_any<T> const& vec, int decimals=2)
+{
+	Serial.print("[");
+	Serial.print(vec.x);
+	Serial.print(",  ");
+	Serial.print(vec.y);
+	Serial.print("]");
+}
+template<>
+inline void print(Vec2 const& vec, int decimals)
 {
 	Serial.print("[");
 	Serial.print(vec.x, decimals);
