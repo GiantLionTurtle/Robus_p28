@@ -18,6 +18,7 @@ void set_hardwareState (HardwareState hwst)
 void printHarwareState(HardwareState state)
 {
     print(state.motors);
+    Serial.println();
     Serial.println(state.armAngle);
     Serial.println(state.cupAngle);
 
