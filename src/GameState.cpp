@@ -8,6 +8,7 @@ namespace p28 {
 
 Pair<int, int> compute_zoneLane(SensorState  const& prevSensState, SensorState const&  currSensState, GameState const&  gmState, DrivebaseState drvbState);
 Objective compute_knockCup_state(GameState const& gmState);
+Objective compute_one_cw_turn_state(GameState const& gmState);
 int comp_lane(COLOR color);
 
 GameState GameState::initial(SensorState sensState)
@@ -70,16 +71,28 @@ Pair<int, int> compute_zoneLane(SensorState const& prevSensState, SensorState co
 	return { zone, lane };
 }
 
-Objective compute_knockCup_state(GameState const& gmState, SensorState cupIR)
+Objective compute_knockCup_state(GameState const& gmState)
 {
 	// Knock cup (not valid because it will open way before and close way after)
 	// &&Figureout&&
-	if(gmState.missionState.knock_cup == Objective::Todo && gmState.zone >= 2) {
+	if(gmState.missionState.knock_cup == Objective::Todo && gmState.zone >= 2) // && newSensorState.distance_IR 
+	{
 		return Objective::UnderWay;
 	} else if(gmState.missionState.knock_cup == Objective::UnderWay && gmState.zone >= 6) {
 		return Objective::Done;
 	}
 	return gmState.missionState.knock_cup;
 }
+
+//One turn mission determines if the mission starts or if the mission is ongoing or done
+Objective compute_one_cw_turn_state(GameState const& gmState)
+{
+	if(gmState.missionState.one_cw_turn == Objective::Todo && gmState.zone >= 1){
+		return Objective::UnderWay;
+	} else if(gmState.missionState.one_cw_turn == Objective::UnderWay && gmState.zone <= 0){
+		return Objective::Done;
+	}
+}
+
 
 } // !p28

@@ -35,7 +35,7 @@ struct SensorState {
 SensorState get_sensors();
 void print (SensorState state)
 {
-    state.bumpersState.right
+    state.bumpersState.right;
 }
 
 } // !p28

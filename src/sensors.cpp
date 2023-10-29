@@ -6,6 +6,7 @@
 #include "ColorSensor.hpp"
 #include "Constants.hpp"
 
+
 namespace p28 {
 
 SensorState get_sensors()
@@ -14,7 +15,7 @@ SensorState get_sensors()
     newSensorState.encoders_ticks = { ENCODER_Read(LEFT), ENCODER_Read(RIGHT) };
     newSensorState.bumpersState = { ROBUS_IsBumper(LEFT), ROBUS_IsBumper(RIGHT) };
     // newSensorState.IRSensor = {PIN_IRSENSOR};
-    newSensorState.frontIR_dist = {};
+    // newSensorState.frontIR_dist = distance_IR; // get the IR distance read in cm 
     newSensorState.proximityDetector = wall_detection();
     newSensorState.colorDetector = get_color();
     //newSensorState.lineDetector = lineDetector functions
