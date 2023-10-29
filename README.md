@@ -43,13 +43,13 @@ Repo pour le robot robus de l'équipe p28
 
 ### Terrain
 
-* Mesurer les posision des zones et les mettre dans les constantes de terrain
-* Mesurer les intersection entre les zones et les mettre dans les constantes de terrain
+* ~~Mesurer les posision des zones et les mettre dans les constantes de terrain~~
+* ~~Mesurer les intersections entre les zones et les mettre dans les constantes de terrain~~
 
 ### Misc
 
 * D'autres choses à faire sont marquées &&Figureout&& dans le code pour qu'il soit facile de les trouver avec une fonction de recherche
 
-* Ajouter une fonction print() à SensorsState et à HardwareState
+* ~~Ajouter une fonction print() à SensorsState et à HardwareState~~
 
 * ~~Changer la façon dont le flot de données se produit pour la base mobile ==> gen_hardwareState ne devrait pas mettre à jour le robot! -- Théo~~
