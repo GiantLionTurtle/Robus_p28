@@ -77,13 +77,22 @@ Objective compute_knockCup_state(GameState const& gmState)
 {
 	// Knock cup (not valid because it will open way before and close way after)
 	// &&Figureout&&
-	if(gmState.missionState.knock_cup == Objective::Todo && gmState.zone >= 2) // && newSensorState.distance_IR 
-	{
+	if(gmState.missionState.knock_cup == Objective::Todo && gmState.zone >= 2) {
 		return Objective::UnderWay;
 	} else if(gmState.missionState.knock_cup == Objective::UnderWay && gmState.zone >= 6) {
 		return Objective::Done;
 	}
 	return gmState.missionState.knock_cup;
 }
-
+Objective compute_one_cw_turn_state(GameState const& gmState,GameState const& previousGmState){
+	if (gmState.missionState.one_cw_turn == Objective::Todo){
+		return Objective::Start;
+	}
+	else if (gmState.missionState.one_cw_turn == Objective::Start){
+		return Objective::UnderWay;
+	}
+	else if (gmState.missionState.one_cw_turn == Objective::UnderWay && gmState.zone == 9 && previousGmState.zone == 8 ){
+		return Objective::Done;
+	}
+}
 } // !p28
