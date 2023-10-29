@@ -18,6 +18,7 @@ SensorState get_sensors()
     newSensorState.colorDetector = get_color();
     //newSensorState.lineDetector = lineDetector functions
     return newSensorState;
+    
 }
 
 } // !p28
