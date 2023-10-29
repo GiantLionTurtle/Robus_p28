@@ -57,18 +57,26 @@ void setup()
 	it_time = it_time.current();
 	SensorState sensState = get_sensors();
 	gameState = GameState::initial(sensState);
+	robot.generate_next(sensorState, sensorState, prevGameState, gameState, it_time);
 	prevSensorState = sensorState;
 
 	// Tests::vector_maths();
 	// Tests::forward_kinematics();
 	// Tests::acceleration_profile();
-	Tests::arc_generation();
+	// Tests::arc_generation();
+
+	// Tests::vectors();
+	// Tests::near_equality();
 }
 
 void loop() 
 {
-	if(whistle_detection()) {
-	// if(ROBUS_IsBumper(3)) {
+	// delay(500);
+	// sensorState = get_sensors();
+	// printSensor(sensorState);
+
+	// if(whistle_detection()) {
+	if(ROBUS_IsBumper(3)) {
 		while(!gameState.over) {
 			// Pause for a bit to allow everything to catch up 
 			delay(kControlLoopDelay);
@@ -78,21 +86,23 @@ void loop()
 			it_time = it_time.current();
 
 			gameState = prevGameState.generate_next(prevSensorState, sensorState, robot.drvb.state);
-			robot = robot.generate_next(prevSensorState, sensorState, prevGameState, gameState, it_time);
+			robot.generate_next(prevSensorState, sensorState, prevGameState, gameState, it_time);
 
 			// Create the data to send to the hardware
 			// the robot is fed and outputed to keep track
 			// of the motors and follow paths
 			hardwareState = generate_hardwareState(robot);
 
-			// Only processed data is fed, it is a write function
+			// // Only processed data is fed, it is a write function
 			set_hardwareState(hardwareState);
 
-			// Keep the previous sensor and game states for useful deltas
+			// // Keep the previous sensor and game states for useful deltas
 			prevSensorState = sensorState;
 			prevGameState = gameState;
 		}
+		Serial.println("out");
 	}
+
 	// Serial.println(static_cast<int>(get_color()));
 	// delay(100);
 }

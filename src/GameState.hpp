@@ -29,6 +29,7 @@ struct MissionState {
 	Objective trap_ball { Objective::Todo };
 	Objective one_cw_turn { Objective::Todo };
 	Objective one_cw_shortcut_turn { Objective::Todo };
+	Objective test { Objective::Done };
 };
 
 struct GameState {

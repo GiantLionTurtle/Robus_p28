@@ -13,31 +13,39 @@ DrivebaseState adjustDrivebase(DrivebaseState drvbState, SensorState const&  cur
 void ballSwerve_helper(Robot& robot, Objective obj_state);
 mt::Vec2 heading_from_ir(mt::Vec2 baseVec, SensorState const& sensState);
 
-
-Robot Robot::generate_next(  SensorState prevSensState, SensorState currSensState, 
-				   			 GameState prevGmState, GameState gmState, Iteration_time it_time) const
+DrivebasePath gen_test_path()
 {
-	Robot newRobot;
-	// New state given the new encoder data
+	DrivebasePath path;
+	path.segments[0] = Pair<PathSegment, unsigned int>(
+		PathSegment(mt::Vec2(0.0, 0.5), mt::Vec2(0.0, 1.0), 0.0),
+		0);
+	path.size = 1;
 
-	newRobot.drvb.state = newRobot.drvb.state.update_kinematics(prevSensState.encoders_ticks, currSensState.encoders_ticks, it_time.delta_s);
+	return path;
+}
+
+void Robot::generate_next(  SensorState prevSensState, SensorState currSensState, 
+				   			 GameState prevGmState, GameState gmState, Iteration_time it_time)
+{
+	// New state given the new encoder data
+	if(gmState.missionState.test == Objective::Start) {
+		drvb.path = gen_test_path();
+	}
+	drvb.state = drvb.state.update_kinematics(prevSensState.encoders_ticks, currSensState.encoders_ticks, it_time.delta_s);
 
 	// Adjust drivebase with other sensors and knowledge of the game
-	newRobot.drvb.state = adjustDrivebase(newRobot.drvb.state, currSensState, prevGmState, gmState);
-	newRobot.drvb.update_path();
-
-	newRobot.drvb.concrete = newRobot.drvb.update_concrete(it_time);
+	// drvb.state = adjustDrivebase(drvb.state, currSensState, prevGmState, gmState);
+	drvb.update_path();
+	drvb.concrete = drvb.update_concrete(it_time);
 
 	// Cup zone?
 	if(gmState.missionState.knock_cup == Objective::UnderWay) {
-		newRobot.openArm = true;
+		openArm = true;
 	}
 
 	if(gmState.missionState.trap_ball == Objective::Start) {
-		ballSwerve_helper(newRobot, gmState.missionState.trap_ball);
+		ballSwerve_helper(*this, gmState.missionState.trap_ball);
 	}
-
-    return newRobot;
 }
 
 DrivebaseState adjustDrivebase(DrivebaseState drvbState, SensorState const& currSensState, 

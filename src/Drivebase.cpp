@@ -35,6 +35,17 @@ namespace p28 {
 // 	}
 // }
 
+void Arc::print() const
+{
+	mt::print(tengeantStart, 4);
+	Serial.print(",  ");
+	mt::print(end, 4);
+	Serial.print(",  ");
+	Serial.print(radius, 4);
+	Serial.print(",  ");
+	Serial.println(length, 4);
+}
+
 PathSegment::PathSegment(mt::Vec2 targPos_, mt::Vec2 targHeading_, float targSpeed_)
 	: targPos(targPos_)
 	, targHeading(targHeading_)
@@ -67,6 +78,7 @@ DrivebaseState DrivebaseState::update_kinematics(mt::i32Vec2 prevEncTicks, mt::i
 	new_drvbState.wheelsVelocities = wheelVels;
 	new_drvbState.waitUntil = waitUntil; // Keep timer up
 
+
 	// Solving for velocity 
 	// Page 11
 	if(wheelVels.left == wheelVels.right) {
@@ -80,8 +92,17 @@ DrivebaseState DrivebaseState::update_kinematics(mt::i32Vec2 prevEncTicks, mt::i
 	// Forward kinematics
 	// page 20
 
-	new_drvbState.pos += (wheelVels.left+wheelVels.right) * heading * delta_s;
+	new_drvbState.pos = pos + (wheelVels.left+wheelVels.right)/2.0f * heading * delta_s;
 	new_drvbState.heading = rotate(heading, 1/kRobotWidth * (wheelVels.right - wheelVels.left) * delta_s);
+
+	// Serial.print("Vel: ");
+	// print(new_drvbState.wheelsVelocities);
+	// Serial.print(" pos: ");
+	// print(new_drvbState.pos);
+	// Serial.print(" heading ");
+	// print(heading);
+	// Serial.print(" delta_s ");	
+	// Serial.println(delta_s);
 
 	return new_drvbState;
 }
@@ -89,6 +110,7 @@ DrivebaseState DrivebaseState::intersect_line(mt::Line ln) const
 {
 	DrivebaseState out = *this;
 	out.pos = ln.line_intersection(mt::Line{.origin=pos, .dir=heading});
+	return out;
 }
 mt::Vec2 DrivebaseState::get_motor_speed(mt::i32Vec2 prevEncTicks, mt::i32Vec2 currEncTicks, float delta_s) const
 {
@@ -117,22 +139,35 @@ mt::Vec2 DrivebaseConcrete::hardware_output() const
 }
 void Drivebase::update_path()
 {
+	if(path.index >= path.size)
+		return;
+	// mt::print(state.pos);
+	// Serial.print(" vs ");
+	// mt::print(path.current().targPos);
+	// Serial.println("");
 	if(mt::epsilon_equal(state.pos, path.current().targPos, kPathFollower_epsilon2)) {
+
+		Serial.println("Neeext");
 		path.index++;
 	}
 }
 DrivebaseConcrete Drivebase::update_concrete(Iteration_time it_time) const
 {
 	// Don't move if the drivebase should be waiting for actions	
-	if(state.waitUntil > it_time.time_ms || path.index >= path.path.size())
+	// Serial.print("Path size ");
+	// Serial.print(path.size);
+	// Serial.print(",  ");
+	// Serial.println(path.index);
+	if(state.waitUntil > it_time.time_ms || path.index >= path.size)
 		return concrete.update(state.wheelsVelocities, {0.0f}, {1.0f}, {1.0f}, it_time);
 
 	PathSegment follow = path.current();
-
 	// 1. Find the arc that takes us from our current position to
 	// the target position with a target heading
 	Arc arc = arc_from_targetHeading(state.pos, follow.targPos, follow.targHeading);
 
+	// Serial.print("Arc: ");
+	// arc.print();
 	// 2. Find the angular velocity that should be reached this iteration
 	// Assum we are going in a straight line of length arc.length
 	float velocity = velocity_for_point(state.velocity(), follow.targSpeed, arc.length, kAccel, it_time.delta_s);

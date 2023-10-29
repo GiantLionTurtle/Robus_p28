@@ -19,6 +19,10 @@ void acceleration_profile();
 
 void arc_generation();
 
+void vectors();
+
+void near_equality();
+
 } // !Tests
 
 } // !p28
