@@ -44,7 +44,7 @@ Repo pour le robot robus de l'équipe p28
 ### Terrain
 
 * ~~Mesurer les posision des zones et les mettre dans les constantes de terrain~~
-* ~~Mesurer les intersection entre les zones et les mettre dans les constantes de terrain~~
+* ~~Mesurer les intersections entre les zones et les mettre dans les constantes de terrain~~
 
 ### Misc
 
