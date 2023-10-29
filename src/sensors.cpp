@@ -8,6 +8,18 @@
 
 namespace p28 {
 
+void printSensor(SensorState state)
+{
+    print(state.bumpersState);
+    Serial.println();
+    Serial.println(toString(state.colorDetector));
+    print(state.encoders_ticks);
+    Serial.println();
+    Serial.println(state.frontIR_dist);
+    Serial.println(state.lineDetector);
+    Serial.println(state.proximityDetector);
+}
+
 SensorState get_sensors()
 {
     SensorState newSensorState;
@@ -19,7 +31,6 @@ SensorState get_sensors()
     newSensorState.colorDetector = get_color();
     //newSensorState.lineDetector = lineDetector functions
     return newSensorState;
-    
 }
 
 } // !p28

@@ -15,6 +15,14 @@ void set_hardwareState (HardwareState hwst)
     SERVO_SetAngle (kCup_servoId, hwst.cupAngle);  //Sets the angle of the servomotor controlling the cup "holder"
 }
 
+void printHarwareState(HardwareState state)
+{
+    print(state.motors);
+    Serial.println(state.armAngle);
+    Serial.println(state.cupAngle);
+
+}
+
 HardwareState generate_hardwareState(Robot robot)
 {
     HardwareState gen_hwst;
@@ -25,7 +33,7 @@ HardwareState generate_hardwareState(Robot robot)
         gen_hwst.cupAngle = kCup_openAngle;
     }
     gen_hwst.motors = robot.drvb.concrete.hardware_output();
-    return gen_hwst;
+        return gen_hwst;
 }
 
 } // !p28

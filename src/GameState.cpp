@@ -70,7 +70,7 @@ Pair<int, int> compute_zoneLane(SensorState const& prevSensState, SensorState co
 	return { zone, lane };
 }
 
-Objective compute_knockCup_state(GameState const& gmState, SensorState cupIR)
+Objective compute_knockCup_state(GameState const& gmState)
 {
 	// Knock cup (not valid because it will open way before and close way after)
 	// &&Figureout&&
