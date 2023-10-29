@@ -17,7 +17,7 @@ enum kBumperId : uint8_t  { kLeftBumper = 0, kRightBumper = 1, kFrontBumper = 2,
 constexpr float kRobotWidth = 0.187;              // m
 constexpr float kRobotWidth = 0.1865;              // m
 #else
-constexpr float kRobotWidth = 0.1850;              // m
+constexpr float kRobotWidth = 0.1850;              // m (distance between the motor wheels)
 #endif
 constexpr float kRobotWidth_2 = kRobotWidth/2;  // m
 constexpr float kWheelRadius = 0.0383;           // m
@@ -29,16 +29,18 @@ constexpr float kAccel = 0.8; // m/s^2
 constexpr float kCatastrophicDecel = 2.0;
 constexpr float kTurnAccel = 0.3;
 constexpr unsigned int kDecelerationDelay = 50; // ms, time to stop the robot
-constexpr float kTurnSpeed = 0.3;
+constexpr float kMaxAngularVelocity = 5.0; // rad/s
 constexpr float kForwardSpeed = 0.62;
-constexpr float kMinSpeed = 0.04;
+constexpr float kMinVel = 0.04;
 constexpr float kAccelDist = 0.2;
 constexpr float kTurnOffset = 0.02;
+
+constexpr float kInfinity = 100000;
 
 using time_t = long unsigned int;
 
 // Square of the precision of the path follower
-constexpr float kPathFollower_epsilon2 = 0.02;
+constexpr float kPathFollower_epsilon2 = 0.004; // 2cm clearance
 
 // Cup holder constants
 constexpr int kCup_servoId = 0;
@@ -50,6 +52,8 @@ constexpr int kCupRelease_pathIndex = 3; // After which arc of the maneuver shou
 constexpr int kArm_servoId = 1;
 constexpr int kArm_openAngle = 90;
 constexpr int kArm_closeAngle = 0;
+
+constexpr float kIRSensor_apartDist = 0.2;
 
 
 

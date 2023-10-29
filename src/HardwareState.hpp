@@ -1,8 +1,18 @@
 #ifndef P28_HARDWARESTATE_HPP_
 #define P28_HARDWARESTATE_HPP_
 
-#include "Utils/Vec.hpp"
-#include "ActionState.hpp"
+#include "Utils/Vec2.hpp"
+#include "Robot.hpp"
+#include "Constants.hpp"
+
+/*
+	How hardware state should work
+
+	1. It is generated using an ActionState and a robot copy
+		a. It translates the commanded actions into real actual commands such as motor values
+		b. It updates the robot because it needs the feedback from the motors <== needs to change
+	2. It is writen to the hardware using LibRobus core code
+*/
 
 namespace p28 {
 
@@ -14,7 +24,7 @@ struct HardwareState {
 
 void set_hardwareState(struct HardwareState hwst);
 
-Pair<HardwareState, Robot> generate_hardwareState(ActionState actState, Robot robot);
+HardwareState generate_hardwareState(Robot robot);
 
 } // !p28
 

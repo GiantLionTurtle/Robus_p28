@@ -1,16 +1,20 @@
+
 #include <Adafruit_TCS34725.h>
 #include <Wire.h>
 #include <ColorSensor.hpp>
+#include "CompileFlags.hpp"
 
 namespace p28 {
 
     static Adafruit_TCS34725 tcs = Adafruit_TCS34725(TCS34725_INTEGRATIONTIME_50MS, TCS34725_GAIN_4X);
     static String color_string[] = {"RED", "GREEN", "BLUE", "YELLOW", "BLACK", "WHITE"};
 
-    void init_color_sensor() {
-        if (tcs.begin()) {
-        } else {
-            while (1);
+    void init_color_sensor() 
+    {
+        if(!tcs.begin()){
+#ifdef DEBUG_MODE
+            Serial.println("Could not init color sensor :(");
+#endif
         }
     }
 
