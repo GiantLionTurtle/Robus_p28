@@ -26,8 +26,8 @@ struct Robot {
 	Drivebase drvb;
 
 	// Compute the next robot state from delta of the sensors and the game state
-	Robot generate_next(	SensorState prevSensState, SensorState currSensState, 
-								GameState prevGmState, GameState gmState, Iteration_time it_time) const;
+	void generate_next(	SensorState prevSensState, SensorState currSensState, 
+								GameState prevGmState, GameState gmState, Iteration_time it_time);
 };
 
 } // !p28

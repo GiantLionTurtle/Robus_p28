@@ -15,8 +15,12 @@ int comp_lane(COLOR color);
 GameState GameState::initial(SensorState sensState)
 {
 	GameState initial_gameState;
+	initial_gameState.over = false;
 	initial_gameState.lane = comp_lane(sensState.colorDetector);
 	initial_gameState.target_lane = initial_gameState.lane;
+	initial_gameState.missionState.test = Objective::Start;
+	
+	return initial_gameState;
 }
 GameState GameState::generate_next(SensorState prevSensState, SensorState currSensState, DrivebaseState drvbState,Iteration_time it_time) const
 {
@@ -29,10 +33,14 @@ GameState GameState::generate_next(SensorState prevSensState, SensorState currSe
 	// Figure out what to do now
 	newGmState.missionState.one_cw_turn = compute_one_cw_turn_state(newGmState,*this);
 	newGmState.missionState.knock_cup = compute_knockCup_state(newGmState);
+
+	if(missionState.test == Objective::Start) {
+		newGmState.missionState.test = Objective::UnderWay;
+	}
+
 	// ping pong
 	// shortcut
 	return newGmState;
-
 }
 
 // Try to deduce de lane based on the color sensor

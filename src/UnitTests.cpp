@@ -151,16 +151,7 @@ bool arcs_equal(Arc a1, Arc a2, float epsilon)
 			mt::epsilon_equal(a1.radius, a2.radius, epsilon) &&
 			 mt::epsilon_equal(a1.length, a2.length, epsilon);
 }
-void print_arc(Arc arc)
-{
-	print(arc.tengeantStart, 4);
-	Serial.print(",  ");
-	print(arc.end, 4);
-	Serial.print(",  ");
-	Serial.print(arc.radius, 4);
-	Serial.print(",  ");
-	Serial.println(arc.length, 4);
-}
+
 void arc_generation()
 {
 	struct Trial {
@@ -188,13 +179,80 @@ void arc_generation()
 		if(arcs_equal(out, trials[i].expected, 0.001)) {
 			successes++;
 		} else {
-			print_arc(out);
+			out.print();
 
 			Serial.print(" --- Failed test ");
 			Serial.print(i);
 			Serial.println(" --- ");
 		}
 	}
+	print_successRate(successes, n_trials);
+}
+
+void vectors()
+{
+	const int n_tests = 8;
+	int successes = 0;
+
+	Serial.println(" --- Vector tests --- ");
+	Serial.println("[assignment]");
+
+	Vector<int> vector;
+	for(int i = 0; i < 3; ++i) {
+		vector.push_back(i);
+	}
+
+	if(vector.size() == 3) {
+		successes++;
+
+		for(int i = 0; i < 3; ++i) {
+			if(vector[i] == i)
+				successes++;
+		}
+	}
+
+	Serial.println("[copy]");
+
+	Vector<int> copy = vector;
+	if(copy.size() == 3) {
+		successes++;
+
+		for(int i = 0; i < 3; ++i) {
+			if(copy[i] == i)
+				successes++;
+		}	
+	}
+
+	print_successRate(successes, n_tests);
+}
+
+void near_equality()
+{
+	struct Trial {
+		mt::Vec2 a;
+		mt::Vec2 b;
+		float epsilon2;
+		bool expected;
+	};
+
+	const int n_trials = 1;
+	Trial trials[n_trials] = {
+		Trial {.a=mt::Vec2(0.0, 0.0), .b=mt::Vec2(0.0, 0.5), .epsilon2=kPathFollower_epsilon2, .expected=false }
+	};
+
+	Serial.println(" --- epsilon equal test --- ");
+
+	int successes = 0;
+	for(int i = 0; i < n_trials; ++i) {
+		if(mt::epsilon_equal2(trials[i].a, trials[i].b, trials[i].epsilon2) == trials[i].expected) {
+			successes++;
+		} else {
+			Serial.print(" --- Failed test ");
+			Serial.print(i);
+			Serial.println(" --- ");
+		}
+	}
+
 	print_successRate(successes, n_trials);
 }
 
