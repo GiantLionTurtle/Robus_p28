@@ -28,18 +28,46 @@ public:
 			at(i) = value;
 		}
 	}
+	Vector(Vector<T>&& other)
+	{
+		mData = other.mData;
+		other.mData = NULL;
+		mSize = other.mSize;
+		mCapacity = other.mCapacity;
+	}
+	Vector& operator=(Vector<T>&& other)
+	{
+		mData = other.mData;
+		other.mData = NULL;
+		mSize = other.mSize;
+		mCapacity = other.mCapacity;
+		return *this;
+	}
+	Vector(Vector<T> const& other)
+	{
+		deep_copy(other.mData, other.mSize);
+	}
+	Vector& operator=(Vector<T> const& other)
+	{
+		deep_copy(other.mData, other.mSize);
+		return *this;
+	}
+
 	~Vector()
 	{
 		delete mData;
 	}
 
-	size_t size() const { return mSize; }
+	unsigned int size() const { return mSize; }
+	unsigned int capacity() const { return mCapacity; }
 
 	void push_back(T value)
 	{
 		if(mCapacity < mSize+1) {
 			reallocate(mCapacity + 4); // We are on an arduino, cannot afford to allocate capacity * 2
 		}
+		mData[mSize] = value;
+		mSize++;
 	}
 
 	T& operator[](unsigned int index)
@@ -81,11 +109,22 @@ private:
 	{
 		T* new_data = new T[capacity];
 
-		for(int i = 0; i < size(); ++i) {
-			new_data = mData[i];
+		for(unsigned int i = 0; i < size(); ++i) {
+			new_data[i] = mData[i];
 		}
 		delete[] mData;
 		mData = new_data;
+		mCapacity = capacity;
+	}
+	void deep_copy(T* ext_data, unsigned int size_)
+	{
+		if(size_ > mCapacity) {
+			reallocate(size_+4);
+		}
+		for(unsigned int i = 0; i < size_; ++i) {
+			mData[i] = ext_data[i];
+		}
+		mSize = size_;
 	}
 };
 

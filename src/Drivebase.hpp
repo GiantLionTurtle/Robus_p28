@@ -33,11 +33,11 @@ namespace p28 {
 
 struct DrivebaseState {
 	mt::Vec2 pos { 0.0, 0.0 }; // Position in m
-    mt::Vec2 heading { 0.0, 1.0 }; // Normalised heading
+	mt::Vec2 heading { 0.0, 1.0 }; // Normalised heading
 	float angular_velocity { 0.0 };
 	float trajectory_radius { 0.0 };
 
-    mt::Vec2 wheelsVelocities { 0.0 }; // Velocity in m/s of each wheel
+	mt::Vec2 wheelsVelocities { 0.0 }; // Velocity in m/s of each wheel
 
 	// A point in time in ms, used to stop the path following as long as millis() < waitUntil
 	unsigned long waitUntil { 0 }; 
@@ -68,6 +68,8 @@ struct Arc {
 	mt::Vec2 end;
 	float radius;
 	float length;
+
+	void print() const;
 };
 
 // Action that the drivebase can do (high level)
@@ -83,10 +85,13 @@ struct PathSegment {
 // Arcs to follow and delays after it's done
 
 struct DrivebasePath {
-    Vector<Pair<PathSegment, unsigned int>> path;
-    unsigned int index { 0 };
+	// Vector<Pair<PathSegment, unsigned int>> path;
+	
+	Pair<PathSegment, unsigned int> segments[10];
+	unsigned int index { 0 };
+	unsigned int size { 0 };
 
-	PathSegment current() const { return path[index].first; }
+	PathSegment current() const { return segments[index].first; }
 };
 
 

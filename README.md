@@ -6,7 +6,7 @@ Repo pour le robot robus de l'équipe p28
 
 ### Base mobile
 
-* Étape 1 de Drivebase::update_concrete: implementer arc_from_targetHeading dans Drivebase.cpp -- Julien
+* ~~Étape 1 de Drivebase::update_concrete: implementer arc_from_targetHeading dans Drivebase.cpp -- Julien~~
     * Un Arc doit contenir un rayon, 
     * Un point de fin
     * Un vecteur tangeant au point de début

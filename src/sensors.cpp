@@ -5,6 +5,8 @@
 #include "ProximityDetector.hpp"
 #include "ColorSensor.hpp"
 #include "Constants.hpp"
+#include "IRSensor.hpp"
+
 
 namespace p28 {
 
@@ -32,7 +34,9 @@ SensorState get_sensors()
     newSensorState.encoders_ticks = { ENCODER_Read(LEFT), ENCODER_Read(RIGHT) };
     newSensorState.bumpersState = { ROBUS_IsBumper(LEFT), ROBUS_IsBumper(RIGHT) };
     // newSensorState.IRSensor = {PIN_IRSENSOR};
-    newSensorState.frontIR_dist = {};
+
+    //index 0 --> adjust index depending which IR captor we want, create const for each IR
+    newSensorState.frontIR_dist = get_distance_ir(0);  
     newSensorState.proximityDetector = wall_detection();
     newSensorState.colorDetector = get_color();
     //newSensorState.lineDetector = lineDetector functions
