@@ -5,6 +5,7 @@
 #include "Utils/Pair.hpp"
 #include "sensors.hpp"
 #include "Drivebase.hpp"
+#include "Iteration_time.hpp"
 
 /*
 	How GameState should work
@@ -29,6 +30,7 @@ struct MissionState {
 	Objective trap_ball { Objective::Todo };
 	Objective one_cw_turn { Objective::Todo };
 	Objective one_cw_shortcut_turn { Objective::Todo };
+	long unsigned int one_cw_turn_time;
 };
 
 struct GameState {
@@ -41,7 +43,7 @@ struct GameState {
 	MissionState missionState;
 
 	// Compute the next gamestate from sensor data deltas
-	GameState generate_next(SensorState prevSensState, SensorState currSensState, DrivebaseState drvbState) const;
+	GameState generate_next(SensorState prevSensState, SensorState currSensState, DrivebaseState drvbState,Iteration_time it_time) const;
 	static GameState initial(SensorState sensState);
 };
 

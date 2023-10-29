@@ -15,17 +15,17 @@ const mt::Line zone_8_to_9_line { .origin=mt::Vec2(0.0), .dir=mt::Vec2(2.0) };
  
 constexpr int n_zones = 11;
 const mt::Box zones_boxes[n_zones] {
-	mt::Box{}, // 0
-	mt::Box{}, // 1
-	mt::Box{}, // 2
-	mt::Box{}, // 3
-	mt::Box{}, // 4
-	mt::Box{}, // 5
-	mt::Box{}, // 6
-	mt::Box{}, // 7
-	mt::Box{}, // 8
-	mt::Box{}, // 9
-	mt::Box{} // shortcut
+	mt::Box{ .bottomLeft=mt::Vec2(0.0, 1.0), .topRight=(1.0, 0.0) }, // 0
+	mt::Box{ .bottomLeft=mt::Vec2(0.0, 0.364), .topRight=(0.122, 0,485)}, // 1
+	mt::Box{ .bottomLeft=mt::Vec2(0.122, 0.364), .topRight=(0.182, 0.485)}, // 2
+	mt::Box{ .bottomLeft=mt::Vec2(0.182, 0.364), .topRight=(0.302, 0.485)}, // 3
+	mt::Box{ .bottomLeft=mt::Vec2(0.182, 0.244), .topRight=(0.302, 0.364)}, // 4
+	mt::Box{ .bottomLeft=mt::Vec2(0.182, 0.123), .topRight=(0.302, 0.244)}, // 5
+	mt::Box{ .bottomLeft=mt::Vec2(0.182, 0.0), .topRight=(0.302, 0.123)}, // 6
+	mt::Box{ .bottomLeft=mt::Vec2(0.122, 0.0), .topRight=(0.182, 0.123)}, // 7
+	mt::Box{ .bottomLeft=mt::Vec2(0.0, 0.0), .topRight=(0.122, 0.123)}, // 8
+	mt::Box{ .bottomLeft=mt::Vec2(0.0, 0.123), .topRight=(0.122, 0.206)}, // 9
+	mt::Box{ .bottomLeft=mt::Vec2(0.122, 0.123), .topRight=(0.182, 0.244)} // shortcut
 };
 
 } // !Field

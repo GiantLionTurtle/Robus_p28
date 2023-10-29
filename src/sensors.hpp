@@ -3,6 +3,7 @@
 
 #include "Utils/Vec2.hpp"
 #include "Constants.hpp"
+#include "ColorSensor.hpp"
 
 /*
     How SensorsState should work
@@ -33,10 +34,7 @@ struct SensorState {
 };
 
 SensorState get_sensors();
-void print (SensorState state)
-{
-    state.bumpersState.right;
-}
+void printSensor (SensorState state);
 
 } // !p28
 
