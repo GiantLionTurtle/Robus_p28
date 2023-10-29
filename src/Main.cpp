@@ -77,7 +77,7 @@ void loop()
 			sensorState = get_sensors();
 			it_time = it_time.current();
 
-			gameState = prevGameState.generate_next(prevSensorState, sensorState, robot.drvb.state);
+			gameState = prevGameState.generate_next(prevSensorState, sensorState, robot.drvb.state, it_time);
 			robot = robot.generate_next(prevSensorState, sensorState, prevGameState, gameState, it_time);
 
 			// Create the data to send to the hardware

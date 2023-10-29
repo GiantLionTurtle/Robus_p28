@@ -3,10 +3,12 @@
 #include "Constants.hpp"
 #include "Field.hpp"
 
+
 namespace p28 {
 
 Pair<int, int> compute_zoneLane(SensorState  const& prevSensState, SensorState const&  currSensState, GameState const&  gmState, DrivebaseState drvbState);
 Objective compute_knockCup_state(GameState const& gmState);
+Objective compute_one_cw_turn_state(GameState const& gmState,GameState const& previousGmState);
 int comp_lane(COLOR color);
 
 GameState GameState::initial(SensorState sensState)
@@ -15,12 +17,13 @@ GameState GameState::initial(SensorState sensState)
 	initial_gameState.lane = comp_lane(sensState.colorDetector);
 	initial_gameState.target_lane = initial_gameState.lane;
 }
-GameState GameState::generate_next(SensorState prevSensState, SensorState currSensState, DrivebaseState drvbState) const
+GameState GameState::generate_next(SensorState prevSensState, SensorState currSensState, DrivebaseState drvbState,Iteration_time it_time) const
 {
 	GameState newGmState = *this;
 
 	// Figure out where we are in game zones
 	tie(newGmState.zone, newGmState.lane) = compute_zoneLane(prevSensState, currSensState, newGmState, drvbState);
+
 
 	// Figure out what to do now
 	newGmState.missionState.knock_cup = compute_knockCup_state(newGmState);
@@ -80,5 +83,15 @@ Objective compute_knockCup_state(GameState const& gmState)
 	}
 	return gmState.missionState.knock_cup;
 }
-
+Objective compute_one_cw_turn_state(GameState const& gmState,GameState const& previousGmState){
+	if (gmState.missionState.one_cw_turn == Objective::Todo){
+		return Objective::Start;
+	}
+	else if (gmState.missionState.one_cw_turn == Objective::Start){
+		return Objective::UnderWay;
+	}
+	else if (gmState.missionState.one_cw_turn == Objective::UnderWay && gmState.zone == 9 && previousGmState.zone == 8 ){
+		return Objective::Done;
+	}
+}
 } // !p28
