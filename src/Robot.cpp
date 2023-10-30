@@ -18,7 +18,7 @@ DrivebasePath gen_test_path()
 {
 	DrivebasePath path;
 	path.segments[0] = Pair<PathSegment, unsigned int>(
-		PathSegment(mt::Vec2(1.0, 1.0), mt::Vec2(1.0, 0.0), 0.0),
+		PathSegment(mt::Vec2(1.0, 1.0), mt::Vec2(1.0, 0.0), 0.0, false),
 		0);
 	path.size = 1;
 

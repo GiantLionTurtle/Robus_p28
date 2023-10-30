@@ -29,6 +29,7 @@ void setup()
 	robot.drvb.concrete.left.pid = { 1.4, 35.5555, 0.03333333 };
 	robot.drvb.concrete.right.pid = { 1.4, 35.5555, 0.03333333 };
 	robot.drvb.concrete.headingPID = { 0.1, 1.0, 0.002 };
+	robot.drvb.state.heading = mt::Vec2(0.0, 1.0);
 
 	it_time = Iteration_time::first();
 

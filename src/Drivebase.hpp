@@ -77,9 +77,10 @@ struct PathSegment {
 	mt::Vec2 targPos { 0.0 }; // Target position 
 	mt::Vec2 targHeading { 0.0 };
 	float targSpeed { 0.0 }; // Speed at the target position
+	bool backward { false };
 
 	PathSegment() = default;
-	PathSegment(mt::Vec2 targPos_, mt::Vec2 targHeading_, float targSpeed_);
+	PathSegment(mt::Vec2 targPos_, mt::Vec2 targHeading_, float targSpeed_, bool backward);
 };
 
 // Arcs to follow and delays after it's done

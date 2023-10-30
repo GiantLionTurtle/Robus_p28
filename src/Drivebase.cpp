@@ -46,10 +46,11 @@ void Arc::print() const
 	Serial.println(length, 4);
 }
 
-PathSegment::PathSegment(mt::Vec2 targPos_, mt::Vec2 targHeading_, float targSpeed_)
+PathSegment::PathSegment(mt::Vec2 targPos_, mt::Vec2 targHeading_, float targSpeed_, bool backward_)
 	: targPos(targPos_)
 	, targHeading(mt::normalize(targHeading_))
 	, targSpeed(targSpeed_)
+	, backward(backward_)
 {
 
 }
@@ -218,7 +219,11 @@ void Drivebase::update_concrete(Iteration_time it_time)
 	// 4. Correct for the heading error
 	motor_speeds = correct_heading(motor_speeds);
 	//mt::Vec2(0.2185, 0.1815)
-	concrete = concrete.update(state.wheelsVelocities, motor_speeds, state.heading, arc.tengeantStart, it_time);
+	if(follow.backward) {
+		concrete = concrete.update(state.wheelsVelocities, -motor_speeds, state.heading, -arc.tengeantStart, it_time);
+	} else {
+		concrete = concrete.update(state.wheelsVelocities, motor_speeds, state.heading, arc.tengeantStart, it_time);
+	}
 }
 mt::Vec2 Drivebase::correct_heading(mt::Vec2 staged_wheelVelocities) const
 {
