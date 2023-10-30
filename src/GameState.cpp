@@ -19,7 +19,7 @@ GameState GameState::initial(SensorState sensState)
 	initial_gameState.over = false;
 	initial_gameState.lane = comp_lane(sensState.colorDetector);
 	initial_gameState.target_lane = initial_gameState.lane;
-	initial_gameState.missionState.test = Objective::Start;
+	initial_gameState.missionState.test = Objective::Todo;
 	
 	return initial_gameState;
 }
@@ -37,7 +37,9 @@ GameState GameState::generate_next(SensorState prevSensState, SensorState currSe
 	newGmState.missionState.one_cw_turn = compute_one_cw_turn_state(newGmState,*this);
 	newGmState.missionState.knock_cup = compute_knockCup_state(newGmState);
 
-	if(missionState.test == Objective::Start) {
+	if(missionState.test == Objective::Todo) {
+		newGmState.missionState.test = Objective::Start;
+	} else if(missionState.test == Objective::Start) {
 		newGmState.missionState.test = Objective::UnderWay;
 	}
 

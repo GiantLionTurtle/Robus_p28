@@ -159,17 +159,18 @@ void arc_generation()
 		Arc expected;
 	};
 
-	const int n_trials = 3;
+	const int n_trials = 4;
 	Trial trials[n_trials] = {
 		Trial { .start=mt::Vec2(0.0, 0.0), .end=mt::Vec2(0.0, 1.0), .end_heading=mt::Vec2(1.0, 0.0), 
 					.expected=Arc{.tengeantStart=mt::Vec2(-1.0, 0.0), .end=mt::Vec2(0.0, 1.0), .radius=-0.5, .length=0.5*PI } },
 		Trial { .start=mt::Vec2(0.0, 0.0), .end=mt::Vec2(0.0, 1.0), .end_heading=mt::Vec2(-1.0, 0.0), 
 					.expected=Arc{.tengeantStart=mt::Vec2(1.0, 0.0), .end=mt::Vec2(0.0, 1.0), .radius=0.5, .length=0.5*PI } },
 
-
 		// Straigth line
 		Trial { .start=mt::Vec2(2.0, 2.0), .end=mt::Vec2(4, 4), .end_heading=mt::normalize(mt::Vec2(1, 1)), 
 					.expected=Arc{.tengeantStart=mt::normalize(mt::Vec2(1, 1)), .end=mt::Vec2(4.0, 4.0), .radius=kInfinity, .length=sqrt(8) } },
+		Trial { .start=mt::Vec2(0.0, 0.0), .end=mt::Vec2(1.0, 1.0), .end_heading=mt::Vec2(1.0, 0.0),
+					.expected=Arc{.tengeantStart=mt::Vec2(0.0, 1.0), .end=mt::Vec2(1.0, 1.0), .radius=-1.0, .length=PI/2}}
 	};
 
 	Serial.println(" --- Testing arc generation --- ");

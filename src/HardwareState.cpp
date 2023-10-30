@@ -6,6 +6,12 @@
 
 namespace p28 {
 
+HardwareState HardwareState::mix(HardwareState hrdwState) const
+{
+	hrdwState.motors = hrdwState.motors * kMotorHarwareStateMixFactor + motors * (1-kMotorHarwareStateMixFactor);
+	return hrdwState;
+}
+
 void set_hardwareState (HardwareState hwst)
 {
 	MOTOR_SetSpeed (RIGHT, hwst.motors.right);      //Sets the motors speed according to the hardware state received
@@ -17,12 +23,11 @@ void set_hardwareState (HardwareState hwst)
 
 void printHarwareState(HardwareState state)
 {
-    Serial.println("motors:");
+    Serial.print("motors:");
     print(state.motors);
-    Serial.println();
-    Serial.println("Arm angle:");
-    Serial.println(state.armAngle);
-    Serial.println("Cup angle:");
+    Serial.print(" | Arm angle:");
+    Serial.print(state.armAngle);
+    Serial.print(" | Cup angle:");
     Serial.println(state.cupAngle);
 
 }
@@ -37,7 +42,7 @@ HardwareState generate_hardwareState(Robot robot)
 		gen_hwst.cupAngle = kCup_openAngle;
 	}
 	gen_hwst.motors = robot.drvb.concrete.hardware_output();
-		return gen_hwst;
+	return gen_hwst;
 }
 
 } // !p28

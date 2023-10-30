@@ -120,7 +120,7 @@ struct Drivebase {
 	DrivebasePath path;
 
 	void update_path();
-	DrivebaseConcrete update_concrete(Iteration_time it_time) const;
+	void update_concrete(Iteration_time it_time);
 
 	// Return new wheel velocities from the wheel velocities needed
 	// to follow the arc + known heading error

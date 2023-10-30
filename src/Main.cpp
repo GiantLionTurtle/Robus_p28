@@ -1,108 +1,82 @@
-#include <LibRobus.h>
-#include <ColorSensor.hpp>
 
-#include <Arduino.h>
-#include "LibRobus.h"
-#include "Constants.hpp"
-#include "Drivebase.hpp"
-#include "WhistleDetector.hpp"
-#include "ProximityDetector.hpp"
+#include <LibRobus.h>
 
 #include "Robot.hpp"
-#include "GameState.hpp"
 #include "HardwareState.hpp"
-#include "sensors.hpp"
-
-#include "TestPID.hpp"
-#include "Iteration_time.hpp"
 
 #include "UnitTests.hpp"
 
 using namespace p28;
 
-SensorState sensorState;
-SensorState prevSensorState;
-
 Robot robot;
-GameState gameState;
-GameState prevGameState;
-
-HardwareState hardwareState;
-
+SensorState sensState, prevSensState;
 Iteration_time it_time;
 
-void buzzerFin();
+GameState gmState, prevGmState;
+HardwareState hrdwState;
+
+PID pid = { 1.4, 35.5555, 0.03333333 };
+// PID pid = { 4, 0.0, 0.0 };
+Error error;
 
 void setup()
 {
 	BoardInit();
 	delay(1000);
+
 	Serial.println("Begin!");
 
 	robot.drvb.concrete.left.pid = { 1.4, 35.5555, 0.03333333 };
 	robot.drvb.concrete.right.pid = { 1.4, 35.5555, 0.03333333 };
-	robot.drvb.concrete.headingPID = { 0.5, 0.0, 0.0 };
+	robot.drvb.concrete.headingPID = { 0.1, 1.0, 0.002 };
 
-	init_detector();
-	init_whistle();
-	init_color_sensor();
+	it_time = Iteration_time::first();
 
-	// // delay(1000);
-	// while(!ROBUS_IsBumper(3)) { delay(50); }
-
-	// // TestPID::Ziegler_Nichols(1.8, 0.3);
-	// PID pid { 1.4, 35.5555, 0.03333333 };
-	// TestPID::test_pid_straightLine(pid, pid, 0.3);
-
-	it_time = it_time.current();
-	SensorState sensState = get_sensors();
-	gameState = GameState::initial(sensState);
-	robot.generate_next(sensorState, sensorState, prevGameState, gameState, it_time);
-	prevSensorState = sensorState;
-
-	// Tests::vector_maths();
-	// Tests::forward_kinematics();
-	// Tests::acceleration_profile();
-	// Tests::arc_generation();
-
-	// Tests::vectors();
-	// Tests::near_equality();
+	sensState = get_sensors();
+	gmState = GameState::initial(sensState);
+	prevGmState = gmState;
+	prevSensState = sensState;
 }
-
-void loop() 
+float buffer_mult = 0.9;
+void loop()
 {
-	// delay(500);
-	// sensorState = get_sensors();
-	// printSensor(sensorState);
+	delay(40);
+	it_time = it_time.current();
 
-	// if(whistle_detection()) {
 	if(ROBUS_IsBumper(3)) {
-		while(!gameState.over) {
-			// Pause for a bit to allow everything to catch up 
+		while(!gmState.over) {
 			delay(kControlLoopDelay);
 
-			// No data is fed, this is a read function
-			sensorState = get_sensors();
 			it_time = it_time.current();
+			sensState = get_sensors();
 
-			gameState = prevGameState.generate_next(prevSensorState, sensorState, robot.drvb.state);
-			robot.generate_next(prevSensorState, sensorState, prevGameState, gameState, it_time);
+			gmState = gmState.generate_next(prevSensState, sensState, robot.drvb.state, it_time);
+			robot.generate_next(prevSensState, sensState, prevGmState, gmState, it_time);
+			hrdwState = hrdwState.mix(generate_hardwareState(robot));
 
-			// Create the data to send to the hardware
-			// the robot is fed and outputed to keep track
-			// of the motors and follow paths
-			hardwareState = generate_hardwareState(robot);
 
-			// // Only processed data is fed, it is a write function
-			set_hardwareState(hardwareState);
+			// print(robot.drvb.state.wheelsVelocities);
+			// Serial.print(" | ");
+			print(robot.drvb.state.pos);
+			Serial.print(" | ");
+			print(robot.drvb.state.heading);
 
-			// // Keep the previous sensor and game states for useful deltas
-			prevSensorState = sensorState;
-			prevGameState = gameState;
-		}
-		Serial.println("out");
+			Serial.print("\n");
+			// Serial.println(it_time.delta_s, 4);
+
+
+			set_hardwareState(hrdwState);
+
+			prevSensState = sensState;
+			prevGmState = gmState;
+
+			if(ROBUS_IsBumper(2)) {
+				set_hardwareState(HardwareState());
+				break;
+			}
+		}		
 	}
 
-	// Serial.println(static_cast<int>(get_color()));
-	// delay(100);
+
+
 }

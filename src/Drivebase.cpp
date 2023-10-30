@@ -48,7 +48,7 @@ void Arc::print() const
 
 PathSegment::PathSegment(mt::Vec2 targPos_, mt::Vec2 targHeading_, float targSpeed_)
 	: targPos(targPos_)
-	, targHeading(targHeading_)
+	, targHeading(mt::normalize(targHeading_))
 	, targSpeed(targSpeed_)
 {
 
@@ -57,6 +57,8 @@ PathSegment::PathSegment(mt::Vec2 targPos_, mt::Vec2 targHeading_, float targSpe
 
 float Motor::hardware_output() const
 {
+	// Serial.print("P: ");
+	// Serial.println(pid.P);
 	return get(pid, error);
 }
 
@@ -93,7 +95,7 @@ DrivebaseState DrivebaseState::update_kinematics(mt::i32Vec2 prevEncTicks, mt::i
 	// page 20
 
 	new_drvbState.pos = pos + (wheelVels.left+wheelVels.right)/2.0f * heading * delta_s;
-	new_drvbState.heading = rotate(heading, 1/kRobotWidth * (wheelVels.right - wheelVels.left) * delta_s);
+	new_drvbState.heading = mt::normalize(mt::rotate(heading, 1/kRobotWidth * (wheelVels.right - wheelVels.left) * delta_s));
 
 	// Serial.print("Vel: ");
 	// print(new_drvbState.wheelsVelocities);
@@ -145,49 +147,83 @@ void Drivebase::update_path()
 	// Serial.print(" vs ");
 	// mt::print(path.current().targPos);
 	// Serial.println("");
-	if(mt::epsilon_equal(state.pos, path.current().targPos, kPathFollower_epsilon2)) {
+	if(mt::epsilon_equal2(state.pos, path.current().targPos, kPathFollower_epsilon2)) {
 
 		Serial.println("Neeext");
 		path.index++;
 	}
 }
-DrivebaseConcrete Drivebase::update_concrete(Iteration_time it_time) const
+void Drivebase::update_concrete(Iteration_time it_time)
 {
 	// Don't move if the drivebase should be waiting for actions	
 	// Serial.print("Path size ");
 	// Serial.print(path.size);
 	// Serial.print(",  ");
 	// Serial.println(path.index);
-	if(state.waitUntil > it_time.time_ms || path.index >= path.size)
-		return concrete.update(state.wheelsVelocities, {0.0f}, {1.0f}, {1.0f}, it_time);
+	if(state.waitUntil > it_time.time_ms || path.index >= path.size) {
+		concrete = concrete.update(state.wheelsVelocities, {0.0f}, {1.0f}, {1.0f}, it_time);
+		return;
+	}
 
 	PathSegment follow = path.current();
 	// 1. Find the arc that takes us from our current position to
 	// the target position with a target heading
 	Arc arc = arc_from_targetHeading(state.pos, follow.targPos, follow.targHeading);
+	// Arc arc { .tengeantStart=mt::Vec2(0.0, 1.0), .end=(1.0, 1.0), .radius=-1.0, .length=1.57 };
 
+	// Serial.print("error: ");
+	// Serial.println(error.error);
+	// Serial.print(",  ");
+	// Serial.print(error.sum_error);
+	// Serial.print(",  ");
+	// Serial.println(error.diff_error);
+
+
+	// Serial.print("Pos: ");
+	// print(state.pos);
+	// Serial.println("");
 	// Serial.print("Arc: ");
 	// arc.print();
 	// 2. Find the angular velocity that should be reached this iteration
 	// Assum we are going in a straight line of length arc.length
 	float velocity = velocity_for_point(state.velocity(), follow.targSpeed, arc.length, kAccel, it_time.delta_s);
+	// Serial.print("Wants vel: ");
+	// Serial.println(state.last_wanted_velocity);
+	mt::Vec2 motor_speeds;
+	if(arc.radius != kInfinity) {	
+		// Transform m/s into rad/s
+		float angularVelocity = min(abs(velocity / arc.radius), kMaxAngularVelocity);
 
-	// Transform m/s into rad/s
-	float angularVelocity = velocity / arc.radius;
 
-	// 3. Find the motor speeds needed to follow said arc, assuming
-	// we are already tangeant to it with angular velocity
-	mt::Vec2 motor_speeds = arcTurnToDest(arc, angularVelocity);
+		// 3. Find the motor speeds needed to follow said arc, assuming
+		// we are already tangeant to it with angular velocity
+		// Serial.print(angularVelocity);
+		// Serial.print(" for ");
+		// Serial.print(arc.length);
+		// Serial.print(" :: ");
+		// Serial.print(arc.radius);
+		// Serial.print(" :: ");
+		motor_speeds = arcTurnToDest(arc, angularVelocity);
+	} else {
+		motor_speeds = { velocity, velocity };
+	}
+	// Serial.print("Target velocity ");
+	// print(motor_speeds);
+	// Serial.print(" => ");
+	// Serial.print(" => ");
+	// Serial.print(velocity);
+	// Serial.print(" from ");
+
 
 	// 4. Correct for the heading error
 	motor_speeds = correct_heading(motor_speeds);
-
-	return concrete.update(state.wheelsVelocities, motor_speeds, state.heading, arc.tengeantStart, it_time);
+	//mt::Vec2(0.2185, 0.1815)
+	concrete = concrete.update(state.wheelsVelocities, motor_speeds, state.heading, arc.tengeantStart, it_time);
 }
 mt::Vec2 Drivebase::correct_heading(mt::Vec2 staged_wheelVelocities) const
 {
 	float velocity_offset = get(concrete.headingPID, concrete.headingError);
-	return staged_wheelVelocities + mt::Vec2(-velocity_offset, velocity_offset);
+	return staged_wheelVelocities + mt::Vec2(velocity_offset, -velocity_offset);
 }
 
 
@@ -195,7 +231,7 @@ mt::Vec2 Drivebase::correct_heading(mt::Vec2 staged_wheelVelocities) const
 Arc arc_from_targetHeading(mt::Vec2 start, mt::Vec2 end, mt::Vec2 end_heading)
 {
 	// See fig.3
-	if(end_heading == mt::normalize(end-start)) { // Protect against overflow and div by 0
+	if(mt::epsilon_equal(end_heading, mt::normalize(end-start), 0.01f)) { // Protect against overflow and div by 0
 		return Arc{ .tengeantStart=end_heading, .end=end, .radius=kInfinity, .length=mt::distance(end, start) };
 	}
 
@@ -217,14 +253,14 @@ Arc arc_from_targetHeading(mt::Vec2 start, mt::Vec2 end, mt::Vec2 end_heading)
 
 	float circumference = 2*PI*abs(arcTGH.radius);
 	float angleArc = mt::angle(center_to_start, center_to_end);
-	
+
 	arcTGH.tengeantStart = mt::normalize(mt::ccw_perpendicular(center_to_start));
 
 	if(arcTGH.radius < 0.0f) { // If we are going clock wise
 		angleArc = 2*PI-angleArc; // The angle is the complement of ccw angle
 		arcTGH.tengeantStart = -arcTGH.tengeantStart; // Reverse start heading;		
 	}
-	
+
 	arcTGH.length = circumference * (angleArc/(2*PI));
 	return arcTGH;
 }
@@ -241,8 +277,16 @@ float velocity_for_point(float current_velocity, float target_velocity, float di
 									velocity_diff * (time_to_target_velocity) / 2; // Zone B
 
 	if(dist_to_target >= dist_to_target_velocity) {
+		// Serial.print("Accel ");
+		// Serial.print(accel);
+		// Serial.print(" * ");
+		// Serial.println(delta_s);
 		return min(current_velocity + accel * delta_s, kMaxVel);
 	} else {
+		// Serial.print("Decel ");
+		// Serial.print(accel);
+		// Serial.print(" * ");
+		// Serial.println(delta_s);
 		return max(current_velocity - decel * delta_s, target_velocity);
 	}
 }
@@ -251,9 +295,9 @@ mt::Vec2 arcTurnToDest(Arc arc, float angularVelocity)
 {
 	// See https://www.eecs.yorku.ca/course_archive/2017-18/W/4421/lectures/Wheeled%20robots%20forward%20kinematics.pdf
 	angularVelocity = min(angularVelocity, kMaxAngularVelocity); // Ensure we do not go over the maximum angular velocity
-	float leftWheel 	= abs(angularVelocity * ( arc.radius - kRobotWidth_2 ));   // speed of the interior wheel in m/s 
-	float rightWheel 	= abs(angularVelocity * ( arc.radius + kRobotWidth_2 ));   //speed of the exteriorwheel in m/s 
-	mt::Vec2 speedBothMotor = { rightWheel, leftWheel };
+	mt::Vec2 speedBothMotor;
+	speedBothMotor.left 	= abs(angularVelocity * ( arc.radius - kRobotWidth_2 ));   // speed of the interior wheel in m/s 
+	speedBothMotor.right 	= abs(angularVelocity * ( arc.radius + kRobotWidth_2 ));   //speed of the exteriorwheel in m/s 
 	return speedBothMotor;
 }
 
