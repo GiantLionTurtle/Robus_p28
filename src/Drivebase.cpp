@@ -130,7 +130,7 @@ DrivebaseConcrete DrivebaseConcrete::update(mt::Vec2 actualWheelVelocities, mt::
 
 	// The heading error doesn't need to know the actual heading angle, only the
 	// difference between target vector and current vector + goal is 0.0
-	// out.headingError = update_error(headingError, mt::signed_angle(currentHeading, targetHeading), 0.0, it_time.delta_s);
+	out.headingError = update_error(headingError, mt::signed_angle(currentHeading, targetHeading), 0.0, it_time.delta_s);
 
 	return out;
 }
@@ -147,7 +147,7 @@ void Drivebase::update_path()
 	// Serial.print(" vs ");
 	// mt::print(path.current().targPos);
 	// Serial.println("");
-	if(mt::epsilon_equal(state.pos, path.current().targPos, kPathFollower_epsilon2)) {
+	if(mt::epsilon_equal2(state.pos, path.current().targPos, kPathFollower_epsilon2)) {
 
 		Serial.println("Neeext");
 		path.index++;
@@ -169,6 +169,7 @@ void Drivebase::update_concrete(Iteration_time it_time)
 	// 1. Find the arc that takes us from our current position to
 	// the target position with a target heading
 	Arc arc = arc_from_targetHeading(state.pos, follow.targPos, follow.targHeading);
+	// Arc arc { .tengeantStart=mt::Vec2(0.0, 1.0), .end=(1.0, 1.0), .radius=-1.0, .length=1.57 };
 
 	// Serial.print("error: ");
 	// Serial.println(error.error);
@@ -181,8 +182,8 @@ void Drivebase::update_concrete(Iteration_time it_time)
 	// Serial.print("Pos: ");
 	// print(state.pos);
 	// Serial.println("");
-	Serial.print("Arc: ");
-	arc.print();
+	// Serial.print("Arc: ");
+	// arc.print();
 	// 2. Find the angular velocity that should be reached this iteration
 	// Assum we are going in a straight line of length arc.length
 	float velocity = velocity_for_point(state.velocity(), follow.targSpeed, arc.length, kAccel, it_time.delta_s);
@@ -191,18 +192,24 @@ void Drivebase::update_concrete(Iteration_time it_time)
 	mt::Vec2 motor_speeds;
 	if(arc.radius != kInfinity) {	
 		// Transform m/s into rad/s
-		float angularVelocity = velocity / arc.radius;
+		float angularVelocity = min(abs(velocity / arc.radius), kMaxAngularVelocity);
 
 
 		// 3. Find the motor speeds needed to follow said arc, assuming
 		// we are already tangeant to it with angular velocity
+		// Serial.print(angularVelocity);
+		// Serial.print(" for ");
+		// Serial.print(arc.length);
+		// Serial.print(" :: ");
+		// Serial.print(arc.radius);
+		// Serial.print(" :: ");
 		motor_speeds = arcTurnToDest(arc, angularVelocity);
 	} else {
 		motor_speeds = { velocity, velocity };
 	}
-	Serial.print("Target velocity ");
-	print(motor_speeds);
-	Serial.print(" => ");
+	// Serial.print("Target velocity ");
+	// print(motor_speeds);
+	// Serial.print(" => ");
 	// Serial.print(" => ");
 	// Serial.print(velocity);
 	// Serial.print(" from ");
@@ -210,13 +217,13 @@ void Drivebase::update_concrete(Iteration_time it_time)
 
 	// 4. Correct for the heading error
 	motor_speeds = correct_heading(motor_speeds);
-
+	//mt::Vec2(0.2185, 0.1815)
 	concrete = concrete.update(state.wheelsVelocities, motor_speeds, state.heading, arc.tengeantStart, it_time);
 }
 mt::Vec2 Drivebase::correct_heading(mt::Vec2 staged_wheelVelocities) const
 {
 	float velocity_offset = get(concrete.headingPID, concrete.headingError);
-	return staged_wheelVelocities + mt::Vec2(-velocity_offset, velocity_offset);
+	return staged_wheelVelocities + mt::Vec2(velocity_offset, -velocity_offset);
 }
 
 

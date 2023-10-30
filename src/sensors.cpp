@@ -36,9 +36,9 @@ SensorState get_sensors()
 	// newSensorState.IRSensor = {PIN_IRSENSOR};
 
 	//index 0 --> adjust index depending which IR captor we want, create const for each IR
-	newSensorState.frontIR_dist = get_distance_ir(0);  
-	newSensorState.proximityDetector = wall_detection();
-	newSensorState.colorDetector = get_color();
+	// newSensorState.frontIR_dist = get_distance_ir(0);  
+	// newSensorState.proximityDetector = wall_detection();
+	// newSensorState.colorDetector = get_color();
 	//newSensorState.lineDetector = lineDetector functions
 	return newSensorState;
 }
