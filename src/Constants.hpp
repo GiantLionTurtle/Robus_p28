@@ -24,8 +24,8 @@ constexpr float kWheelRadius = 0.0383;           // m
 constexpr int kTicksPerRotation = 3200;
 constexpr float kCircumference = PI * kRobotWidth;
 constexpr float kMaxVel = 1.9;                  // m / s
-constexpr unsigned int kControlLoopDelay = 5; // ms
-constexpr float kAccel = 0.8; // m/s^2
+constexpr unsigned int kControlLoopDelay = 40; // ms
+constexpr float kAccel = 0.4; // m/s^2
 constexpr float kCatastrophicDecel = 2.0;
 constexpr float kTurnAccel = 0.3;
 constexpr unsigned int kDecelerationDelay = 50; // ms, time to stop the robot
@@ -36,6 +36,8 @@ constexpr float kAccelDist = 0.2;
 constexpr float kTurnOffset = 0.02;
 
 constexpr float kInfinity = 100000;
+
+constexpr float kMotorHarwareStateMixFactor = 0.9;
 
 using time_t = long unsigned int;
 

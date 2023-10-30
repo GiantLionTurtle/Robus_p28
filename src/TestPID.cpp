@@ -11,7 +11,7 @@
 
 namespace p28 {
 
-namespace TestPID {
+namespace Tests {
 
 
 struct DataPoint {
@@ -128,6 +128,6 @@ void test_pid_straightLine(PID pid_left, PID pid_right, float target_velocity)
 	MOTOR_SetSpeed(RIGHT, 0.0);
 }
 
-} // !TestPID
+} // !Tests
 
 } // !p28

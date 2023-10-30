@@ -17,22 +17,23 @@
 #include "Iteration_time.hpp"
 
 #include "UnitTests.hpp"
+#include "TestPID.hpp"
 
 using namespace p28;
 
-SensorState sensorState;
-SensorState prevSensorState;
+// SensorState sensorState;
+// SensorState prevSensorState;
 
-Robot robot;
-GameState gameState;
-GameState prevGameState;
+// Robot robot;
+// GameState gameState;
+// GameState prevGameState;
 
-HardwareState hardwareState;
+// HardwareState hardwareState;
 
-Iteration_time it_time;
+// Iteration_time it_time;
 
 void buzzerFin();
-
+/*
 void setup()
 {
 	BoardInit();
@@ -55,9 +56,10 @@ void setup()
 	// TestPID::test_pid_straightLine(pid, pid, 0.3);
 
 	it_time = it_time.current();
+
 	SensorState sensState = get_sensors();
-	gameState = GameState::initial(sensState);
-	robot.generate_next(sensorState, sensorState, prevGameState, gameState, it_time);
+	// gameState = GameState::initial(sensState);
+	// robot.generate_next(sensorState, sensorState, prevGameState, gameState, it_time);
 	prevSensorState = sensorState;
 
 	// Tests::vector_maths();
@@ -67,13 +69,17 @@ void setup()
 
 	// Tests::vectors();
 	// Tests::near_equality();
+	// Tests::test_pid_straightLine(robot.drvb.concrete.left.pid, robot.drvb.concrete.left.pid, 0.5);
 }
+*/
 
+/*
 void loop() 
 {
 	// delay(500);
 	// sensorState = get_sensors();
 	// printSensor(sensorState);
+	it_time = it_time.current();
 
 	// if(whistle_detection()) {
 	if(ROBUS_IsBumper(3)) {
@@ -85,7 +91,7 @@ void loop()
 			sensorState = get_sensors();
 			it_time = it_time.current();
 
-			gameState = prevGameState.generate_next(prevSensorState, sensorState, robot.drvb.state);
+			gameState = prevGameState.generate_next(prevSensorState, sensorState, robot.drvb.state, it_time);
 			robot.generate_next(prevSensorState, sensorState, prevGameState, gameState, it_time);
 
 			// Create the data to send to the hardware
@@ -106,3 +112,4 @@ void loop()
 	// Serial.println(static_cast<int>(get_color()));
 	// delay(100);
 }
+*/

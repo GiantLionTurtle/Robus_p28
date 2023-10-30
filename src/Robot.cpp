@@ -17,7 +17,7 @@ DrivebasePath gen_test_path()
 {
 	DrivebasePath path;
 	path.segments[0] = Pair<PathSegment, unsigned int>(
-		PathSegment(mt::Vec2(0.0, 0.5), mt::Vec2(0.0, 1.0), 0.0),
+		PathSegment(mt::Vec2(1.0, 1.0), mt::Vec2(1.0, 0.0), 0.0),
 		0);
 	path.size = 1;
 
@@ -27,7 +27,7 @@ DrivebasePath gen_test_path()
 void Robot::generate_next(  SensorState prevSensState, SensorState currSensState, 
 				   			 GameState prevGmState, GameState gmState, Iteration_time it_time)
 {
-	// New state given the new encoder data
+	// // New state given the new encoder data
 	if(gmState.missionState.test == Objective::Start) {
 		drvb.path = gen_test_path();
 	}
@@ -36,16 +36,16 @@ void Robot::generate_next(  SensorState prevSensState, SensorState currSensState
 	// Adjust drivebase with other sensors and knowledge of the game
 	// drvb.state = adjustDrivebase(drvb.state, currSensState, prevGmState, gmState);
 	drvb.update_path();
-	drvb.concrete = drvb.update_concrete(it_time);
+	drvb.update_concrete(it_time);
 
 	// Cup zone?
-	if(gmState.missionState.knock_cup == Objective::UnderWay) {
-		openArm = true;
-	}
+	// if(gmState.missionState.knock_cup == Objective::UnderWay) {
+	// 	openArm = true;
+	// }
 
-	if(gmState.missionState.trap_ball == Objective::Start) {
-		ballSwerve_helper(*this, gmState.missionState.trap_ball);
-	}
+	// if(gmState.missionState.trap_ball == Objective::Start) {
+	// 	ballSwerve_helper(*this, gmState.missionState.trap_ball);
+	// }
 }
 
 DrivebaseState adjustDrivebase(DrivebaseState drvbState, SensorState const& currSensState, 

@@ -11,19 +11,19 @@ namespace p28 {
 
 void printSensor(SensorState state)
 {
-    Serial.println("bumper:");
+    Serial.print("bumper:");
     print(state.bumpersState);
-    Serial.println();
-    Serial.println("Color detector:");
-    Serial.println(toString(state.colorDetector));
-    Serial.println("encoders:");
+    
+    Serial.print(" | Color detector:");
+    Serial.print(toString(state.colorDetector));
+    Serial.print(" | encoders:");
     print(state.encoders_ticks);
-    Serial.println();
-    Serial.println("FrontIR:");
-    Serial.println(state.frontIR_dist);
-    Serial.println("Line detector:");
-    Serial.println(state.lineDetector);
-    Serial.println("Proximity detector:");
+    
+    Serial.print(" | FrontIR:");
+    Serial.print(state.frontIR_dist);
+    Serial.print(" | Line detector:");
+    Serial.print(state.lineDetector);
+    Serial.print(" | Proximity detector:");
     Serial.println(state.proximityDetector);
 }
 
@@ -34,8 +34,8 @@ SensorState get_sensors()
     newSensorState.bumpersState = { ROBUS_IsBumper(LEFT), ROBUS_IsBumper(RIGHT) };
     // newSensorState.IRSensor = {PIN_IRSENSOR};
     // newSensorState.frontIR_dist = distance_IR; // get the IR distance read in cm 
-    newSensorState.proximityDetector = wall_detection();
-    newSensorState.colorDetector = get_color();
+    // newSensorState.proximityDetector = wall_detection();
+    // newSensorState.colorDetector = get_color();
     //newSensorState.lineDetector = lineDetector functions
     return newSensorState;
 }

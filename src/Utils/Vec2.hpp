@@ -208,9 +208,8 @@ inline T signed_angle(Vec2_any<T> const& lhs, Vec2_any<T> const& rhs)
 template<typename T>
 inline T angle(Vec2_any<T> const& lhs, Vec2_any<T> const& rhs)
 {
-	// https://math.stackexchange.com/questions/2718543/how-to-calculate-the-angle-between-2-vectors-in-a-plane
-	Vec2_any<T> perp_lhs(-lhs.y, lhs.x);
-	return atan2(dot(rhs, perp_lhs), dot(lhs, rhs));
+	float signed_angle_ = signed_angle(lhs, rhs);
+	return signed_angle_ >= 0 ? signed_angle_ : 2*PI+signed_angle_;
 }
 
 // ----- Comparisons & access ----- //
