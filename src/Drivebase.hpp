@@ -38,7 +38,6 @@ struct DrivebaseState {
 	float trajectory_radius { 0.0 };
 
 	mt::Vec2 wheelsVelocities { 0.0 }; // Velocity in m/s of each wheel
-	float last_wanted_velocity;
 
 	// A point in time in ms, used to stop the path following as long as millis() < waitUntil
 	unsigned long waitUntil { 0 }; 
