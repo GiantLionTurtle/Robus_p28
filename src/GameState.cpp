@@ -3,6 +3,7 @@
 #include "Constants.hpp"
 #include "Field.hpp"
 #include "sensors.hpp"
+#include "CompileFlags.hpp"
 
 
 namespace p28 {
@@ -22,6 +23,8 @@ GameState GameState::initial(SensorState sensState)
 	
 	return initial_gameState;
 }
+
+#ifndef RACE_MODE
 GameState GameState::generate_next(SensorState prevSensState, SensorState currSensState, DrivebaseState drvbState,Iteration_time it_time) const
 {
 	GameState newGmState = *this;
@@ -31,6 +34,7 @@ GameState GameState::generate_next(SensorState prevSensState, SensorState currSe
 
 
 	// Figure out what to do now
+	newGmState.missionState.one_cw_turn = compute_one_cw_turn_state(newGmState,*this);
 	newGmState.missionState.knock_cup = compute_knockCup_state(newGmState);
 
 	if(missionState.test == Objective::Todo) {
@@ -43,6 +47,13 @@ GameState GameState::generate_next(SensorState prevSensState, SensorState currSe
 	// shortcut
 	return newGmState;
 }
+#else
+GameState GameState::generate_next(SensorState prevSensState, SensorState currSensState, DrivebaseState drvbState,Iteration_time it_time) const
+{
+	
+}
+#endif
+
 
 // Try to deduce de lane based on the color sensor
 int comp_lane(COLOR color)
@@ -103,6 +114,20 @@ Objective compute_one_cw_turn_state(GameState const& gmState,GameState const& pr
 	}
 	else if (gmState.missionState.one_cw_turn == Objective::UnderWay && gmState.zone == 9 && previousGmState.zone == 8 ){
 		return Objective::Done;
+
 	}
+	return gmState.missionState.one_cw_turn;
+}
+Objective compute_one_cw_shortCut_state(GameState const& gmState,GameState const& previousGmState){
+	if(gmState.zone == 5 && gmState.missionState.one_cw_turn == Objective::Done){
+		return Objective::Start;
+	}
+	else if (gmState.missionState.one_cw_shortcut_turn == Objective::Start){
+		return Objective::UnderWay;
+	}
+	else if(gmState.missionState.one_cw_shortcut_turn == Objective::UnderWay && gmState.zone == 9 && previousGmState.zone == Field::kshortcutZone){
+		return Objective::Done;
+	}
+	return gmState.missionState.one_cw_shortcut_turn;
 }
 } // !p28

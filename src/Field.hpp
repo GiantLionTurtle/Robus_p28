@@ -27,7 +27,7 @@ const mt::Box zones_boxes[n_zones] {
 	mt::Box{ .bottomLeft=mt::Vec2(0.0, 0.123), .topRight=(0.122, 0.206)}, // 9
 	mt::Box{ .bottomLeft=mt::Vec2(0.122, 0.123), .topRight=(0.182, 0.244)} // shortcut
 };
-
+const int kshortcutZone = 10;
 } // !Field
 
 } // !p28

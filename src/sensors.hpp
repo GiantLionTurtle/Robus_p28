@@ -35,7 +35,6 @@ struct SensorState {
 
 SensorState get_sensors();
 void printSensor (SensorState state);
-
 } // !p28
 
 

@@ -3,6 +3,7 @@
 #include <Arduino.h>
 
 #include "Field.hpp"
+#include "LineDetector.hpp"
 
 namespace p28 {
 
@@ -46,6 +47,40 @@ void Robot::generate_next(  SensorState prevSensState, SensorState currSensState
 	// if(gmState.missionState.trap_ball == Objective::Start) {
 	// 	ballSwerve_helper(*this, gmState.missionState.trap_ball);
 	// }
+}
+void followLine (Drivebase drvb)
+{
+	int numCapteur = 0;
+	int numCapteur2 = 0;
+	char line = get_ir_line();
+	if(line >= pow(2, 7)){
+		line -= pow(2, 7);
+		numCapteur = 1;
+	} else if (line >= pow(2, 6)){
+		line -= pow(2, 6);
+		numCapteur = 2;
+	} else if (line >= pow(2, 5)){
+		line -= pow(2, 5);
+		numCapteur = 3;
+	}else if (line >= pow(2, 4)){
+		line -= pow(2, 4);
+		numCapteur = 4;
+	}else if (line >= pow(2, 3)){
+		line -= pow(2, 3);
+		numCapteur = 5;
+	}else if (line >= pow(2, 2)){
+		line -= pow(2, 2);
+		numCapteur = 6;
+	}else if (line >= pow(2, 1)){
+		line -= pow(2, 1);
+		numCapteur = 7;
+	}else if (line >= pow(2, 0)){
+		line -= pow(2, 0);
+		numCapteur = 8;
+	}
+	if (line > 0){
+		numCapteur2 = numCapteur +1;
+	}
 }
 
 DrivebaseState adjustDrivebase(DrivebaseState drvbState, SensorState const& currSensState, 
