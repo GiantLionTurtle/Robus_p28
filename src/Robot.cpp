@@ -48,11 +48,15 @@ DrivebasePath genpathyellowline()
 void Robot::generate_next(  SensorState prevSensState, SensorState currSensState, 
 				   			 GameState prevGmState, GameState gmState, Iteration_time it_time)
 {
+	static unsigned int openarm_ms = 0;
 	// // New state given the new encoder data
 	if(gmState.missionState.test == Objective::Start) {
 		//drvb.path = gen_test_path(); 
 		openArm = true;
+		openarm_ms = it_time.time_ms;
 	}
+	if(it_time.time_ms - openarm_ms > 5000)
+		openArm = false;
 	drvb.state = drvb.state.update_kinematics(prevSensState.encoders_ticks, currSensState.encoders_ticks, it_time.delta_s);
 
 	// Adjust drivebase with other sensors and knowledge of the game
