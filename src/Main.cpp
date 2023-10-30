@@ -29,7 +29,6 @@ void setup()
 	robot.drvb.concrete.left.pid = { 1.4, 35.5555, 0.03333333 };
 	robot.drvb.concrete.right.pid = { 1.4, 35.5555, 0.03333333 };
 	robot.drvb.concrete.headingPID = { 0.1, 1.0, 0.002 };
-
 	it_time = Iteration_time::first();
 
 	sensState = get_sensors();
@@ -56,6 +55,11 @@ void loop()
 
 			// print(robot.drvb.state.wheelsVelocities);
 			// Serial.print(" | ");
+			//print(robot.drvb.state.pos);
+			// Serial.print(" | ");
+			//print(robot.drvb.state.heading);
+
+			//Serial.print("\n");
 			// Serial.println(it_time.delta_s, 4);
 
 
