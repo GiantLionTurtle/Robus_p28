@@ -18,9 +18,29 @@ DrivebasePath gen_test_path()
 {
 	DrivebasePath path;
 	path.segments[0] = Pair<PathSegment, unsigned int>(
-		PathSegment(mt::Vec2(1.0, 1.0), mt::Vec2(1.0, 0.0), 0.0),
+		PathSegment(mt::Vec2(1.5, -1.0), mt::Vec2(1.0, 0.0), 0.0),
 		0);
 	path.size = 1;
+
+	return path;
+}
+
+DrivebasePath genpathyellowline()
+{
+	DrivebasePath path;
+	path.segments[0] = Pair<PathSegment, unsigned int>(
+		PathSegment(mt::Vec2(1.0, 1.0), mt::Vec2(1.0, 0.0), 0.6),
+		0);
+	path.segments[1] = Pair<PathSegment, unsigned int>(
+		PathSegment(mt::Vec2(1.0, -1.0), mt::Vec2(0.0, -1.0), 0.6),
+		0);
+	path.segments[2] = Pair<PathSegment, unsigned int>(
+		PathSegment(mt::Vec2(-1.0, -1.0), mt::Vec2(-1.0, 0.0), 0.6),
+		0);
+	path.segments[3] = Pair<PathSegment, unsigned int>(
+		PathSegment(mt::Vec2(-1.0, 1.0), mt::Vec2(0.0, 1.0), 0.0),
+		0);
+	path.size = 4;
 
 	return path;
 }
@@ -30,7 +50,8 @@ void Robot::generate_next(  SensorState prevSensState, SensorState currSensState
 {
 	// // New state given the new encoder data
 	if(gmState.missionState.test == Objective::Start) {
-		drvb.path = gen_test_path();
+		//drvb.path = gen_test_path(); 
+		openArm = true;
 	}
 	drvb.state = drvb.state.update_kinematics(prevSensState.encoders_ticks, currSensState.encoders_ticks, it_time.delta_s);
 

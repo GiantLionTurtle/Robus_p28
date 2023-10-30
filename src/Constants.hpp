@@ -53,8 +53,8 @@ constexpr int kCupRelease_pathIndex = 3; // After which arc of the maneuver shou
 
 // Cup knocker arm constants
 constexpr int kArm_servoId = 1;
-constexpr int kArm_openAngle = 90;
-constexpr int kArm_closeAngle = 0;
+constexpr int kArm_openAngle = 180;
+constexpr int kArm_closeAngle = 95;
 
 // position of the center of the arc of the turns
 // one full turn mission constants
