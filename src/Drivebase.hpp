@@ -38,6 +38,7 @@ struct DrivebaseState {
 	float trajectory_radius { 0.0 };
 
 	mt::Vec2 wheelsVelocities { 0.0 }; // Velocity in m/s of each wheel
+	float last_wanted_velocity;
 
 	// A point in time in ms, used to stop the path following as long as millis() < waitUntil
 	unsigned long waitUntil { 0 }; 
@@ -77,9 +78,9 @@ struct PathSegment {
 	mt::Vec2 targPos { 0.0 }; // Target position 
 	mt::Vec2 targHeading { 0.0 };
 	float targSpeed { 0.0 }; // Speed at the target position
-
+	bool backwardDriving {false} ;
 	PathSegment() = default;
-	PathSegment(mt::Vec2 targPos_, mt::Vec2 targHeading_, float targSpeed_);
+	PathSegment(mt::Vec2 targPos_, mt::Vec2 targHeading_, float targSpeed_, bool backward_=false);
 };
 
 // Arcs to follow and delays after it's done

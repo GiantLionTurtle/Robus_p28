@@ -28,7 +28,7 @@ struct SensorState {
 	float backIR_dist;
 
 	bool proximityDetector; // value of 1 or 0
-	int lineDetector; // &&Figureout&& TO BE DEFINED DEPENDING HOW IT WORKS AND ITS RESPONSE
+	char lineDetector; // &&Figureout&& TO BE DEFINED DEPENDING HOW IT WORKS AND ITS RESPONSE
 	COLOR colorDetector; // assign a color depending on the color detector response
 	
 };
