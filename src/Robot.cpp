@@ -18,9 +18,12 @@ DrivebasePath gen_test_path()
 {
 	DrivebasePath path;
 	path.segments[0] = Pair<PathSegment, unsigned int>(
-		PathSegment(mt::Vec2(1.0, 1.0), mt::Vec2(1.0, 0.0), 0.0),
+		PathSegment(mt::Vec2(1.0, 1.0), mt::Vec2(1.0, 0.0), 0.2),
+		0); // delay following the arc
+	path.segments[1] = Pair<PathSegment, unsigned int>(
+		PathSegment(mt::Vec2(2.0,2.0), mt::Vec2(0.0,1.0), 0.0),
 		0);
-	path.size = 1;
+	path.size = 2;
 
 	return path;
 }
