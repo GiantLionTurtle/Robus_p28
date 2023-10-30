@@ -45,10 +45,9 @@ void loop()
 
 	if(ROBUS_IsBumper(3)) {
 		while(!gmState.over) {
-			delay(kControlLoopDelay);
-
-			it_time = it_time.current();
+			int loop_start = millis();
 			sensState = get_sensors();
+			it_time = it_time.current();
 
 			gmState = gmState.generate_next(prevSensState, sensState, robot.drvb.state, it_time);
 			robot.generate_next(prevSensState, sensState, prevGmState, gmState, it_time);
@@ -57,11 +56,6 @@ void loop()
 
 			// print(robot.drvb.state.wheelsVelocities);
 			// Serial.print(" | ");
-			print(robot.drvb.state.pos);
-			Serial.print(" | ");
-			print(robot.drvb.state.heading);
-
-			Serial.print("\n");
 			// Serial.println(it_time.delta_s, 4);
 
 
@@ -74,6 +68,10 @@ void loop()
 				set_hardwareState(HardwareState());
 				break;
 			}
+			float loop_end = millis();
+			float time_to_delay;
+			kControlLoopDelay-(loop_end-loop_start)<0? time_to_delay = 0:time_to_delay = kControlLoopDelay-(loop_end-loop_start);
+			delay(time_to_delay);
 		}		
 	}
 
