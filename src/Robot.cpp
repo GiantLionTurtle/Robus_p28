@@ -48,9 +48,9 @@ void Robot::generate_next(  SensorState prevSensState, SensorState currSensState
 		ballSwerve_helper(*this, gmState.missionState.trap_ball);
 	}
 }
-void followLine (Drivebase drvb)
+Drivebase follow_line (Drivebase drvb)
 {
-	int numCapteur = 0;
+	/*int numCapteur = 0;
 	int numCapteur2 = 0;
 	char line = get_ir_line();
 	if(line >= pow(2, 7)){
@@ -80,7 +80,19 @@ void followLine (Drivebase drvb)
 	}
 	if (line > 0){
 		numCapteur2 = numCapteur +1;
+	}*/
+	float dir =0;
+	char line = get_ir_line();
+	for(int i = 0; i < 8; i++)
+	{
+		if((bool)(line&(1<<i)))
+		{
+			dir+=i-3.5;
+		}
 	}
+	float angle = dir*5*2*PI/360;
+	drvb.state.heading = mt::rotate(drvb.state.heading, -angle);
+	return drvb;
 }
 
 DrivebaseState adjustDrivebase(DrivebaseState drvbState, SensorState const& currSensState, 

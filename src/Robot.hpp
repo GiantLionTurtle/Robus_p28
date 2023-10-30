@@ -30,7 +30,7 @@ struct Robot {
 								GameState prevGmState, GameState gmState, Iteration_time it_time);
 };
 
-void followLine(Drivebase drvb);
+ Drivebase follow_line(Drivebase drvb);
 
 } // !p28
 
