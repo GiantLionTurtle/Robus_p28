@@ -24,7 +24,7 @@ constexpr float kWheelRadius = 0.0383;           // m
 constexpr int kTicksPerRotation = 3200;
 constexpr float kCircumference = PI * kRobotWidth;
 constexpr float kMaxVel = 0.8;                  // m / s
-constexpr unsigned int kControlLoopDelay = 20; // ms
+constexpr unsigned int kControlLoopDelay = 10; // ms
 constexpr float kAccel = 0.4; // m/s^2
 constexpr float kCatastrophicDecel = 1.0;
 constexpr float kTurnAccel = 0.3;
@@ -53,8 +53,8 @@ constexpr int kCupRelease_pathIndex = 3; // After which arc of the maneuver shou
 
 // Cup knocker arm constants
 constexpr int kArm_servoId = 1;
-constexpr int kArm_openAngle = 90;
-constexpr int kArm_closeAngle = 0;
+constexpr int kArm_openAngle = 0;
+constexpr int kArm_closeAngle = 95;
 
 // position of the center of the arc of the turns
 // one full turn mission constants

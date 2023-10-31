@@ -14,6 +14,16 @@ DrivebaseState adjustDrivebase(DrivebaseState drvbState, SensorState const&  cur
 void ballSwerve_helper(Robot& robot, Objective obj_state);
 mt::Vec2 heading_from_ir(mt::Vec2 baseVec, SensorState const& sensState);
 
+DrivebasePath gen_test_path();
+DrivebasePath trapball_path();
+Drivebase follow_line (Drivebase drvb);
+DrivebaseState adjustDrivebase(DrivebaseState drvbState, SensorState const& currSensState, 
+								GameState const& prevGmState, GameState const& gmState);
+mt::Vec2 heading_from_ir(mt::Vec2 baseVec, SensorState const& sensState);
+DrivebasePath gen_ballSwervePath(Robot const& robot);
+void ballSwerve_helper(Robot& robot, Objective obj_state);
+
+
 DrivebasePath gen_test_path()
 {
 	DrivebasePath path;
@@ -33,13 +43,52 @@ DrivebasePath gen_test_path()
 	return path;
 }
 
+DrivebasePath genpathyellowline()
+{
+	DrivebasePath path;
+	// path.segments[0] = Pair<PathSegment, unsigned int>(
+	// 	PathSegment(mt::Vec2(1.0, 1.0), mt::Vec2(1.0, 0.0), 0.6),
+	// 	0);
+	// path.segments[1] = Pair<PathSegment, unsigned int>(
+	// 	PathSegment(mt::Vec2(1.0, -1.0), mt::Vec2(0.0, -1.0), 0.6),
+	// 	0);
+	// path.segments[2] = Pair<PathSegment, unsigned int>(
+	// 	PathSegment(mt::Vec2(-1.0, -1.0), mt::Vec2(-1.0, 0.0), 0.6),
+	// 	0);
+	// path.segments[3] = Pair<PathSegment, unsigned int>(
+	// 	PathSegment(mt::Vec2(-1.0, 1.0), mt::Vec2(0.0, 1.0), 0.0),
+	// 	0);
+	// path.size = 4;
+
+	return path;
+}
+
+DrivebasePath trapball_path()
+{
+	DrivebasePath ball_path;
+	// ball_path.segments[0] = Pair<PathSegment, unsigned int>(
+	// 	PathSegment(mt::Vec2(0.0,-1.0), mt::Vec2(0.0, -kInfinity), 0.2),
+	// 	0);
+	// ball_path.segments[1] = Pair<PathSegment, unsigned int>(
+	// 	PathSegment(mt::Vec2(-1.0,0.0), mt::Vec2(-1.0, 0.0), 0.2),
+	// 	0);
+		// ball_path.size = 2;
+
+		return ball_path;
+}
+
 void Robot::generate_next(  SensorState prevSensState, SensorState currSensState, 
 				   			 GameState prevGmState, GameState gmState, Iteration_time it_time)
 {
+	static unsigned int openarm_ms = 0;
 	// // New state given the new encoder data
 	if(gmState.missionState.test == Objective::Start) {
 		drvb.set_path(gen_test_path(), it_time);
+		openArm = true;
+		openarm_ms = it_time.time_ms;
 	}
+	if(it_time.time_ms - openarm_ms > 5000)
+		openArm = false;
 	drvb.state = drvb.state.update_kinematics(prevSensState.encoders_ticks, currSensState.encoders_ticks, it_time.delta_s);
 
 	// Adjust drivebase with other sensors and knowledge of the game

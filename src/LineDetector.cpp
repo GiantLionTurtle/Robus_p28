@@ -4,7 +4,7 @@
 #include "LibRobus.h"
 
 namespace p28 {
-    static int PIN_IR[8] {A0, A1, A2, A3, A4, A5, A6, A7};
+    static int PIN_IR[8] {A4, A5, A6, A7, A8, A9, A10, A11};
     #define BLACK_TRESH 200
     #define BASIC_TRESH 900
 
