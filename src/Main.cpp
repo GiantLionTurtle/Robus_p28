@@ -30,7 +30,7 @@ void setup()
 	// robot.drvb.concrete.headingPID = { 0.48, 0.18, 0.006 };
 
 	// robot.drvb.state.heading = mt::normalize(mt::rotate(mt::Vec2(0.0, 1.0), (float)PI));
-	// robot.drvb.state.heading = { 0.0, -1.0 };
+	robot.drvb.state.heading = { 0.0, -1.0 };
 
 	it_time = Iteration_time::first();
 
@@ -67,6 +67,10 @@ void loop()
 				set_hardwareState(HardwareState());
 				break;
 			}
+			print(robot.drvb.state.pos);
+			Serial.print(" | ");
+			print(robot.drvb.state.heading);
+			Serial.println();
 			unsigned int loop_end = millis();
 			unsigned int loop_duration = loop_end-loop_start;
 			time_to_delay_ms = loop_duration > kControlLoopDelay ? 0 : kControlLoopDelay - (loop_duration);

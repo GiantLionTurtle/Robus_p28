@@ -188,6 +188,8 @@ void Drivebase::update_concrete(Iteration_time it_time)
 	// 1. Find the arc that takes us from our current position to
 	// the target position with a target heading
 	Arc arc = arc_from_targetHeading(state.pos, follow.targPos, follow.targHeading);
+	if(follow.backward)
+		arc.radius = -arc.radius;
 
 	// Arc arc { .tengeantStart=mt::Vec2(0.0, 1.0), .end=(1.0, 1.0), .radius=-1.0, .length=1.57 };
 
@@ -244,12 +246,15 @@ void Drivebase::update_concrete(Iteration_time it_time)
 	mt::Vec2 speed_correction = correct_heading(motor_speeds);
 	// print(speed_correction);
 	Serial.println();
-	motor_speeds += speed_correction;//static_cast<float>(pow(state.velocity() / kMaxVel, 2));
 
 	//mt::Vec2(0.2185, 0.1815)
 	if(follow.backward) {
+		motor_speeds -= speed_correction;
 		concrete = concrete.update(state.wheelsVelocities, -motor_speeds, state.heading, -arc.tengeantStart, arc.length, it_time);
+		
+
 	} else {
+		motor_speeds += speed_correction;//static_cast<float>(pow(state.velocity() / kMaxVel, 2));
 		concrete = concrete.update(state.wheelsVelocities, motor_speeds, state.heading, arc.tengeantStart, arc.length, it_time);
 	}
 }

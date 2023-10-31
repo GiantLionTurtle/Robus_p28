@@ -35,6 +35,7 @@ constexpr float kMinSpeed = 0.04;
 constexpr float kAccelDist = 0.2;
 constexpr float kTurnOffset = 0.02;
 constexpr int kIRSensor_apartDist = 84;
+constexpr int kIRSensor_apartDist = 84;
 constexpr float kInfinity = 100000;
 
 constexpr float kMotorHarwareStateMixFactor = 0.85;

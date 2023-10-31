@@ -1,9 +1,11 @@
 
 #include "Robot.hpp"
 #include <Arduino.h>
-
+#include "Constants.hpp"
 #include "Field.hpp"
 #include "LineDetector.hpp"
+
+#include "Paths.hpp"
 
 namespace p28 {
 
@@ -14,8 +16,6 @@ DrivebaseState adjustDrivebase(DrivebaseState drvbState, SensorState const&  cur
 void ballSwerve_helper(Robot& robot, Objective obj_state);
 mt::Vec2 heading_from_ir(mt::Vec2 baseVec, SensorState const& sensState);
 
-DrivebasePath gen_test_path();
-DrivebasePath trapball_path();
 Drivebase follow_line (Drivebase drvb);
 DrivebaseState adjustDrivebase(DrivebaseState drvbState, SensorState const& currSensState, 
 								GameState const& prevGmState, GameState const& gmState);
@@ -23,6 +23,17 @@ mt::Vec2 heading_from_ir(mt::Vec2 baseVec, SensorState const& sensState);
 DrivebasePath gen_ballSwervePath(Robot const& robot);
 void ballSwerve_helper(Robot& robot, Objective obj_state);
 
+DrivebasePath path_hot_insert(DrivebasePath prevPath, DrivebasePath newPath)
+{
+	int prevSize = prevPath.size;
+	int newSize = newPath.size;
+	int limit = prevSize+newSize;
+	for(int i = newSize; i<limit;i++)
+	{
+		newPath.segments[i] = prevPath.segments[prevPath.index+(i-newSize)];
+		newPath.size++;
+	}
+	return newPath;
 
 DrivebasePath gen_test_path()
 {
@@ -40,6 +51,7 @@ DrivebasePath gen_test_path()
 	// path.add_checkPoint(PathCheckPoint(mt::Vec2(1, 0.0), mt::Vec2(0.0, -1.0), 0.08));
 	// path.add_checkPoint(PathCheckPoint(mt::Vec2(0.0, 0.0), mt::Vec2(0.0, 1.0), 0.08));
 
+	path.add_checkPoint(PathCheckPoint(mt::Vec2(0.0, 1.0), mt::Vec2(0.0, -1.0), 0.08, true));
 	return path;
 }
 
@@ -83,9 +95,13 @@ void Robot::generate_next(  SensorState prevSensState, SensorState currSensState
 	static unsigned int openarm_ms = 0;
 	// // New state given the new encoder data
 	if(gmState.missionState.test == Objective::Start) {
-		drvb.set_path(gen_test_path(), it_time);
+		drvb.set_path(Paths::gen_test(), it_time);
 		openArm = true;
 		openarm_ms = it_time.time_ms;
+	}
+	else if(gmState.missionState.one_cw_turn == Objective::Start)
+	{
+		drvb.set_path(Paths:: gen_one_cw_turn_path(), it_time);
 	}
 	if(it_time.time_ms - openarm_ms > 5000)
 		openArm = false;
@@ -107,37 +123,7 @@ void Robot::generate_next(  SensorState prevSensState, SensorState currSensState
 }
 void followLine (Drivebase drvb)
 {
-	int numCapteur = 0;
-	int numCapteur2 = 0;
-	char line = get_ir_line();
-	if(line >= pow(2, 7)){
-		line -= pow(2, 7);
-		numCapteur = 1;
-	} else if (line >= pow(2, 6)){
-		line -= pow(2, 6);
-		numCapteur = 2;
-	} else if (line >= pow(2, 5)){
-		line -= pow(2, 5);
-		numCapteur = 3;
-	}else if (line >= pow(2, 4)){
-		line -= pow(2, 4);
-		numCapteur = 4;
-	}else if (line >= pow(2, 3)){
-		line -= pow(2, 3);
-		numCapteur = 5;
-	}else if (line >= pow(2, 2)){
-		line -= pow(2, 2);
-		numCapteur = 6;
-	}else if (line >= pow(2, 1)){
-		line -= pow(2, 1);
-		numCapteur = 7;
-	}else if (line >= pow(2, 0)){
-		line -= pow(2, 0);
-		numCapteur = 8;
-	}
-	if (line > 0){
-		numCapteur2 = numCapteur +1;
-	}
+	
 }
 
 DrivebaseState adjustDrivebase(DrivebaseState drvbState, SensorState const& currSensState, 
@@ -211,14 +197,10 @@ mt::Vec2 heading_from_ir(mt::Vec2 baseVec, SensorState const& sensState)
 	return mt::rotate(baseVec, heading_angle);
 }
 
-DrivebasePath gen_ballSwervePath(Robot const& robot)
-{
-	// &&Figureout&&
-}
 void ballSwerve_helper(Robot& robot, Objective obj_state)
 {
 	if(obj_state == Objective::Start) {
-		robot.drvb.path = gen_ballSwervePath(robot);
+		robot.drvb.path = Paths::gen_trapBal(robot.drvb.state);
 	} else if(obj_state == Objective::UnderWay && robot.drvb.path.index == kCupRelease_pathIndex) {
 		robot.releaseCup = true;
 	}

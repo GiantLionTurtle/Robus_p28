@@ -19,7 +19,7 @@ GameState GameState::initial(SensorState sensState)
 	initial_gameState.over = false;
 	initial_gameState.lane = comp_lane(sensState.colorDetector);
 	initial_gameState.target_lane = initial_gameState.lane;
-	initial_gameState.missionState.test = Objective::Todo;
+	//initial_gameState.missionState.test = Objective::Todo;
 	
 	return initial_gameState;
 }
@@ -42,7 +42,6 @@ GameState GameState::generate_next(SensorState prevSensState, SensorState currSe
 	} else if(missionState.test == Objective::Start) {
 		newGmState.missionState.test = Objective::UnderWay;
 	}
-
 	// ping pong
 	// shortcut
 	return newGmState;
