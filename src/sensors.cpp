@@ -32,12 +32,14 @@ void printSensor(SensorState state)
 SensorState get_sensors()
 {
 	SensorState newSensorState;
-	newSensorState.encoders_ticks = { ENCODER_Read(LEFT), ENCODER_Read(RIGHT) };
-	newSensorState.bumpersState = { ROBUS_IsBumper(LEFT), ROBUS_IsBumper(RIGHT) };
+
 	newSensorState.frontIR_dist = get_distance_ir(0);
 	newSensorState.backIR_dist = get_distance_ir(1);
 	newSensorState.proximityDetector = wall_detection();
 	newSensorState.colorDetector = get_color();
+
+	newSensorState.encoders_ticks = { ENCODER_Read(LEFT), ENCODER_Read(RIGHT) };
+	newSensorState.bumpersState = { ROBUS_IsBumper(LEFT), ROBUS_IsBumper(RIGHT) };
 	//newSensorState.lineDetector = get_ir_line();
 	return newSensorState;
 }

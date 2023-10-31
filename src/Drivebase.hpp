@@ -18,7 +18,7 @@
 /*
 	How the drivebase should work:
 
-	1. PathSegments are fed one at a time (end point, end heading, end velocity)
+	1. PathCheckPoints are fed one at a time (end point, end heading, end velocity)
 	2. The drivebase computes an arc to complete the segment
 	3. The drivebase tries to follow said arcs using
 		a. Forward kinematics
@@ -74,25 +74,29 @@ struct Arc {
 };
 
 // Action that the drivebase can do (high level)
-struct PathSegment {
+struct PathCheckPoint {
 	mt::Vec2 targPos { 0.0 }; // Target position 
 	mt::Vec2 targHeading { 0.0 };
 	float targSpeed { 0.0 }; // Speed at the target position
-	bool backwardDriving {false} ;
-	PathSegment() = default;
-	PathSegment(mt::Vec2 targPos_, mt::Vec2 targHeading_, float targSpeed_, bool backward_=false);
+	unsigned int delay_before { 0 };
+	bool backward { false };
+
+	PathCheckPoint() = default;
+	PathCheckPoint(mt::Vec2 targPos_, mt::Vec2 targHeading_, 
+					float targSpeed_ = 0.0, unsigned int delay_before_ = 0, bool backward_ = false);
 };
 
 // Arcs to follow and delays after it's done
 
 struct DrivebasePath {
-	// Vector<Pair<PathSegment, unsigned int>> path;
+	PathCheckPoint segments[kMaxCheckPointForPath];
 	
-	Pair<PathSegment, unsigned int> segments[10];
 	unsigned int index { 0 };
 	unsigned int size { 0 };
 
-	PathSegment current() const { return segments[index].first; }
+	PathCheckPoint current() const { return segments[index]; }
+	void add_checkPoint(PathCheckPoint segment);
+	bool finished() const { return index >= size; }
 };
 
 
@@ -111,7 +115,7 @@ struct DrivebaseConcrete {
 	Error headingError;
 
 	DrivebaseConcrete update(mt::Vec2 actualWheelVelocities, mt::Vec2 desiredWheelVelocities,
-								mt::Vec2 currentHeading, mt::Vec2 targetHeading, Iteration_time it_time) const;
+								mt::Vec2 currentHeading, mt::Vec2 targetHeading, float dist_to_target, Iteration_time it_time) const;
 	mt::Vec2 hardware_output() const;
 };
 
@@ -120,7 +124,8 @@ struct Drivebase {
 	DrivebaseState state;
 	DrivebasePath path;
 
-	void update_path();
+	void update_path(Iteration_time it_time);
+	void set_path(DrivebasePath path_, Iteration_time it_time);
 	void update_concrete(Iteration_time it_time);
 
 	// Return new wheel velocities from the wheel velocities needed

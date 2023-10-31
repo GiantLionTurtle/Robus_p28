@@ -14,17 +14,31 @@ DrivebaseState adjustDrivebase(DrivebaseState drvbState, SensorState const&  cur
 void ballSwerve_helper(Robot& robot, Objective obj_state);
 mt::Vec2 heading_from_ir(mt::Vec2 baseVec, SensorState const& sensState);
 
+DrivebasePath gen_test_path();
+DrivebasePath trapball_path();
+Drivebase follow_line (Drivebase drvb);
+DrivebaseState adjustDrivebase(DrivebaseState drvbState, SensorState const& currSensState, 
+								GameState const& prevGmState, GameState const& gmState);
+mt::Vec2 heading_from_ir(mt::Vec2 baseVec, SensorState const& sensState);
+DrivebasePath gen_ballSwervePath(Robot const& robot);
+void ballSwerve_helper(Robot& robot, Objective obj_state);
+
+
 DrivebasePath gen_test_path()
 {
 	DrivebasePath path;
-	path.segments[0] = Pair<PathSegment, unsigned int>(
-		PathSegment(mt::Vec2(1.0, 1.0), mt::Vec2(1.0, 0.0), 0.0,true),
-		// PathSegment(mt::Vec2(1.0, 1.0), mt::Vec2(1.0, 0.0), 0.2),
-		0); // delay following the arc
-	// path.segments[1] = Pair<PathSegment, unsigned int>(
-	// 	PathSegment(mt::Vec2(2.0,2.0), mt::Vec2(0.0,1.0), 0.0),
-	// 	0);
-	path.size = 1;
+	// path.add_checkPoint(PathCheckPoint(mt::Vec2(0.0, 0.5), mt::Vec2(0.0, 1.0), 0.0, 0, false));
+	// path.add_checkPoint(PathCheckPoint(mt::Vec2(0.0, 20), mt::Vec2(0.0, 1.0)));
+
+	// path.add_checkPoint(PathCheckPoint(mt::Vec2(0.0, 0.5), mt::Vec2(0.0, 1.0), 0.2));
+	// path.add_checkPoint(PathCheckPoint(mt::Vec2(0.5, 0.5), mt::Vec2(0.0, -1.0), 0.2));
+	// path.add_checkPoint(PathCheckPoint(mt::Vec2(0.5, 0.0), mt::Vec2(0.0, -1.0), 0.2));
+	// path.add_checkPoint(PathCheckPoint(mt::Vec2(0.0, 0.0), mt::Vec2(0.0, 1.0), 0.0));
+
+	path.add_checkPoint(PathCheckPoint(mt::Vec2(0.0, 1), mt::Vec2(0.0, 1.0), 0.08));
+	path.add_checkPoint(PathCheckPoint(mt::Vec2(1, 1), mt::Vec2(0.0, -1.0), 0.08));
+	path.add_checkPoint(PathCheckPoint(mt::Vec2(1, 0.0), mt::Vec2(0.0, -1.0), 0.08));
+	path.add_checkPoint(PathCheckPoint(mt::Vec2(0.0, 0.0), mt::Vec2(0.0, 1.0), 0.08));
 
 	return path;
 }
@@ -32,21 +46,35 @@ DrivebasePath gen_test_path()
 DrivebasePath genpathyellowline()
 {
 	DrivebasePath path;
-	path.segments[0] = Pair<PathSegment, unsigned int>(
-		PathSegment(mt::Vec2(1.0, 1.0), mt::Vec2(1.0, 0.0), 0.6),
-		0);
-	path.segments[1] = Pair<PathSegment, unsigned int>(
-		PathSegment(mt::Vec2(1.0, -1.0), mt::Vec2(0.0, -1.0), 0.6),
-		0);
-	path.segments[2] = Pair<PathSegment, unsigned int>(
-		PathSegment(mt::Vec2(-1.0, -1.0), mt::Vec2(-1.0, 0.0), 0.6),
-		0);
-	path.segments[3] = Pair<PathSegment, unsigned int>(
-		PathSegment(mt::Vec2(-1.0, 1.0), mt::Vec2(0.0, 1.0), 0.0),
-		0);
-	path.size = 4;
+	// path.segments[0] = Pair<PathSegment, unsigned int>(
+	// 	PathSegment(mt::Vec2(1.0, 1.0), mt::Vec2(1.0, 0.0), 0.6),
+	// 	0);
+	// path.segments[1] = Pair<PathSegment, unsigned int>(
+	// 	PathSegment(mt::Vec2(1.0, -1.0), mt::Vec2(0.0, -1.0), 0.6),
+	// 	0);
+	// path.segments[2] = Pair<PathSegment, unsigned int>(
+	// 	PathSegment(mt::Vec2(-1.0, -1.0), mt::Vec2(-1.0, 0.0), 0.6),
+	// 	0);
+	// path.segments[3] = Pair<PathSegment, unsigned int>(
+	// 	PathSegment(mt::Vec2(-1.0, 1.0), mt::Vec2(0.0, 1.0), 0.0),
+	// 	0);
+	// path.size = 4;
 
 	return path;
+}
+
+DrivebasePath trapball_path()
+{
+	DrivebasePath ball_path;
+	// ball_path.segments[0] = Pair<PathSegment, unsigned int>(
+	// 	PathSegment(mt::Vec2(0.0,-1.0), mt::Vec2(0.0, -kInfinity), 0.2),
+	// 	0);
+	// ball_path.segments[1] = Pair<PathSegment, unsigned int>(
+	// 	PathSegment(mt::Vec2(-1.0,0.0), mt::Vec2(-1.0, 0.0), 0.2),
+	// 	0);
+		// ball_path.size = 2;
+
+		return ball_path;
 }
 
 void Robot::generate_next(  SensorState prevSensState, SensorState currSensState, 
@@ -55,7 +83,7 @@ void Robot::generate_next(  SensorState prevSensState, SensorState currSensState
 	static unsigned int openarm_ms = 0;
 	// // New state given the new encoder data
 	if(gmState.missionState.test == Objective::Start) {
-		//drvb.path = gen_test_path(); 
+		drvb.set_path(gen_test_path(), it_time);
 		openArm = true;
 		openarm_ms = it_time.time_ms;
 	}
@@ -65,17 +93,17 @@ void Robot::generate_next(  SensorState prevSensState, SensorState currSensState
 
 	// Adjust drivebase with other sensors and knowledge of the game
 	// drvb.state = adjustDrivebase(drvb.state, currSensState, prevGmState, gmState);
-	drvb.update_path();
+	drvb.update_path(it_time);
 	drvb.update_concrete(it_time);
 
 	// Cup zone?
-	// if(gmState.missionState.knock_cup == Objective::UnderWay) {
-	// 	openArm = true;
-	// }
+	if(gmState.missionState.knock_cup == Objective::UnderWay) {
+		openArm = true;
+	}
 
-	// if(gmState.missionState.trap_ball == Objective::Start) {
-	// 	ballSwerve_helper(*this, gmState.missionState.trap_ball);
-	// }
+	if(gmState.missionState.trap_ball == Objective::Start) {
+		ballSwerve_helper(*this, gmState.missionState.trap_ball);
+	}
 }
 void followLine (Drivebase drvb)
 {
