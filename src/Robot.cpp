@@ -1,7 +1,7 @@
 
 #include "Robot.hpp"
 #include <Arduino.h>
-
+#include "Constants.hpp"
 #include "Field.hpp"
 #include "LineDetector.hpp"
 
@@ -29,12 +29,41 @@ DrivebasePath gen_test_path()
 	return path;
 }
 
+DrivebasePath gen_one_cw_turn_path()
+{
+	DrivebasePath path;
+	path.segments[0] = Pair<PathSegment, unsigned int>(PathSegment(mt::Vec2(0.0, 1.0), mt::Vec2(0.0, 1.0), 0.0, true), 0);
+	path.segments[1] = Pair<PathSegment, unsigned int>(PathSegment(mt::Vec2(0.5, 1.0), mt::Vec2(0.0, -1.0), 0.0, true), 0);
+	path.segments[2] = Pair<PathSegment, unsigned int>(PathSegment(mt::Vec2(0.5, 0.5), mt::Vec2(0.0, -1.0), 0.0, true), 0);
+	//path.segments[3] = Pair<PathSegment, unsigned int>(PathSegment(mt::Vec2(0.0, 0.0), mt::Vec2(0.0, 1.0), 0.0, true), 0);
+	path.size = 3;
+
+	return path;
+}
+
+DrivebasePath path_hot_insert(DrivebasePath prevPath, DrivebasePath newPath)
+{
+	int prevSize = prevPath.size;
+	int newSize = newPath.size;
+	int limit = prevSize+newSize;
+	for(int i = newSize; i<limit;i++)
+	{
+		newPath.segments[i] = prevPath.segments[prevPath.index+(i-newSize)];
+		newPath.size++;
+	}
+	return newPath;
+}
+
 void Robot::generate_next(  SensorState prevSensState, SensorState currSensState, 
 				   			 GameState prevGmState, GameState gmState, Iteration_time it_time)
 {
 	// // New state given the new encoder data
 	if(gmState.missionState.test == Objective::Start) {
 		drvb.path = gen_test_path();
+	}
+	else if(gmState.missionState.one_cw_turn == Objective::Start)
+	{
+		drvb.path = gen_one_cw_turn_path();
 	}
 	drvb.state = drvb.state.update_kinematics(prevSensState.encoders_ticks, currSensState.encoders_ticks, it_time.delta_s);
 
@@ -54,37 +83,7 @@ void Robot::generate_next(  SensorState prevSensState, SensorState currSensState
 }
 void followLine (Drivebase drvb)
 {
-	int numCapteur = 0;
-	int numCapteur2 = 0;
-	char line = get_ir_line();
-	if(line >= pow(2, 7)){
-		line -= pow(2, 7);
-		numCapteur = 1;
-	} else if (line >= pow(2, 6)){
-		line -= pow(2, 6);
-		numCapteur = 2;
-	} else if (line >= pow(2, 5)){
-		line -= pow(2, 5);
-		numCapteur = 3;
-	}else if (line >= pow(2, 4)){
-		line -= pow(2, 4);
-		numCapteur = 4;
-	}else if (line >= pow(2, 3)){
-		line -= pow(2, 3);
-		numCapteur = 5;
-	}else if (line >= pow(2, 2)){
-		line -= pow(2, 2);
-		numCapteur = 6;
-	}else if (line >= pow(2, 1)){
-		line -= pow(2, 1);
-		numCapteur = 7;
-	}else if (line >= pow(2, 0)){
-		line -= pow(2, 0);
-		numCapteur = 8;
-	}
-	if (line > 0){
-		numCapteur2 = numCapteur +1;
-	}
+	
 }
 
 DrivebaseState adjustDrivebase(DrivebaseState drvbState, SensorState const& currSensState, 
@@ -154,7 +153,7 @@ mt::Vec2 heading_from_ir(mt::Vec2 baseVec, SensorState const& sensState)
 {
 	// See fig.4
 	float dist_diff = abs(sensState.backIR_dist - sensState.frontIR_dist);
-	float heading_angle = 0.0;//asin(dist_diff/kIRSensor_apartDist);
+	float heading_angle = asin(dist_diff/kIRSensor_apartDist);
 	return mt::rotate(baseVec, heading_angle);
 }
 
