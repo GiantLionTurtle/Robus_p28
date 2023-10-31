@@ -65,7 +65,8 @@ struct Vec2_any {
 		y += other.y;
 		return *this;
 	}
-	inline Vec2_any<T>& operator+=(T scalar)
+	template<typename Ts>
+	inline Vec2_any<T>& operator+=(Ts scalar)
 	{
 		x += scalar;
 		y += scalar;
@@ -77,19 +78,22 @@ struct Vec2_any {
 		y -= other.y;
 		return *this;
 	}
-	inline Vec2_any<T>& operator-=(T scalar)
+	template<typename Ts>
+	inline Vec2_any<T>& operator-=(Ts scalar)
 	{
 		x -= scalar;
 		y -= scalar;
 		return *this;
 	}
-	inline Vec2_any<T>& operator*=(T scalar)
+	template<typename Ts>
+	inline Vec2_any<T>& operator*=(Ts scalar)
 	{
 		x *= scalar;
 		y *= scalar;
 		return *this;
 	}
-	inline Vec2_any<T>& operator/=(T scalar)
+	template<typename Ts>
+	inline Vec2_any<T>& operator/=(Ts scalar)
 	{
 		x /= scalar;
 		y /= scalar;
@@ -129,44 +133,44 @@ inline T cross(Vec2_any<T> const& lhs, Vec2_any<T> const& rhs)
 }
 
 // ----- Operations with scalars ----- //
-template<typename T>
-inline Vec2_any<T> operator+(Vec2_any<T> const& lhs, T const& rhs)
+template<typename T, typename Ts>
+inline Vec2_any<T> operator+(Vec2_any<T> const& lhs, Ts const& rhs)
 {
 	return { lhs.x + rhs, lhs.y + rhs };
 }
-template<typename T>
-inline Vec2_any<T> operator-(Vec2_any<T> const& lhs, T const& rhs)
+template<typename T, typename Ts>
+inline Vec2_any<T> operator-(Vec2_any<T> const& lhs, Ts const& rhs)
 {
 	return { lhs.x - rhs, lhs.y - rhs };
 }
-template<typename T>
-inline Vec2_any<T> operator*(Vec2_any<T> const& lhs, T const& rhs)
+template<typename T, typename Ts>
+inline Vec2_any<T> operator*(Vec2_any<T> const& lhs, Ts const& rhs)
 {
 	return { lhs.x * rhs, lhs.y * rhs };
 }
-template<typename T>
-inline Vec2_any<T> operator/(Vec2_any<T> const& lhs, T const& rhs)
+template<typename T, typename Ts>
+inline Vec2_any<T> operator/(Vec2_any<T> const& lhs, Ts const& rhs)
 {
 	return { lhs.x / rhs, lhs.y / rhs };
 }
 
-template<typename T>
-inline Vec2_any<T> operator+(T const& lhs, Vec2_any<T> const& rhs)
+template<typename T, typename Ts>
+inline Vec2_any<T> operator+(Ts const& lhs, Vec2_any<T> const& rhs)
 {
 	return { lhs + rhs.x, lhs + rhs.y };
 }
-template<typename T>
-inline Vec2_any<T> operator-(T const& lhs, Vec2_any<T> const& rhs)
+template<typename T, typename Ts>
+inline Vec2_any<T> operator-(Ts const& lhs, Vec2_any<T> const& rhs)
 {
 	return { lhs - rhs.x, lhs - rhs.y };
 }
-template<typename T>
-inline Vec2_any<T> operator*(T const& lhs, Vec2_any<T> const& rhs)
+template<typename T, typename Ts>
+inline Vec2_any<T> operator*(Ts const& lhs, Vec2_any<T> const& rhs)
 {
 	return { lhs * rhs.x, lhs * rhs.y };
 }
-template<typename T>
-inline Vec2_any<T> operator/(T const& lhs, Vec2_any<T> const& rhs)
+template<typename T, typename Ts>
+inline Vec2_any<T> operator/(Ts const& lhs, Vec2_any<T> const& rhs)
 {
 	return { lhs / rhs.x, lhs / rhs.y };
 }
@@ -242,8 +246,8 @@ inline Vec2_any<T> operator-(Vec2_any<T> const& vec)
 	return mt::Vec2{-vec.x, -vec.y};
 }
 
-template<typename T>
-inline Vec2_any<T> rotate(Vec2_any<T> const& vec, T const& angle_rad)
+template<typename T, typename Ta>
+inline Vec2_any<T> rotate(Vec2_any<T> const& vec, Ta const& angle_rad)
 {
 	// https://en.wikipedia.org/wiki/Rotation_matrix#In_two_dimensions
 

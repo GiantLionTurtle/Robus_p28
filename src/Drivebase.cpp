@@ -4,8 +4,8 @@
 
 namespace p28 {
 
-template<typename T>
-T clamp(T x, T min_, T max_)
+template<typename Tx, typename Tmin, typename Tmax>
+Tx clamp(Tx x, Tmin min_, Tmax max_)
 {
 	if(x < min_)
 		return min_;
@@ -34,6 +34,14 @@ PathCheckPoint::PathCheckPoint(mt::Vec2 targPos_, mt::Vec2 targHeading_,
 	, backward(backward_)
 {
 	
+}
+PathCheckPoint PathCheckPoint::make_turn(mt::Vec2 targHeading_, unsigned int delay_before = 0)
+{	
+	PathCheckPoint out;
+	out.targHeading = mt::normalize(targHeading_);
+	out.turn_only = true;
+	out.delay_before = 0;
+	return out;
 }
 void DrivebasePath::add_checkPoint(PathCheckPoint checkPoint)
 {
@@ -85,15 +93,6 @@ DrivebaseState DrivebaseState::update_kinematics(mt::i32Vec2 prevEncTicks, mt::i
 	new_drvbState.pos = pos + (wheelVels.left+wheelVels.right)/2.0f * heading * delta_s;
 	new_drvbState.heading = mt::normalize(mt::rotate(heading, 1/kRobotWidth * (wheelVels.right - wheelVels.left) * delta_s));
 
-	// Serial.print("Vel: ");
-	// print(new_drvbState.wheelsVelocities);
-	// Serial.print(" pos: ");
-	// print(new_drvbState.pos);
-	// Serial.print(" heading ");
-	// print(heading);
-	// Serial.print(" delta_s ");	
-	// Serial.println(delta_s);
-
 	return new_drvbState;
 }
 DrivebaseState DrivebaseState::intersect_line(mt::Line ln) const
@@ -125,7 +124,7 @@ DrivebaseConcrete DrivebaseConcrete::update(mt::Vec2 actualWheelVelocities, mt::
 	// The heading error doesn't need to know the actual heading angle, only the
 	// difference between target vector and current vector + goal is 0.0
 
-	float angle_error = mt::signed_angle(currentHeading, targetHeading);
+	float angle_error = clamp(mt::signed_angle(currentHeading, targetHeading), -PI/2, PI/2);
 
 	if(dist_to_target < 0.05) {
 		angle_error *= dist_to_target / 0.05;
@@ -140,27 +139,24 @@ DrivebaseConcrete DrivebaseConcrete::update(mt::Vec2 actualWheelVelocities, mt::
 
 mt::Vec2 DrivebaseConcrete::hardware_output() const
 {
-	// Serial.print("left: ");
-	// Serial.print(left.error.error);
-	// Serial.print(",  ");
-	// Serial.print(left.error.sum_error);
-	// Serial.print(",  ");
-	// Serial.println(left.error.diff_error);
 	return { left.hardware_output(), right.hardware_output() };
 }
 void Drivebase::update_path(Iteration_time it_time)
 {
 	if(path.finished())
 		return;
-	// mt::print(state.pos);
-	// Serial.print(" vs ");
-	// mt::print(path.current().targPos);
-	// Serial.println("");
-	if(mt::epsilon_equal2(state.pos, path.current().targPos, kPathFollower_epsilon2)) {
+
+	PathCheckPoint current = path.current();
+	
+
+	if((!current.turn_only && mt::epsilon_equal2(state.pos, current.targPos, kPathFollower_distEpsilon2)) || 
+		(current.turn_only && mt::epsilon_equal2(state.heading, current.targHeading, kPathFollower_headingEpsilon2))) {
 		Serial.println("Neeext");
 		path.index++;
 		concrete.headingError = Error{};
 		if(!path.finished()) {
+			// path.current is not the same as current because we
+			// just incremented the path!
 			state.waitUntil = it_time.time_ms + path.current().delay_before;
 		}
 	}
@@ -175,46 +171,29 @@ void Drivebase::set_path(DrivebasePath path_, Iteration_time it_time)
 void Drivebase::update_concrete(Iteration_time it_time)
 {
 	// Don't move if the drivebase should be waiting for actions	
-	// Serial.print("Path size ");
-	// Serial.print(path.size);
-	// Serial.print(",  ");
-	// Serial.println(path.index);
 	if(state.waitUntil > it_time.time_ms || path.finished()) {
 		concrete = concrete.update(state.wheelsVelocities, {0.0f}, {1.0f}, {1.0f}, 0.0, it_time);
 		return;
 	}
 
 	PathCheckPoint follow = path.current();
+
+	if(follow.turn_only) {
+		update_turn(follow, it_time);
+	} else {
+		update_follow_arc(follow, it_time);
+	}
+}
+void Drivebase::update_follow_arc(PathCheckPoint follow, Iteration_time it_time)
+{
 	// 1. Find the arc that takes us from our current position to
 	// the target position with a target heading
 	Arc arc = arc_from_targetHeading(state.pos, follow.targPos, follow.targHeading);
 	if(follow.backward)
 		arc.radius = -arc.radius;
 
-	// Arc arc { .tengeantStart=mt::Vec2(0.0, 1.0), .end=(1.0, 1.0), .radius=-1.0, .length=1.57 };
-
-	// Serial.print("error: ");
-	// Serial.println(error.error);
-	// Serial.print(",  ");
-	// Serial.print(error.sum_error);
-	// Serial.print(",  ");
-	// Serial.println(error.diff_error);
-
-
-	// Serial.print("Pos: ");
-	// print(state.pos);
-	// Serial.println("");
-	// Serial.print("Arc: ");
-	// arc.print();
-	// 2. Find the angular velocity that should be reached this iteration
-	// Assum we are going in a straight line of length arc.length
-	// float mod_accel = 1 - abs(concrete.headingError.error / PI);
 	float velocity = velocity_for_point(state.velocity(), follow.targSpeed, arc.length, kAccel, it_time.delta_s);
-	// Serial.print("Wants vel: ");
-	// Serial.print(velocity);
-	// Serial.print(" actual: ");
-	// Serial.print(state.velocity());
-	// Serial.print(" correction: ");
+
 	mt::Vec2 motor_speeds;
 	if(arc.radius != kInfinity) {	
 		// Transform m/s into rad/s
@@ -222,43 +201,38 @@ void Drivebase::update_concrete(Iteration_time it_time)
 
 
 		// 3. Find the motor speeds needed to follow said arc, assuming
-		// we are already tangeant to it with angular velocity
-		// Serial.print("ang vel: ");
-		// Serial.println(angularVelocity);
-		// Serial.print(" for ");
-		// Serial.print(arc.length);
-		// Serial.print(" :: ");
-		// Serial.print(arc.radius);
-		// Serial.print(" :: ");
 		motor_speeds = arcTurnToDest(arc, angularVelocity);
 	} else {
 		motor_speeds = { velocity, velocity };
 	}
-	// Serial.print("Target velocity ");
-	// print(motor_speeds);
-	// Serial.print(" => ");
-	// Serial.print(" => ");
-	// Serial.print(velocity);
-	// Serial.print(" from ");
-
 
 	// 4. Correct for the heading error
-	mt::Vec2 speed_correction = correct_heading(motor_speeds);
-	// print(speed_correction);
-	Serial.println();
+	mt::Vec2 speed_correction = correct_heading();
 
-	//mt::Vec2(0.2185, 0.1815)
 	if(follow.backward) {
 		motor_speeds -= speed_correction;
 		concrete = concrete.update(state.wheelsVelocities, -motor_speeds, state.heading, -arc.tengeantStart, arc.length, it_time);
-		
-
 	} else {
-		motor_speeds += speed_correction;//static_cast<float>(pow(state.velocity() / kMaxVel, 2));
+		motor_speeds += speed_correction;
 		concrete = concrete.update(state.wheelsVelocities, motor_speeds, state.heading, arc.tengeantStart, arc.length, it_time);
 	}
 }
-mt::Vec2 Drivebase::correct_heading(mt::Vec2 staged_wheelVelocities) const
+void Drivebase::update_turn(PathCheckPoint follow, Iteration_time it_time)
+{
+	float err = abs(concrete.headingError.error);
+	float motor_speed = kMinSpeed;
+	if(err > PI/2) {
+		motor_speed = 0.3;
+	} else if(err > PI/4) {
+		motor_speed = 0.1;
+	}
+	if(concrete.headingError.error < 0) {
+		motor_speed = -motor_speed;
+	}
+	concrete = concrete.update(state.wheelsVelocities, {motor_speed, -motor_speed}, state.heading, follow.targHeading, kInfinity, it_time);
+}
+
+mt::Vec2 Drivebase::correct_heading() const
 {
 	float velocity_offset = get(concrete.headingPID, concrete.headingError);
 	return mt::Vec2(velocity_offset, -velocity_offset);
@@ -289,10 +263,7 @@ Arc arc_from_targetHeading(mt::Vec2 start, mt::Vec2 end, mt::Vec2 end_heading)
 	float angleRadius_CenterEnd = angle(orientationCenterEnd,vecStartEnd);
 	arcTGH.radius = (magnitude(vecStartEnd)/2)/(cos(angleRadius_CenterEnd));
 
-	// Serial.print("Radius ");
-	// Serial.println(arcTGH.radius);
 	if(abs(arcTGH.radius) >= kInfinity) {
-		// Serial.println("Is infiinitylpol");
 		return Arc{ .tengeantStart=end_heading, .end=end, .radius=kInfinity, .length=mt::distance(end, start) };
 	}
 
@@ -322,24 +293,9 @@ float velocity_for_point(float current_velocity, float target_velocity, float di
 	float dist_to_target_velocity = min(target_velocity, current_velocity) * time_to_target_velocity + // Zone A
 									velocity_diff * (time_to_target_velocity) / 2; // Zone B
 
-	// Serial.print("dists: ");
-	// Serial.print(dist_to_target);
-	// Serial.print(",  ");
-	// Serial.print(dist_to_target_velocity);
-	// Serial.print(" with ");
-	// Serial.print(current_velocity);
-	// Serial.print(" :: ");
 	if(dist_to_target >= dist_to_target_velocity) {
-		// Serial.print("Accel ");
-		// Serial.print(accel);
-		// Serial.print(" * ");
-		// Serial.println(delta_s);
 		return min(current_velocity + accel * delta_s, kMaxVel);
 	} else {
-		// Serial.print("Decel ");
-		// Serial.print(accel);
-		// Serial.print(" * ");
-		// Serial.println(delta_s);
 		return max(current_velocity - decel * delta_s, target_velocity);
 	}
 }

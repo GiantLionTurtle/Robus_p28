@@ -238,7 +238,7 @@ void near_equality()
 
 	const int n_trials = 1;
 	Trial trials[n_trials] = {
-		Trial {.a=mt::Vec2(0.0, 0.0), .b=mt::Vec2(0.0, 0.5), .epsilon2=kPathFollower_epsilon2, .expected=false }
+		Trial {.a=mt::Vec2(0.0, 0.0), .b=mt::Vec2(0.0, 0.5), .epsilon2=kPathFollower_distEpsilon2, .expected=false }
 	};
 
 	Serial.println(" --- epsilon equal test --- ");

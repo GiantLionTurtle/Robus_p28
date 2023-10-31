@@ -21,11 +21,15 @@ Drivebase follow_line (Drivebase drvb);
 void Robot::generate_next(  SensorState prevSensState, SensorState currSensState, 
 				   			 GameState prevGmState, GameState gmState, Iteration_time it_time)
 {
+	if(gmState.missions.test.start()) {
+		drvb.set_path(Paths::gen_test(), it_time);
+	}
 	// else if(gmState.missions.one_turn == Objective::Start)
 	// {
 	// 	drvb.set_path(Paths:: gen_one_turn_path(), it_time);
 	// }
 
+	// New state given the new encoder data
 	drvb.state = drvb.state.update_kinematics(prevSensState.encoders_ticks, currSensState.encoders_ticks, it_time.delta_s);
 
 	// Adjust drivebase with other sensors and knowledge of the game

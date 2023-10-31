@@ -79,11 +79,14 @@ struct PathCheckPoint {
 	mt::Vec2 targHeading { 0.0 };
 	float targSpeed { 0.0 }; // Speed at the target position
 	unsigned int delay_before { 0 };
+	bool turn_only { false };
 	bool backward { false };
 
 	PathCheckPoint() = default;
 	PathCheckPoint(mt::Vec2 targPos_, mt::Vec2 targHeading_, 
 					float targSpeed_ = 0.0, unsigned int delay_before_ = 0, bool backward_ = false);
+
+	static PathCheckPoint make_turn(mt::Vec2 targHeading_, unsigned int delay_before = 0);
 };
 
 // Arcs to follow and delays after it's done
@@ -128,9 +131,12 @@ struct Drivebase {
 	void set_path(DrivebasePath path_, Iteration_time it_time);
 	void update_concrete(Iteration_time it_time);
 
-	// Return new wheel velocities from the wheel velocities needed
-	// to follow the arc + known heading error
-	mt::Vec2 correct_heading(mt::Vec2 staged_wheelVelocities) const;
+	void update_follow_arc(PathCheckPoint follow, Iteration_time it_time);
+	void update_turn(PathCheckPoint follow, Iteration_time it_time);
+
+	// Returns an offset to wheel velocities to correct 
+	// the heading
+	mt::Vec2 correct_heading() const;
 };
 
 // Conversion for encoders to distance (meters)

@@ -14,8 +14,7 @@ enum kMotorId : uint8_t { kLeftMotor = 0, kRightMotor = 1 };
 enum kBumperId : uint8_t  { kLeftBumper = 0, kRightBumper = 1, kFrontBumper = 2, kRearBumper = 3 };
 
 #ifdef AQUAMAN
-constexpr float kRobotWidth = 0.187;              // m
-constexpr float kRobotWidth = 0.1865;              // m
+constexpr float kRobotWidth = 0.19;              // m
 #else
 constexpr float kRobotWidth = 0.1850;              // m (distance between the motor wheels)
 #endif
@@ -31,7 +30,7 @@ constexpr float kTurnAccel = 0.3;
 constexpr unsigned int kDecelerationDelay = 50; // ms, time to stop the robot
 constexpr float kMaxAngularVelocity = 0.8; // rad/s
 constexpr float kForwardSpeed = 0.62;
-constexpr float kMinSpeed = 0.04;
+constexpr float kMinSpeed = 0.03;
 constexpr float kAccelDist = 0.2;
 constexpr float kTurnOffset = 0.02;
 constexpr int kIRSensor_apartDist = 84;
@@ -42,8 +41,11 @@ constexpr float kMotorHarwareStateMixFactor = 0.85;
 using time_t = long unsigned int;
 
 // Square of the precision of the path follower
-// We want to land within a radius of 4cm
-constexpr float kPathFollower_epsilon2 = 0.0001;
+// We want to land within a radius of 1cm
+constexpr float kPathFollower_distEpsilon2 = 0.0001;
+constexpr float kPathFollower_headingEpsilon2 = 0.00005;
+constexpr unsigned int kMaxCheckPointForPath = 20;
+
 
 // Cup holder constants
 constexpr int kCup_servoId = 0;
@@ -62,7 +64,6 @@ constexpr int kKnockCupDelay = 1500; // ms
 // one full turn mission constants
 constexpr unsigned int kOneCWTurn_startTime = 20000;
 
-constexpr unsigned int kMaxCheckPointForPath = 10;
 
 enum class COLOR { RED, GREEN, BLUE, YELLOW, BLACK, WHITE };
 

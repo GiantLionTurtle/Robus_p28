@@ -3,7 +3,7 @@
 #define P28_COMPILEFLAGS_HPP_
 
 // Chose target robot
-//#define AQUAMAN
+#define AQUAMAN
 #ifndef AQUAMAN
 #define BATAMAN
 #endif
