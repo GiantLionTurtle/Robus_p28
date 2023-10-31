@@ -12,6 +12,7 @@ DrivebasePath gen_test();
 
 DrivebasePath gen_yellowLine();
 DrivebasePath gen_trapBal(DrivebaseState drvbState);
+DrivebasePath gen_one_cw_turn_path();
 
 }
 

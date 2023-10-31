@@ -23,19 +23,6 @@ mt::Vec2 heading_from_ir(mt::Vec2 baseVec, SensorState const& sensState);
 DrivebasePath gen_ballSwervePath(Robot const& robot);
 void ballSwerve_helper(Robot& robot, Objective obj_state);
 
-
-DrivebasePath gen_one_cw_turn_path()
-{
-	DrivebasePath path;
-	path.segments[0] = Pair<PathSegment, unsigned int>(PathSegment(mt::Vec2(0.0, 1.0), mt::Vec2(0.0, 1.0), 0.0, true), 0);
-	path.segments[1] = Pair<PathSegment, unsigned int>(PathSegment(mt::Vec2(0.5, 1.0), mt::Vec2(0.0, -1.0), 0.0, true), 0);
-	path.segments[2] = Pair<PathSegment, unsigned int>(PathSegment(mt::Vec2(0.5, 0.5), mt::Vec2(0.0, -1.0), 0.0, true), 0);
-	//path.segments[3] = Pair<PathSegment, unsigned int>(PathSegment(mt::Vec2(0.0, 0.0), mt::Vec2(0.0, 1.0), 0.0, true), 0);
-	path.size = 3;
-
-	return path;
-}
-
 DrivebasePath path_hot_insert(DrivebasePath prevPath, DrivebasePath newPath)
 {
 	int prevSize = prevPath.size;
@@ -61,7 +48,7 @@ void Robot::generate_next(  SensorState prevSensState, SensorState currSensState
 	}
 	else if(gmState.missionState.one_cw_turn == Objective::Start)
 	{
-		drvb.path = gen_one_cw_turn_path();
+		drvb.set_path(Paths:: gen_one_cw_turn_path(), it_time);
 	}
 	if(it_time.time_ms - openarm_ms > 5000)
 		openArm = false;
