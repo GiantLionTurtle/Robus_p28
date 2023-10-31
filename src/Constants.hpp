@@ -23,27 +23,27 @@ constexpr float kRobotWidth_2 = kRobotWidth/2;  // m
 constexpr float kWheelRadius = 0.0383;           // m
 constexpr int kTicksPerRotation = 3200;
 constexpr float kCircumference = PI * kRobotWidth;
-constexpr float kMaxVel = 1.9;                  // m / s
-constexpr unsigned int kControlLoopDelay = 50; // ms
+constexpr float kMaxVel = 0.8;                  // m / s
+constexpr unsigned int kControlLoopDelay = 10; // ms
 constexpr float kAccel = 0.4; // m/s^2
-constexpr float kCatastrophicDecel = 2.0;
+constexpr float kCatastrophicDecel = 1.0;
 constexpr float kTurnAccel = 0.3;
 constexpr unsigned int kDecelerationDelay = 50; // ms, time to stop the robot
-constexpr float kMaxAngularVelocity = 0.5; // rad/s
+constexpr float kMaxAngularVelocity = 0.8; // rad/s
 constexpr float kForwardSpeed = 0.62;
 constexpr float kMinSpeed = 0.04;
 constexpr float kAccelDist = 0.2;
 constexpr float kTurnOffset = 0.02;
 
-constexpr float kInfinity = 100000;
+constexpr float kInfinity = 10;
 
-constexpr float kMotorHarwareStateMixFactor = 0.95;
+constexpr float kMotorHarwareStateMixFactor = 0.85;
 
 using time_t = long unsigned int;
 
 // Square of the precision of the path follower
 // We want to land within a radius of 4cm
-constexpr float kPathFollower_epsilon2 = 0.0016;
+constexpr float kPathFollower_epsilon2 = 0.0001;
 
 // Cup holder constants
 constexpr int kCup_servoId = 0;
@@ -53,13 +53,14 @@ constexpr int kCupRelease_pathIndex = 3; // After which arc of the maneuver shou
 
 // Cup knocker arm constants
 constexpr int kArm_servoId = 1;
-constexpr int kArm_openAngle = 90;
-constexpr int kArm_closeAngle = 0;
+constexpr int kArm_openAngle = 0;
+constexpr int kArm_closeAngle = 95;
 
 // position of the center of the arc of the turns
 // one full turn mission constants
 constexpr unsigned int kOneCWTurn_startTime = 20000;
 
+constexpr unsigned int kMaxCheckPointForPath = 10;
 
 enum class COLOR { RED, GREEN, BLUE, YELLOW, BLACK, WHITE };
 

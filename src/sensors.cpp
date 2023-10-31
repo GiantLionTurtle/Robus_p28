@@ -32,6 +32,7 @@ void printSensor(SensorState state)
 SensorState get_sensors()
 {
 	SensorState newSensorState;
+
 	newSensorState.frontIR_dist = get_distance_ir(0);
 	newSensorState.backIR_dist = get_distance_ir(1);
 	newSensorState.proximityDetector = wall_detection();
