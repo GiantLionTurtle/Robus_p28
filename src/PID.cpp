@@ -21,7 +21,7 @@ float get(PID const& pid, Error const& error)
 	// Serial.print(error.sum_error);
 	// Serial.print(",  ");
 	// Serial.println(error.diff_error);
-	return pid.P * error.error + pid.D * error.diff_error + pid.I * error.sum_error;
+	return pid.P * error.error + pid.I * error.sum_error + pid.D * error.diff_error;
 }
 
 } // !p28

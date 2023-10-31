@@ -15,10 +15,6 @@ Iteration_time it_time;
 GameState gmState, prevGmState;
 HardwareState hrdwState;
 
-PID pid = { 1.4, 35.5555, 0.03333333 };
-// PID pid = { 4, 0.0, 0.0 };
-Error error;
-
 void setup()
 {
 	BoardInit();
@@ -28,8 +24,11 @@ void setup()
 
 	robot.drvb.concrete.left.pid = { 1.4, 35.5555, 0.03333333 };
 	robot.drvb.concrete.right.pid = { 1.4, 35.5555, 0.03333333 };
-	robot.drvb.concrete.headingPID = { 0.1, 1.0, 0.002 };
-	robot.drvb.state.heading = mt::Vec2(0.0, 1.0);
+	robot.drvb.concrete.headingPID = { 0.48, 0.18, 0.006 };
+	// robot.drvb.concrete.headingPID = { 0.48, 0.18, 0.006 };
+
+	// robot.drvb.state.heading = mt::normalize(mt::rotate(mt::Vec2(0.0, 1.0), (float)PI));
+	// robot.drvb.state.heading = { 0.0, -1.0 };
 
 	it_time = Iteration_time::first();
 
@@ -38,7 +37,7 @@ void setup()
 	prevGmState = gmState;
 	prevSensState = sensState;
 }
-float buffer_mult = 0.9;
+
 void loop()
 {
 	delay(40);
@@ -47,6 +46,13 @@ void loop()
 	if(ROBUS_IsBumper(3)) {
 		while(!gmState.over) {
 			delay(kControlLoopDelay);
+			// print(robot.drvb.state.wheelsVelocities);
+			// Serial.print(" | ");
+			// print(robot.drvb.state.pos);
+			// Serial.print(" | ");
+			// print(robot.drvb.state.heading);
+
+			// Serial.print("\n");
 
 			it_time = it_time.current();
 			sensState = get_sensors();
@@ -56,22 +62,14 @@ void loop()
 			hrdwState = hrdwState.mix(generate_hardwareState(robot));
 
 
-			// print(robot.drvb.state.wheelsVelocities);
-			// Serial.print(" | ");
-			print(robot.drvb.state.pos);
-			Serial.print(" | ");
-			print(robot.drvb.state.heading);
-
-			Serial.print("\n");
 			// Serial.println(it_time.delta_s, 4);
-
 
 			set_hardwareState(hrdwState);
 
 			prevSensState = sensState;
 			prevGmState = gmState;
 
-			if(ROBUS_IsBumper(2)) {
+			if(ROBUS_IsBumper(0) || ROBUS_IsBumper(1) || ROBUS_IsBumper(2)) {
 				set_hardwareState(HardwareState());
 				break;
 			}

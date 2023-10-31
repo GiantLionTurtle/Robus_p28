@@ -17,10 +17,18 @@ mt::Vec2 heading_from_ir(mt::Vec2 baseVec, SensorState const& sensState);
 DrivebasePath gen_test_path()
 {
 	DrivebasePath path;
-	path.segments[0] = Pair<PathSegment, unsigned int>(
-		PathSegment(mt::Vec2(1.0, 1.0), mt::Vec2(1.0, 0.0), 0.0, false),
-		0);
-	path.size = 1;
+	// path.add_checkPoint(PathCheckPoint(mt::Vec2(0.0, 0.5), mt::Vec2(0.0, 1.0), 0.0, 0, false));
+	// path.add_checkPoint(PathCheckPoint(mt::Vec2(0.0, 20), mt::Vec2(0.0, 1.0)));
+
+	// path.add_checkPoint(PathCheckPoint(mt::Vec2(0.0, 0.5), mt::Vec2(0.0, 1.0), 0.2));
+	// path.add_checkPoint(PathCheckPoint(mt::Vec2(0.5, 0.5), mt::Vec2(0.0, -1.0), 0.2));
+	// path.add_checkPoint(PathCheckPoint(mt::Vec2(0.5, 0.0), mt::Vec2(0.0, -1.0), 0.2));
+	// path.add_checkPoint(PathCheckPoint(mt::Vec2(0.0, 0.0), mt::Vec2(0.0, 1.0), 0.0));
+
+	path.add_checkPoint(PathCheckPoint(mt::Vec2(0.0, 1), mt::Vec2(0.0, 1.0), 0.08));
+	path.add_checkPoint(PathCheckPoint(mt::Vec2(1, 1), mt::Vec2(0.0, -1.0), 0.08));
+	path.add_checkPoint(PathCheckPoint(mt::Vec2(1, 0.0), mt::Vec2(0.0, -1.0), 0.08));
+	path.add_checkPoint(PathCheckPoint(mt::Vec2(0.0, 0.0), mt::Vec2(0.0, 1.0), 0.08));
 
 	return path;
 }
@@ -30,13 +38,13 @@ void Robot::generate_next(  SensorState prevSensState, SensorState currSensState
 {
 	// // New state given the new encoder data
 	if(gmState.missionState.test == Objective::Start) {
-		drvb.path = gen_test_path();
+		drvb.set_path(gen_test_path(), it_time);
 	}
 	drvb.state = drvb.state.update_kinematics(prevSensState.encoders_ticks, currSensState.encoders_ticks, it_time.delta_s);
 
 	// Adjust drivebase with other sensors and knowledge of the game
 	// drvb.state = adjustDrivebase(drvb.state, currSensState, prevGmState, gmState);
-	drvb.update_path();
+	drvb.update_path(it_time);
 	drvb.update_concrete(it_time);
 
 	// Cup zone?
