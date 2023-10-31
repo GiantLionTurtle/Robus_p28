@@ -48,7 +48,7 @@ constexpr float kPathFollower_epsilon2 = 0.0001;
 // Cup holder constants
 constexpr int kCup_servoId = 0;
 constexpr int kCup_openAngle = 15;
-constexpr int kCup_closeAngle = 0;
+constexpr int kCup_closeAngle = 180;
 constexpr int kCupRelease_pathIndex = 3; // After which arc of the maneuver should the cup be dropped?
 
 // Cup knocker arm constants

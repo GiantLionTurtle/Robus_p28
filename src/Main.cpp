@@ -51,7 +51,6 @@ void loop()
 			unsigned int loop_start = millis();
 			sensState = get_sensors();
 			it_time = it_time.current();
-
 			gmState = gmState.generate_next(prevSensState, sensState, robot.drvb.state, it_time);
 			robot.generate_next(prevSensState, sensState, prevGmState, gmState, it_time);
 			hrdwState = hrdwState.mix(generate_hardwareState(robot));

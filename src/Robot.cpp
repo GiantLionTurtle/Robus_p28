@@ -27,7 +27,7 @@ void ballSwerve_helper(Robot& robot, Objective obj_state);
 DrivebasePath gen_test_path()
 {
 	DrivebasePath path;
-	// path.add_checkPoint(PathCheckPoint(mt::Vec2(0.0, 0.5), mt::Vec2(0.0, 1.0), 0.0, 0, false));
+	path.add_checkPoint(PathCheckPoint(mt::Vec2(0.0, 4), mt::Vec2(0.0, 1.0), 0.0, 0, false));
 	// path.add_checkPoint(PathCheckPoint(mt::Vec2(0.0, 20), mt::Vec2(0.0, 1.0)));
 
 	// path.add_checkPoint(PathCheckPoint(mt::Vec2(0.0, 0.5), mt::Vec2(0.0, 1.0), 0.2));
@@ -35,10 +35,10 @@ DrivebasePath gen_test_path()
 	// path.add_checkPoint(PathCheckPoint(mt::Vec2(0.5, 0.0), mt::Vec2(0.0, -1.0), 0.2));
 	// path.add_checkPoint(PathCheckPoint(mt::Vec2(0.0, 0.0), mt::Vec2(0.0, 1.0), 0.0));
 
-	path.add_checkPoint(PathCheckPoint(mt::Vec2(0.0, 1), mt::Vec2(0.0, 1.0), 0.08));
-	path.add_checkPoint(PathCheckPoint(mt::Vec2(1, 1), mt::Vec2(0.0, -1.0), 0.08));
-	path.add_checkPoint(PathCheckPoint(mt::Vec2(1, 0.0), mt::Vec2(0.0, -1.0), 0.08));
-	path.add_checkPoint(PathCheckPoint(mt::Vec2(0.0, 0.0), mt::Vec2(0.0, 1.0), 0.08));
+	// path.add_checkPoint(PathCheckPoint(mt::Vec2(0.0, 1), mt::Vec2(0.0, 1.0), 0.08));
+	// path.add_checkPoint(PathCheckPoint(mt::Vec2(1, 1), mt::Vec2(0.0, -1.0), 0.08));
+	// path.add_checkPoint(PathCheckPoint(mt::Vec2(1, 0.0), mt::Vec2(0.0, -1.0), 0.08));
+	// path.add_checkPoint(PathCheckPoint(mt::Vec2(0.0, 0.0), mt::Vec2(0.0, 1.0), 0.08));
 
 	return path;
 }
@@ -207,7 +207,7 @@ mt::Vec2 heading_from_ir(mt::Vec2 baseVec, SensorState const& sensState)
 {
 	// See fig.4
 	float dist_diff = abs(sensState.backIR_dist - sensState.frontIR_dist);
-	float heading_angle = 0.0;//asin(dist_diff/kIRSensor_apartDist);
+	float heading_angle = asin(dist_diff/kIRSensor_apartDist);
 	return mt::rotate(baseVec, heading_angle);
 }
 
