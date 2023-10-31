@@ -202,16 +202,16 @@ void Drivebase::update_concrete(Iteration_time it_time)
 	// Serial.print("Pos: ");
 	// print(state.pos);
 	// Serial.println("");
-	Serial.print("Arc: ");
-	arc.print();
+	// Serial.print("Arc: ");
+	// arc.print();
 	// 2. Find the angular velocity that should be reached this iteration
 	// Assum we are going in a straight line of length arc.length
 	// float mod_accel = 1 - abs(concrete.headingError.error / PI);
 	float velocity = velocity_for_point(state.velocity(), follow.targSpeed, arc.length, kAccel, it_time.delta_s);
 	// Serial.print("Wants vel: ");
 	// Serial.print(velocity);
-	Serial.print(" actual: ");
-	Serial.print(state.velocity());
+	// Serial.print(" actual: ");
+	// Serial.print(state.velocity());
 	// Serial.print(" correction: ");
 	mt::Vec2 motor_speeds;
 	if(arc.radius != kInfinity) {	
@@ -232,9 +232,9 @@ void Drivebase::update_concrete(Iteration_time it_time)
 	} else {
 		motor_speeds = { velocity, velocity };
 	}
-	Serial.print("Target velocity ");
-	print(motor_speeds);
-	Serial.print(" => ");
+	// Serial.print("Target velocity ");
+	// print(motor_speeds);
+	// Serial.print(" => ");
 	// Serial.print(" => ");
 	// Serial.print(velocity);
 	// Serial.print(" from ");
