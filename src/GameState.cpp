@@ -9,8 +9,9 @@
 namespace p28 {
 
 Pair<int, int> compute_zoneLane(SensorState  const& prevSensState, SensorState const&  currSensState, GameState const&  gmState, DrivebaseState drvbState);
-Objective compute_knockCup_state(GameState const& gmState);
-Objective compute_one_cw_turn_state(GameState const& gmState,GameState const& previousGmState);
+Objective compute_knockCup_state(GameState const& gmState, SensorState const& sensState, time_t time_ms);
+Objective compute_one_turn_state(GameState const& gmState, GameState const& previousGmState, time_t time_ms);
+Objective compute_tests_state(GameState const& gmState, time_t time_ms);
 int comp_lane(COLOR color);
 
 GameState GameState::initial(SensorState sensState)
@@ -19,7 +20,7 @@ GameState GameState::initial(SensorState sensState)
 	initial_gameState.over = false;
 	initial_gameState.lane = comp_lane(sensState.colorDetector);
 	initial_gameState.target_lane = initial_gameState.lane;
-	//initial_gameState.missionState.test = Objective::Todo;
+	initial_gameState.missions.test.donneness = Objective::Todo;
 	
 	return initial_gameState;
 }
@@ -32,16 +33,15 @@ GameState GameState::generate_next(SensorState prevSensState, SensorState currSe
 	// Figure out where we are in game zones
 	tie(newGmState.zone, newGmState.lane) = compute_zoneLane(prevSensState, currSensState, newGmState, drvbState);
 
-
-	// Figure out what to do now
-	newGmState.missionState.one_cw_turn = compute_one_cw_turn_state(newGmState,*this);
-	newGmState.missionState.knock_cup = compute_knockCup_state(newGmState);
-
-	if(missionState.test == Objective::Todo) {
-		newGmState.missionState.test = Objective::Start;
-	} else if(missionState.test == Objective::Start) {
-		newGmState.missionState.test = Objective::UnderWay;
+	if(newGmState.zone != zone) {
+		Serial.print("zone: ");
+		Serial.println(newGmState.zone);
 	}
+	// Figure out what to do now
+	newGmState.missions.one_turn = compute_one_turn_state(newGmState, *this, it_time.time_ms);
+	newGmState.missions.knock_cup = compute_knockCup_state(newGmState, currSensState, it_time.time_ms);
+	newGmState.missions.test = compute_tests_state(newGmState, it_time.time_ms);
+
 	// ping pong
 	// shortcut
 	return newGmState;
@@ -71,62 +71,70 @@ Pair<int, int> compute_zoneLane(SensorState const& prevSensState, SensorState co
 {
 	int zone = gmState.zone;
 	int lane = gmState.lane;
+
+// Figure out zone	
+#ifdef LEFT_BUMPER_FOR_ZONE_INCREMENT
+	if(prevSensState.bumpersState.left == 0 && currSensState.bumpersState.left == 1)
+		zone++;
+#else
 	if(currSensState.colorDetector == COLOR::BLACK){
 		zone = 2;
 	} else if(currSensState.colorDetector == COLOR::WHITE
 			&& prevSensState.colorDetector != COLOR::WHITE) {
 		zone = 6;
 	} else {
-		lane = comp_lane(currSensState.colorDetector);
-
 		if(prevSensState.colorDetector == COLOR::WHITE)
 			zone = 9;
 	}
-
 	for(int i = 0; i < Field::n_zones; ++i) {
 		if(Field::zones_boxes[i].point_inside(drvbState.pos)) {
 			zone = i;
 			break;
 		}
 	}
+#endif
+
+// Figure out lane
+	if(currSensState.colorDetector != COLOR::BLACK && currSensState.colorDetector != COLOR::WHITE) {
+		lane = comp_lane(currSensState.colorDetector);
+	}
+
+
 
 	return { zone, lane };
 }
 
-Objective compute_knockCup_state(GameState const& gmState)
+Objective compute_knockCup_state(GameState const& gmState, SensorState const& sensState, time_t time_ms)
 {
-	// Knock cup (not valid because it will open way before and close way after)
-	// &&Figureout&&
-	if(gmState.missionState.knock_cup == Objective::Todo && gmState.zone >= 2) {
-		return Objective::UnderWay;
-	} else if(gmState.missionState.knock_cup == Objective::UnderWay && gmState.zone >= 6) {
-		return Objective::Done;
-	}
-	return gmState.missionState.knock_cup;
-}
-Objective compute_one_cw_turn_state(GameState const& gmState,GameState const& previousGmState){
-	if (gmState.missionState.one_cw_turn == Objective::Todo){
-		return Objective::Start;
-	}
-	else if (gmState.missionState.one_cw_turn == Objective::Start){
-		return Objective::UnderWay;
-	}
-	else if (gmState.missionState.one_cw_turn == Objective::UnderWay && gmState.zone == 9 && previousGmState.zone == 8 ){
-		return Objective::Done;
+	bool start_cond = (gmState.zone == 4 || gmState.zone == 5) && // right zones
+						sensState.backIR_dist <= kCupDetectDist; // Sensor detects
+	bool end_cond = (gmState.zone > 5) || time_ms-gmState.missions.knock_cup.start_ms > kKnockCupDelay;
 
-	}
-	return gmState.missionState.one_cw_turn;
+	return gmState.missions.knock_cup.advance(start_cond, end_cond, time_ms);
 }
-Objective compute_one_cw_shortCut_state(GameState const& gmState,GameState const& previousGmState){
-	if(gmState.zone == 5 && gmState.missionState.one_cw_turn == Objective::Done){
-		return Objective::Start;
-	}
-	else if (gmState.missionState.one_cw_shortcut_turn == Objective::Start){
-		return Objective::UnderWay;
-	}
-	else if(gmState.missionState.one_cw_shortcut_turn == Objective::UnderWay && gmState.zone == 9 && previousGmState.zone == Field::kshortcutZone){
-		return Objective::Done;
-	}
-	return gmState.missionState.one_cw_shortcut_turn;
+Objective compute_one_turn_state(GameState const& gmState, GameState const& previousGmState, time_t time_ms)
+{
+	bool start_cond = true;
+	bool end_cond = gmState.zone == 9 && previousGmState.zone == 8;
+
+	return gmState.missions.one_turn.advance(start_cond, end_cond, time_ms);
+}
+Objective compute_one_shortCut_state(GameState const& gmState,GameState const& previousGmState, time_t time_ms)
+{
+	bool start_cond = gmState.zone == 5 && gmState.missions.one_turn.done();
+	bool end_cond = gmState.zone == 9 && previousGmState.zone == Field::kshortcutZone;	
+	
+	return gmState.missions.one_shortcut_turn.advance(start_cond, end_cond, time_ms);
+}
+Objective compute_tests_state(GameState const& gmState, time_t time_ms)
+{
+#ifdef ENABLE_TEST_OBJECTIVE
+	bool start_cond = true;
+#else 
+	bool start_cond = false;
+#endif
+	bool end_cond = false;
+	
+	return gmState.missions.test.advance(start_cond, end_cond, time_ms);
 }
 } // !p28

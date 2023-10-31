@@ -18,6 +18,7 @@ namespace p28 {
 
 struct HardwareState {
 	p28::mt::Vec2 motors; // Values from [-1,1]
+
 	int armAngle { kArm_closeAngle };   //angle of the arm 
 	int cupAngle { kCup_closeAngle };   //angle of the servomotor that holds the cup
 
@@ -25,11 +26,13 @@ struct HardwareState {
 	// hardware state with an exponential moving average
 	// it helps smooth out motor output
 	HardwareState mix(HardwareState hrdwState) const;
+
+	static HardwareState initial();
 };
 
 void set_hardwareState(struct HardwareState hwst);
 
-HardwareState generate_hardwareState(Robot robot);
+HardwareState generate_hardwareState(Robot const& robot);
 
 void printHarwareState (HardwareState state);
 

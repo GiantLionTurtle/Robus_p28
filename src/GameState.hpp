@@ -21,17 +21,41 @@
 
 namespace p28 {
 
-enum class Objective : char { Todo, Start, UnderWay, Done };
+struct Objective {
+	enum Doneness : char { Todo, Start, UnderWay, Done };
+
+	Doneness donneness;
+	time_t start_ms;
+
+	bool todo() const { return donneness == Doneness::Todo; }
+	bool start() const { return donneness == Doneness::Start; }
+	bool underway() const { return donneness == Doneness::UnderWay; }
+	bool done() const { return donneness == Doneness::Done; }
+
+	Objective advance(bool start_cond, bool end_cond, time_t time_ms) const
+	{
+		if(todo() && start_cond) {
+			return Objective { .donneness=Doneness::Start, .start_ms=time_ms };
+		}
+		if(start()) {
+			return Objective { .donneness=Doneness::UnderWay, .start_ms=start_ms };
+		}
+		if(underway() && end_cond) {
+			return Objective { .donneness=Doneness::Done, .start_ms=start_ms };
+		}
+		return *this;
+	}
+};
+
 
 struct MissionState {
 
 	// Mission objectives if the robot is not in race mode
 	Objective knock_cup { Objective::Todo };
 	Objective trap_ball { Objective::Todo };
-	Objective one_cw_turn { Objective::Todo };
-	Objective one_cw_shortcut_turn { Objective::Todo };
+	Objective one_turn { Objective::Todo };
+	Objective one_shortcut_turn { Objective::Todo };
 	Objective test { Objective::Done };
-	long unsigned int one_cw_turn_time;
 };
 
 struct GameState {
@@ -41,7 +65,7 @@ struct GameState {
 	int target_lane { -1 }; // Lane to follow
 
 	// How the mission is going (if not in race mode)
-	MissionState missionState;
+	MissionState missions;
 
 	// Compute the next gamestate from sensor data deltas
 	GameState generate_next(SensorState prevSensState, SensorState currSensState, DrivebaseState drvbState,Iteration_time it_time) const;

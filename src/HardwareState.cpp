@@ -9,7 +9,17 @@ namespace p28 {
 HardwareState HardwareState::mix(HardwareState hrdwState) const
 {
 	hrdwState.motors = hrdwState.motors * kMotorHarwareStateMixFactor + motors * (1-kMotorHarwareStateMixFactor);
+	if(abs(hrdwState.motors.left) <= 0.05 && abs(hrdwState.motors.right) <= 0.05)
+		hrdwState.motors = { 0, 0 };
 	return hrdwState;
+}
+HardwareState HardwareState::initial()
+{
+	HardwareState out;
+	out.motors = { 0.0f, 0.0f };
+	out.armAngle = kArm_closeAngle;
+	out.cupAngle = kCup_closeAngle;
+	return out;
 }
 
 void set_hardwareState (HardwareState hwst)
@@ -17,8 +27,10 @@ void set_hardwareState (HardwareState hwst)
 	MOTOR_SetSpeed (RIGHT, hwst.motors.right);      //Sets the motors speed according to the hardware state received
 	MOTOR_SetSpeed (LEFT, hwst.motors.left);
 
-	SERVO_SetAngle (kArm_servoId, hwst.armAngle);  //Sets the angle of the servomotor of the arm 
-	SERVO_SetAngle (kCup_servoId, hwst.cupAngle);  //Sets the angle of the servomotor controlling the cup "holder"
+	if(hwst.armAngle != -1)
+		SERVO_SetAngle (kArm_servoId, hwst.armAngle);  //Sets the angle of the servomotor of the arm 
+	if(hwst.cupAngle != -1)
+		SERVO_SetAngle (kCup_servoId, hwst.cupAngle);  //Sets the angle of the servomotor controlling the cup "holder"
 }
 
 void printHarwareState(HardwareState state)
@@ -32,7 +44,7 @@ void printHarwareState(HardwareState state)
 
 }
 
-HardwareState generate_hardwareState(Robot robot)
+HardwareState generate_hardwareState(Robot const& robot)
 {
 	HardwareState gen_hwst;
 	if (robot.openArm) {

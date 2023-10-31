@@ -35,7 +35,6 @@ constexpr float kMinSpeed = 0.04;
 constexpr float kAccelDist = 0.2;
 constexpr float kTurnOffset = 0.02;
 constexpr int kIRSensor_apartDist = 84;
-constexpr int kIRSensor_apartDist = 84;
 constexpr float kInfinity = 100000;
 
 constexpr float kMotorHarwareStateMixFactor = 0.85;
@@ -54,8 +53,10 @@ constexpr int kCupRelease_pathIndex = 3; // After which arc of the maneuver shou
 
 // Cup knocker arm constants
 constexpr int kArm_servoId = 1;
-constexpr int kArm_openAngle = 0;
-constexpr int kArm_closeAngle = 95;
+constexpr int kArm_openAngle = 20;
+constexpr int kArm_closeAngle = 150;
+constexpr int kCupDetectDist = 200; // mm
+constexpr int kKnockCupDelay = 1500; // ms
 
 // position of the center of the arc of the turns
 // one full turn mission constants

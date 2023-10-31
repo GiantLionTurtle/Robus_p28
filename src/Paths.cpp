@@ -44,7 +44,7 @@ DrivebasePath gen_trapBal(DrivebaseState drvbState)
 	return path;
 }
 
-DrivebasePath gen_one_cw_turn_path()
+DrivebasePath gen_one_turn_path()
 {
 	DrivebasePath path;
 	path.add_checkPoint(PathCheckPoint(mt::Vec2(0.0,1.0), mt::Vec2(0.0, 1.0)));
@@ -52,6 +52,20 @@ DrivebasePath gen_one_cw_turn_path()
 	path.add_checkPoint(PathCheckPoint(mt::Vec2(0.5, 0.5), mt::Vec2(0.0, -1.0)));
 
 	return path;
+}
+
+DrivebasePath path_hot_insert(DrivebasePath prevPath, DrivebasePath newPath)
+{
+	int prevSize = prevPath.size;
+	int newSize = newPath.size;
+	int limit = prevSize+newSize;
+	for(int i = newSize; i<limit;i++)
+	{
+		newPath.segments[i] = prevPath.segments[prevPath.index+(i-newSize)];
+		newPath.size++;
+	}
+	return newPath;
+
 }
 
 }

@@ -38,6 +38,8 @@ void setup()
 	gmState = GameState::initial(sensState);
 	prevGmState = gmState;
 	prevSensState = sensState;
+
+	set_hardwareState(HardwareState::initial());
 }
 
 void loop()
@@ -63,14 +65,15 @@ void loop()
 			prevSensState = sensState;
 			prevGmState = gmState;
 
-			if(ROBUS_IsBumper(0) || ROBUS_IsBumper(1) || ROBUS_IsBumper(2)) {
+			if(ROBUS_IsBumper(1) || ROBUS_IsBumper(2)) {
 				set_hardwareState(HardwareState());
 				break;
 			}
-			print(robot.drvb.state.pos);
-			Serial.print(" | ");
-			print(robot.drvb.state.heading);
-			Serial.println();
+			// print(robot.drvb.state.pos);
+			// Serial.print(" | ");
+			// print(robot.drvb.state.heading);
+			// Serial.println();
+
 			unsigned int loop_end = millis();
 			unsigned int loop_duration = loop_end-loop_start;
 			time_to_delay_ms = loop_duration > kControlLoopDelay ? 0 : kControlLoopDelay - (loop_duration);
