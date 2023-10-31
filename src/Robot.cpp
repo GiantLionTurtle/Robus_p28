@@ -14,6 +14,16 @@ DrivebaseState adjustDrivebase(DrivebaseState drvbState, SensorState const&  cur
 void ballSwerve_helper(Robot& robot, Objective obj_state);
 mt::Vec2 heading_from_ir(mt::Vec2 baseVec, SensorState const& sensState);
 
+DrivebasePath gen_test_path();
+DrivebasePath trapball_path();
+Drivebase follow_line (Drivebase drvb);
+DrivebaseState adjustDrivebase(DrivebaseState drvbState, SensorState const& currSensState, 
+								GameState const& prevGmState, GameState const& gmState);
+mt::Vec2 heading_from_ir(mt::Vec2 baseVec, SensorState const& sensState);
+DrivebasePath gen_ballSwervePath(Robot const& robot);
+void ballSwerve_helper(Robot& robot, Objective obj_state);
+
+
 DrivebasePath gen_test_path()
 {
 	DrivebasePath path;
@@ -26,6 +36,20 @@ DrivebasePath gen_test_path()
 	path.size = 2;
 
 	return path;
+}
+
+DrivebasePath trapball_path()
+{
+	DrivebasePath ball_path;
+	// ball_path.segments[0] = Pair<PathSegment, unsigned int>(
+	// 	PathSegment(mt::Vec2(0.0,-1.0), mt::Vec2(0.0, -kInfinity), 0.2),
+	// 	0);
+	ball_path.segments[1] = Pair<PathSegment, unsigned int>(
+		PathSegment(mt::Vec2(-1.0,0.0), mt::Vec2(-1.0, 0.0), 0.2),
+		0);
+		ball_path.size = 2;
+
+		return ball_path;
 }
 
 void Robot::generate_next(  SensorState prevSensState, SensorState currSensState, 
