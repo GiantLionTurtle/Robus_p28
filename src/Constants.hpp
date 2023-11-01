@@ -34,7 +34,8 @@ constexpr int kArm_closeAngle = 150;
 constexpr float kMaxVel = 0.8;                  // m / s
 constexpr float kAccel = 0.4; // m/s^2
 constexpr float kMaxAngularVelocity = 0.8; // rad/s
-constexpr float kMinSpeed = 0.03;
+constexpr float KMinVel = 0.03;
+constexpr float kEndSegmentVel = 0.08;
 
 
 // Control constants 

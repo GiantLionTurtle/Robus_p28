@@ -11,20 +11,20 @@ DrivebasePath gen_test()
 	// path.add_checkPoint(PathCheckPoint(mt::Vec2(0.0, 0.5), mt::Vec2(0.0, 1.0), 0.0, 0, false));
 	// path.add_checkPoint(PathCheckPoint(mt::Vec2(0.0, 20), mt::Vec2(0.0, 1.0)));
 
-	// path.add_checkPoint(PathCheckPoint(mt::Vec2(0.0, 0.5), mt::Vec2(0.0, 1.0), 0.2));
-	// path.add_checkPoint(PathCheckPoint(mt::Vec2(0.5, 0.5), mt::Vec2(0.0, -1.0), 0.2));
-	// path.add_checkPoint(PathCheckPoint(mt::Vec2(0.5, 0.0), mt::Vec2(0.0, -1.0), 0.2));
+	// path.add_checkPoint(PathCheckPoint(mt::Vec2(0.0, 0.5), mt::Vec2(0.0, 1.0), kEndSegmentVel));
+	// path.add_checkPoint(PathCheckPoint(mt::Vec2(0.5, 0.5), mt::Vec2(0.0, -1.0), kEndSegmentVel));
+	// path.add_checkPoint(PathCheckPoint(mt::Vec2(0.5, 0.0), mt::Vec2(0.0, -1.0), kEndSegmentVel));
 	// path.add_checkPoint(PathCheckPoint(mt::Vec2(0.0, 0.0), mt::Vec2(0.0, 1.0), 0.0));
 
-	// path.add_checkPoint(PathCheckPoint(mt::Vec2(0.0, 1), mt::Vec2(0.0, 1.0), 0.08));
-	// path.add_checkPoint(PathCheckPoint(mt::Vec2(1, 1), mt::Vec2(0.0, -1.0), 0.08));
-	// path.add_checkPoint(PathCheckPoint(mt::Vec2(1, 0.0), mt::Vec2(0.0, -1.0), 0.08));
+	// path.add_checkPoint(PathCheckPoint(mt::Vec2(0.0, 1), mt::Vec2(0.0, 1.0), kEndSegmentVel));
+	// path.add_checkPoint(PathCheckPoint(mt::Vec2(1, 1), mt::Vec2(0.0, -1.0), kEndSegmentVel));
+	// path.add_checkPoint(PathCheckPoint(mt::Vec2(1, 0.0), mt::Vec2(0.0, -1.0), kEndSegmentVel));
 	// path.add_checkPoint(PathCheckPoint(mt::Vec2(0.0, 0.0), mt::Vec2(0.0, 1.0), 0.0));
 
 	path.add_checkPoint(PathCheckPoint::make_turn(mt::Vec2(0.0, -1.0)));
-	path.add_checkPoint(PathCheckPoint(mt::Vec2(0.0, 1), mt::Vec2(0.0, 1.0), 0.08, true));
-	path.add_checkPoint(PathCheckPoint(mt::Vec2(1, 1), mt::Vec2(0.0, -1.0), 0.08, true));
-	path.add_checkPoint(PathCheckPoint(mt::Vec2(1, 0.0), mt::Vec2(0.0, -1.0), 0.08, true));
+	path.add_checkPoint(PathCheckPoint(mt::Vec2(0.0, 1), mt::Vec2(0.0, 1.0), kEndSegmentVel, true));
+	path.add_checkPoint(PathCheckPoint(mt::Vec2(1, 1), mt::Vec2(0.0, -1.0), kEndSegmentVel, true));
+	path.add_checkPoint(PathCheckPoint(mt::Vec2(1, 0.0), mt::Vec2(0.0, -1.0), kEndSegmentVel, true));
 	path.add_checkPoint(PathCheckPoint(mt::Vec2(0.0, 0.0), mt::Vec2(0.0, 1.0), 0.0, true));
 	path.add_checkPoint(PathCheckPoint::make_turn(mt::Vec2(0.0, 1.0)));
 
@@ -57,9 +57,9 @@ DrivebasePath gen_greenLane()
 	zone_678_maxSpeed = 0.8; // Slower when we might have a ball to deal with
 #endif
 
-	path.add_checkPoint(PathCheckPoint(mt::Vec2(0.0,1.0), mt::Vec2(0.0, 1.0), 0.08, backward));
-	path.add_checkPoint(PathCheckPoint(mt::Vec2(0.5, 1.0), mt::Vec2(0.0, -1.0), 0.08, backward));
-	path.add_checkPoint(PathCheckPoint(mt::Vec2(0.5, 0.5), mt::Vec2(0.0, -1.0), 0.08, backward));
+	path.add_checkPoint(PathCheckPoint(mt::Vec2(0.0,1.0), mt::Vec2(0.0, 1.0), kEndSegmentVel, backward));
+	path.add_checkPoint(PathCheckPoint(mt::Vec2(0.5, 1.0), mt::Vec2(0.0, -1.0), kEndSegmentVel, backward));
+	path.add_checkPoint(PathCheckPoint(mt::Vec2(0.5, 0.5), mt::Vec2(0.0, -1.0), kEndSegmentVel, backward));
 
 	return path;
 }

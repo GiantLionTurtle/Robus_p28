@@ -191,8 +191,18 @@ void Drivebase::update_follow_arc(PathCheckPoint follow, Iteration_time it_time)
 	// 1. Find the arc that takes us from our current position to
 	// the target position with a target heading
 	Arc arc = arc_from_targetHeading(state.pos, follow.targPos, follow.targHeading);
-	if(follow.backward)
+	
+	if(follow.backward) { 
 		arc.radius = -arc.radius;
+		arc.tengeantStart = -arc.tengeantStart;
+	}
+
+	// If the angle between the current heading and the heading to be 
+	// tangeant to the arc is greater than 15 degrees, just turn
+	if(abs(mt::signed_angle(state.heading, arc.tengeantStart) > 0.267)) {
+		update_turn(PathCheckPoint::make_turn(arc.tengeantStart), it_time);
+		return;
+	}
 
 	float velocity = velocity_for_point(state.velocity(), follow.targVel, follow.maxVel, arc.length, kAccel, it_time.delta_s);
 
@@ -213,7 +223,7 @@ void Drivebase::update_follow_arc(PathCheckPoint follow, Iteration_time it_time)
 
 	if(follow.backward) {
 		motor_speeds -= speed_correction;
-		concrete = concrete.update(state.wheelsVelocities, -motor_speeds, state.heading, -arc.tengeantStart, arc.length, it_time);
+		concrete = concrete.update(state.wheelsVelocities, -motor_speeds, state.heading, arc.tengeantStart, arc.length, it_time);
 	} else {
 		motor_speeds += speed_correction;
 		concrete = concrete.update(state.wheelsVelocities, motor_speeds, state.heading, arc.tengeantStart, arc.length, it_time);
@@ -222,7 +232,7 @@ void Drivebase::update_follow_arc(PathCheckPoint follow, Iteration_time it_time)
 void Drivebase::update_turn(PathCheckPoint follow, Iteration_time it_time)
 {
 	float err = abs(concrete.headingError.error);
-	float motor_speed = kMinSpeed;
+	float motor_speed = KMinVel;
 	if(err > PI/2) {
 		motor_speed = 0.3;
 	} else if(err > PI/4) {
