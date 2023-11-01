@@ -4,6 +4,9 @@
 #include "Constants.hpp"
 #include "Robot.hpp"
 
+#define CUP_SERVO_ID 0
+#define ARM_SERVO_ID 1
+
 namespace p28 {
 
 HardwareState HardwareState::mix(HardwareState hrdwState) const
@@ -28,9 +31,9 @@ void set_hardwareState (HardwareState hwst)
 	MOTOR_SetSpeed (LEFT, hwst.motors.left);
 
 	if(hwst.armAngle != -1)
-		SERVO_SetAngle (kArm_servoId, hwst.armAngle);  //Sets the angle of the servomotor of the arm 
+		SERVO_SetAngle (ARM_SERVO_ID, hwst.armAngle);  //Sets the angle of the servomotor of the arm 
 	if(hwst.cupAngle != -1)
-		SERVO_SetAngle (kCup_servoId, hwst.cupAngle);  //Sets the angle of the servomotor controlling the cup "holder"
+		SERVO_SetAngle (CUP_SERVO_ID, hwst.cupAngle);  //Sets the angle of the servomotor controlling the cup "holder"
 }
 
 void printHarwareState(HardwareState state)
