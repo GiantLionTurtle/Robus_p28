@@ -190,43 +190,6 @@ void arc_generation()
 	print_successRate(successes, n_trials);
 }
 
-void vectors()
-{
-	const int n_tests = 8;
-	int successes = 0;
-
-	Serial.println(" --- Vector tests --- ");
-	Serial.println("[assignment]");
-
-	Vector<int> vector;
-	for(int i = 0; i < 3; ++i) {
-		vector.push_back(i);
-	}
-
-	if(vector.size() == 3) {
-		successes++;
-
-		for(int i = 0; i < 3; ++i) {
-			if(vector[i] == i)
-				successes++;
-		}
-	}
-
-	Serial.println("[copy]");
-
-	Vector<int> copy = vector;
-	if(copy.size() == 3) {
-		successes++;
-
-		for(int i = 0; i < 3; ++i) {
-			if(copy[i] == i)
-				successes++;
-		}	
-	}
-
-	print_successRate(successes, n_tests);
-}
-
 void near_equality()
 {
 	struct Trial {

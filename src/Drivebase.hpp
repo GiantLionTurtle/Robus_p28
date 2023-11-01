@@ -9,9 +9,7 @@
 #include "Constants.hpp"
 #include "Utils/Vec2.hpp"
 
-#include "Utils/Vector.hpp"
 #include "Utils/Pair.hpp"
-#include "Utils/Vec2.hpp"
 #include "Iteration_time.hpp"
 #include "Utils/Geometry.hpp"
 

@@ -72,8 +72,9 @@ void loop()
 			}
 			// print(robot.drvb.state.pos);
 			// Serial.print(" | ");
-			print(robot.drvb.state.heading);
-			Serial.println();
+			// print(robot.drvb.state.heading, 4);
+			// Serial.println();
+			// printSensor(sensState);
 
 			unsigned int loop_end = millis();
 			unsigned int loop_duration = loop_end-loop_start;

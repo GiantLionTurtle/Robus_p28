@@ -1,5 +1,4 @@
 
-
 #include "LineDetector.hpp"
 #include "LibRobus.h"
 
@@ -33,5 +32,9 @@ namespace p28 {
             }
         }
         return state;
+    }
+    bool is_active(char line, short index)
+    {
+        return line & 1<<index;
     }
 }

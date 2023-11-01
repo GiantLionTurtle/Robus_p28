@@ -14,7 +14,7 @@ DrivebaseState adjustDrivebase(DrivebaseState drvbState, SensorState const&  cur
 								GameState const&  prevGmState, GameState const&  gmState);
 
 void ballSwerve_helper(Robot& robot, Objective obj_state);
-mt::Vec2 heading_from_ir(mt::Vec2 baseVec, SensorState const& sensState);
+mt::Vec2 heading_from_ir(mt::Vec2 baseVec, SensorState const& sensState, mt::Vec2 fallback);
 
 Drivebase follow_line (Drivebase drvb);
 
@@ -33,7 +33,7 @@ void Robot::generate_next(  SensorState prevSensState, SensorState currSensState
 	drvb.state = drvb.state.update_kinematics(prevSensState.encoders_ticks, currSensState.encoders_ticks, it_time.delta_s);
 
 	// Adjust drivebase with other sensors and knowledge of the game
-	// drvb.state = adjustDrivebase(drvb.state, currSensState, prevGmState, gmState);
+	drvb.state = adjustDrivebase(drvb.state, currSensState, prevGmState, gmState);
 	drvb.update_path(it_time);
 	drvb.update_concrete(it_time);
 
@@ -101,26 +101,30 @@ DrivebaseState adjustDrivebase(DrivebaseState drvbState, SensorState const& curr
 	// Ir alignment
 	if(prevGmState.zone == 0 && gmState.zone == 0 && abs(mt::signed_angle(mt::Vec2(0.0, 1.0), drvbState.heading)) < PI/2) {
 #endif
-		drvbState.heading = heading_from_ir(mt::Vec2(0.0, 1.0), currSensState);
+		drvbState.heading = heading_from_ir(mt::Vec2(0.0, 1.0), currSensState, drvbState.heading);
 		return drvbState;
 #ifndef FORCE_WALL_ALIGN
 	}
 #endif
 
 	if(prevGmState.zone == 4 && gmState.zone == 4 && abs(mt::signed_angle(mt::Vec2(0.0, -1.0), drvbState.heading) < PI/2)) {
-		drvbState.heading = heading_from_ir(mt::Vec2(0.0, -1.0), currSensState);
+		drvbState.heading = heading_from_ir(mt::Vec2(0.0, -1.0), currSensState, drvbState.heading);
 		return drvbState;
 	}
 
 	return drvbState;
 }
 
-mt::Vec2 heading_from_ir(mt::Vec2 baseVec, SensorState const& sensState)
+mt::Vec2 heading_from_ir(mt::Vec2 baseVec, SensorState const& sensState, mt::Vec2 fallback)
 {
 	// See fig.4
-	float dist_diff = abs(sensState.backIR_dist - sensState.frontIR_dist);
+	// Serial.println(sensState.backIR_dist);
+	float dist_diff = sensState.backIR_dist - sensState.frontIR_dist;
+	if(dist_diff >= kIRSensor_apartDist)
+		return fallback;
 	float heading_angle = asin(dist_diff/kIRSensor_apartDist);
-	return mt::rotate(baseVec, heading_angle);
+	// Serial.println(dist_diff);
+	return mt::normalize(mt::rotate(baseVec, heading_angle));
 }
 
 void ballSwerve_helper(Robot& robot, Objective obj_state)

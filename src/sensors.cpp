@@ -24,7 +24,9 @@ void printSensor(SensorState state)
 	Serial.print(" | FrontIR:");
 	Serial.print(state.frontIR_dist);
 	Serial.print(" | Line detector:");
-	Serial.print(state.lineDetector);
+	for(int i = 0; i < 8; ++i) {
+		Serial.print(is_active(state.lineDetector, i));
+	}
 	Serial.print(" | Proximity detector:");
 	Serial.println(state.proximityDetector);
 }
