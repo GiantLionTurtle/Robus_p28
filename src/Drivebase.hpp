@@ -75,14 +75,15 @@ struct Arc {
 struct PathCheckPoint {
 	mt::Vec2 targPos { 0.0 }; // Target position 
 	mt::Vec2 targHeading { 0.0 };
-	float targSpeed { 0.0 }; // Speed at the target position
+	float targVel { 0.0 }; // Speed at the target position
+	float maxVel { kMaxVel };
 	unsigned int delay_before { 0 };
 	bool turn_only { false };
 	bool backward { false };
 
 	PathCheckPoint() = default;
 	PathCheckPoint(mt::Vec2 targPos_, mt::Vec2 targHeading_, 
-					float targSpeed_ = 0.0, unsigned int delay_before_ = 0, bool backward_ = false);
+					float targVel_ = 0.0, bool backward_ = false, float maxVel_ = kMaxVel, unsigned int delay_before_ = 0);
 
 	static PathCheckPoint make_turn(mt::Vec2 targHeading_, unsigned int delay_before = 0);
 };
@@ -95,7 +96,7 @@ struct DrivebasePath {
 	unsigned int index { 0 };
 	unsigned int size { 0 };
 
-	PathCheckPoint current() const { return segments[index]; }
+	PathCheckPoint& current() { return segments[index]; }
 	void add_checkPoint(PathCheckPoint segment);
 	bool finished() const { return index >= size; }
 };
@@ -144,9 +145,9 @@ mt::Vec2 ticks_to_dist(mt::i32Vec2 bothTicks);
 int32_t dist_to_ticks(float dist);
 mt::i32Vec2 dist_to_ticks(mt::Vec2 dist);
 
-float velocity_for_point(float current_velocity, float target_velocity, float dist_to_target, float allowed_accel, float delta_s);
+float velocity_for_point(float current_vel, float target_vel, float max_vel, float target_dist, float accel, float delta_s);
 Arc arc_from_targetHeading(mt::Vec2 start, mt::Vec2 end, mt::Vec2 end_heading);
-mt::Vec2 arcTurnToDest(Arc arc, float angularVelocity);
+mt::Vec2 arcTurnToDest(Arc arc, float angular_vel);
 
 } // !p28
 

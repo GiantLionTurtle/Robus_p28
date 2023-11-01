@@ -28,6 +28,12 @@ struct Robot {
 	// Compute the next robot state from delta of the sensors and the game state
 	void generate_next(	SensorState prevSensState, SensorState currSensState, 
 								GameState prevGmState, GameState gmState, Iteration_time it_time);
+
+	void test_helper(GameState gmState, Iteration_time it_time);
+	void knockCup_helper(GameState gmState, Iteration_time it_time);
+	void trapBall_helper(GameState gmState, Iteration_time it_time);
+	void oneTurn_helper(GameState gmState, Iteration_time it_time);
+	void shortCut_helper(GameState gmState, Iteration_time it_time);
 };
 
  Drivebase follow_line(Drivebase drvb);

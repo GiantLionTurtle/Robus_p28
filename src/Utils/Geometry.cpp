@@ -23,6 +23,15 @@ bool threePoints_ccw(mt::Vec2 A, mt::Vec2 B, mt::Vec2 C)
 	return (C.y-A.y) * (B.x-A.x) > (B.y-A.y) * (C.x-A.x);
 }
 
+float to_radians(float degrees)
+{
+	return degrees / 180 * PI;
+}
+float to_degrees(float radians)
+{
+	return radians * 180 / PI;
+}
+
 } // !mt
 
 } // !p28

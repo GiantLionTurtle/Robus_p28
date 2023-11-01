@@ -25,17 +25,19 @@ void Arc::print() const
 	Serial.println(length, 4);
 }
 
-PathCheckPoint::PathCheckPoint(mt::Vec2 targPos_, mt::Vec2 targHeading_, 
-								float targSpeed_, unsigned int delay_before_, bool backward_)
+PathCheckPoint::PathCheckPoint(mt::Vec2 targPos_, mt::Vec2 targHeading_,
+								float targVel_, bool backward_, 
+								float maxVel_, unsigned int delay_before_)
 	: targPos(targPos_)
 	, targHeading(mt::normalize(targHeading_))
-	, targSpeed(targSpeed_)
+	, targVel(targVel_)
+	, maxVel(maxVel_)
 	, delay_before(delay_before_)
 	, backward(backward_)
 {
 	
 }
-PathCheckPoint PathCheckPoint::make_turn(mt::Vec2 targHeading_, unsigned int delay_before = 0)
+PathCheckPoint PathCheckPoint::make_turn(mt::Vec2 targHeading_, unsigned int delay_before)
 {	
 	PathCheckPoint out;
 	out.targHeading = mt::normalize(targHeading_);
@@ -192,16 +194,16 @@ void Drivebase::update_follow_arc(PathCheckPoint follow, Iteration_time it_time)
 	if(follow.backward)
 		arc.radius = -arc.radius;
 
-	float velocity = velocity_for_point(state.velocity(), follow.targSpeed, arc.length, kAccel, it_time.delta_s);
+	float velocity = velocity_for_point(state.velocity(), follow.targVel, follow.maxVel, arc.length, kAccel, it_time.delta_s);
 
 	mt::Vec2 motor_speeds;
 	if(arc.radius != kInfinity) {	
 		// Transform m/s into rad/s
-		float angularVelocity = abs(velocity / arc.radius);
+		float angular_vel = abs(velocity / arc.radius);
 
 
 		// 3. Find the motor speeds needed to follow said arc, assuming
-		motor_speeds = arcTurnToDest(arc, angularVelocity);
+		motor_speeds = arcTurnToDest(arc, angular_vel);
 	} else {
 		motor_speeds = { velocity, velocity };
 	}
@@ -283,31 +285,33 @@ Arc arc_from_targetHeading(mt::Vec2 start, mt::Vec2 end, mt::Vec2 end_heading)
 }
 
 // Gives a velocity that tries to follow a trapezoidal acceleration patern
-float velocity_for_point(float current_velocity, float target_velocity, float dist_to_target, float allowed_accel, float delta_s)
+float velocity_for_point(float current_vel, float target_vel, float max_vel, float target_dist, float accel, float delta_s)
 {
 	// See fig.1
-	float decel = allowed_accel;
-	float accel = allowed_accel-0.01;
-	float velocity_diff = abs(target_velocity - current_velocity);
-	float time_to_target_velocity = velocity_diff / decel;
-	float dist_to_target_velocity = min(target_velocity, current_velocity) * time_to_target_velocity + // Zone A
-									velocity_diff * (time_to_target_velocity) / 2; // Zone B
+	float decel = accel-0.01; // Slightly gentler decel
 
-	if(dist_to_target >= dist_to_target_velocity) {
-		return min(current_velocity + accel * delta_s, kMaxVel);
+	float vel_diff = abs(target_vel - current_vel);
+	float time_to_target_vel = vel_diff / decel;
+
+	// Distance to reach the targe velocity if we were to accel/decel right now
+	float dist_to_target_vel = min(target_vel, current_vel) * time_to_target_vel + // Zone A
+									vel_diff * (time_to_target_vel) / 2; // Zone B
+
+	if(target_dist >= dist_to_target_vel) {
+		return min(current_vel + accel * delta_s, max_vel);
 	} else {
-		return max(current_velocity - decel * delta_s, target_velocity);
+		return max(current_vel - decel * delta_s, target_vel);
 	}
 }
 //makes the robot turn following a circular arc
-mt::Vec2 arcTurnToDest(Arc arc, float angularVelocity)
+mt::Vec2 arcTurnToDest(Arc arc, float angular_vel)
 {
-	angularVelocity = abs(angularVelocity);
+	angular_vel = abs(angular_vel);
 	// See https://www.eecs.yorku.ca/course_archive/2017-18/W/4421/lectures/Wheeled%20robots%20forward%20kinematics.pdf
-	angularVelocity = min(angularVelocity, kMaxAngularVelocity); // Ensure we do not go over the maximum angular velocity
+	angular_vel = min(angular_vel, kMaxAngularVelocity); // Ensure we do not go over the maximum angular velocity
 	mt::Vec2 speedBothMotor;
-	speedBothMotor.left 	= abs(angularVelocity * ( arc.radius - kRobotWidth_2 ));   // speed of the interior wheel in m/s 
-	speedBothMotor.right 	= abs(angularVelocity * ( arc.radius + kRobotWidth_2 ));   //speed of the exteriorwheel in m/s 
+	speedBothMotor.left 	= abs(angular_vel * ( arc.radius - kRobotWidth_2 ));   // speed of the interior wheel in m/s 
+	speedBothMotor.right 	= abs(angular_vel * ( arc.radius + kRobotWidth_2 ));   //speed of the exteriorwheel in m/s 
 	return speedBothMotor;
 }
 

@@ -138,7 +138,7 @@ void acceleration_profile()
 			traveled_dist += current_vel * trials[i].time_step;
 			time += trials[i].time_step;
 
-			current_vel = velocity_for_point(current_vel, trials[i].end_vel, trials[i].dist_to_travel-traveled_dist, trials[i].accel, trials[i].time_step);
+			current_vel = velocity_for_point(current_vel, trials[i].end_vel, kMaxVel, trials[i].dist_to_travel-traveled_dist, trials[i].accel, trials[i].time_step);
 			print_helper_accelProfile(time, current_vel, traveled_dist);
 		}
 	}

@@ -24,6 +24,9 @@ struct Box {
 
 bool threePoints_ccw(mt::Vec2 A, mt::Vec2 B, mt::Vec2 C);
 
+float to_radians(float degrees);
+float to_degrees(float radians);
+
 } // !mt
 
 } // !p28

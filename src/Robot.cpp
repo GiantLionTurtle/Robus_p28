@@ -13,21 +13,18 @@ namespace p28 {
 DrivebaseState adjustDrivebase(DrivebaseState drvbState, SensorState const&  currSensState, 
 								GameState const&  prevGmState, GameState const&  gmState);
 
-void ballSwerve_helper(Robot& robot, Objective obj_state);
 mt::Vec2 heading_from_ir(mt::Vec2 baseVec, SensorState const& sensState, mt::Vec2 fallback);
-
 Drivebase follow_line (Drivebase drvb);
+
 
 void Robot::generate_next(  SensorState prevSensState, SensorState currSensState, 
 				   			 GameState prevGmState, GameState gmState, Iteration_time it_time)
 {
-	if(gmState.missions.test.start()) {
-		drvb.set_path(Paths::gen_test(), it_time);
-	}
-	// else if(gmState.missions.one_turn == Objective::Start)
-	// {
-	// 	drvb.set_path(Paths:: gen_one_turn_path(), it_time);
-	// }
+	test_helper(gmState, it_time);
+	oneTurn_helper(gmState, it_time);
+	knockCup_helper(gmState, it_time);
+	trapBall_helper(gmState, it_time);
+	shortCut_helper(gmState, it_time);
 
 	// New state given the new encoder data
 	drvb.state = drvb.state.update_kinematics(prevSensState.encoders_ticks, currSensState.encoders_ticks, it_time.delta_s);
@@ -36,17 +33,61 @@ void Robot::generate_next(  SensorState prevSensState, SensorState currSensState
 	drvb.state = adjustDrivebase(drvb.state, currSensState, prevGmState, gmState);
 	drvb.update_path(it_time);
 	drvb.update_concrete(it_time);
+}
 
+void Robot::test_helper(GameState gmState, Iteration_time it_time)
+{
+	// Test mission
+	if(gmState.missions.test.start()) {
+		drvb.set_path(Paths::gen_test(), it_time);
+	}
+}
+void Robot::knockCup_helper(GameState gmState, Iteration_time it_time)
+{
+	// Knock cup mission
 	if(gmState.missions.knock_cup.start()) {
 		openArm = true;
+
+		// Modify path if we are in the green lane (turn to knock the cup)
+		if(gmState.lane == 1) {
+			drvb.set_path(Paths::add_greenLaneKnockCup(drvb.path), it_time);
+		}
 	} else if(gmState.missions.knock_cup.done()) {
 		openArm = false;
 	}
-
+}
+void Robot::trapBall_helper(GameState gmState, Iteration_time it_time)
+{
+	// Trap ball mission
 	if(gmState.missions.trap_ball.start()) {
-		ballSwerve_helper(*this, gmState.missions.trap_ball);
+		drvb.set_path(Paths::add_pingPong(drvb.path, drvb.state), it_time);
+	}
+	if(gmState.missions.trap_ball.underway() && drvb.path.index == kCupRelease_pathIndex) {
+		releaseCup = true;
+	} 
+	if(gmState.missions.trap_ball.done()) {
+		releaseCup = false;
 	}
 }
+void Robot::oneTurn_helper(GameState gmState, Iteration_time it_time)
+{
+	// One turn mission
+	if(gmState.missions.one_turn.start()) {
+		if(gmState.lane == 1) {
+			drvb.set_path(Paths::gen_greenLane(), it_time);
+		} else if(gmState.lane == 2) {
+			drvb.set_path(Paths::gen_yellowLane(), it_time);
+		}
+	}
+}
+void Robot::shortCut_helper(GameState gmState, Iteration_time it_time)
+{
+	// Shortcut mission
+	if(gmState.missions.one_shortcut_turn.start()) {
+		drvb.set_path(Paths::gen_shortcut(), it_time);
+	}
+}
+
 void followLine (Drivebase drvb)
 {
 	
@@ -118,7 +159,8 @@ DrivebaseState adjustDrivebase(DrivebaseState drvbState, SensorState const& curr
 mt::Vec2 heading_from_ir(mt::Vec2 baseVec, SensorState const& sensState, mt::Vec2 fallback)
 {
 	// See fig.4
-	// Serial.println(sensState.backIR_dist);
+
+	// Add Previous sensorstate to make an everage???
 	float dist_diff = sensState.backIR_dist - sensState.frontIR_dist;
 	if(dist_diff >= kIRSensor_apartDist)
 		return fallback;
@@ -126,15 +168,5 @@ mt::Vec2 heading_from_ir(mt::Vec2 baseVec, SensorState const& sensState, mt::Vec
 	// Serial.println(dist_diff);
 	return mt::normalize(mt::rotate(baseVec, heading_angle));
 }
-
-void ballSwerve_helper(Robot& robot, Objective obj_state)
-{
-	if(obj_state.start()) {
-		robot.drvb.path = Paths::gen_trapBal(robot.drvb.state);
-	} else if(obj_state.underway() && robot.drvb.path.index == kCupRelease_pathIndex) {
-		robot.releaseCup = true;
-	}
-}
-
 
 } // !p28
