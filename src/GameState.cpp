@@ -18,7 +18,7 @@ GameState GameState::initial(SensorState sensState)
 {
 	GameState initial_gameState;
 	initial_gameState.over = false;
-	initial_gameState.lane = 2; // comp_lane(sensState.colorDetector);
+	initial_gameState.lane =1; // comp_lane(sensState.colorDetector);
 	initial_gameState.target_lane = initial_gameState.lane;
 	//initial_gameState.missions.test.donneness = Objective::Todo;
 	
