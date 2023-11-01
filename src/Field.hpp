@@ -21,7 +21,9 @@ const mt::Line zone_1_to_2_line { .origin=zone1_topRight, 	.dir=zone1_topRight-z
 const mt::Line zone_2_to_3_line { .origin=zone2_topRight, 	.dir=zone2_topRight-zone3_bottomLeft };
 const mt::Line zone_5_to_6_line { .origin=zone5_bottomLeft, .dir=zone5_bottomLeft-zone6_topRight };
 const mt::Line zone_8_to_9_line { .origin=zone8_topRight, 	.dir=zone8_topRight-zone9_bottomLeft };
- 
+const mt::Line yellow_follow_line1 { .origin=mt::Vec2(3.65 , 1.22),  .dir=mt::Vec2(-1.0 , -1.0)};
+const mt::Line yellow_follow_line2 { .origin=mt::Vec2(2.44, 0.305),  .dir=mt::Vec2(-1.0 , 0.0)};
+const mt::Line yellow_follow_line3 { .origin=mt::Vec2(1.22, 0.305),  .dir=mt::Vec2(-1.0 , 1.0)};
 constexpr int n_zones = 11;
 const mt::Box zones_boxes[n_zones] {
 	mt::Box{ .bottomLeft=mt::Vec2(0.0, 0.214), 		.topRight=mt::Vec2(0.122, 0.364) }, // 0

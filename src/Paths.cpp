@@ -1,5 +1,6 @@
 
 #include "Paths.hpp"
+#include "Field.hpp"
 
 namespace p28 {
 
@@ -35,11 +36,22 @@ DrivebasePath gen_test()
 DrivebasePath gen_yellowLane()
 {
 	DrivebasePath path;
+	Serial.println("Beginning yellow Path");
 
-	path.add_checkPoint(PathCheckPoint(mt::Vec2(0.0,1.0), mt::Vec2(0.0, 1.0)));
-	path.add_checkPoint(PathCheckPoint(mt::Vec2(0.5, 1.0), mt::Vec2(0.0, -1.0)));
-	path.add_checkPoint(PathCheckPoint(mt::Vec2(0.5, 0.5), mt::Vec2(0.0, -1.0)));
-
+	
+	path.add_checkPoint(PathCheckPoint(mt::Vec2(0.4572 , 3.64), mt::Vec2(0.0, 1.0)));
+	path.add_checkPoint(PathCheckPoint(mt::Vec2(1.219 , 4.4696), mt::Vec2(1.0, 0.0)));
+	path.add_checkPoint(PathCheckPoint(mt::Vec2(1.829 , 4.4696), mt::Vec2(1.0,0.0)));
+	path.add_checkPoint(PathCheckPoint(mt::Vec2(2.701 , 3.64), mt::Vec2(0.0,-1.0)));
+	path.add_checkPoint(PathCheckPoint(mt::Vec2(2.701 , 1.2192 - 0.16), mt::Vec2(0.0,-1.0)));
+	path.add_checkPoint(PathCheckPoint::make_turn(Field::yellow_follow_line1.dir));
+	path.add_checkPoint(PathCheckPoint(Field::yellow_follow_line2.origin, Field::yellow_follow_line1.dir));
+	path.add_checkPoint(PathCheckPoint::make_turn(Field::yellow_follow_line2.dir));
+	path.add_checkPoint(PathCheckPoint(Field::yellow_follow_line3.origin, Field::yellow_follow_line2.dir));
+	path.add_checkPoint(PathCheckPoint::make_turn(Field::yellow_follow_line3.dir));
+	path.add_checkPoint(PathCheckPoint(mt::Vec2(0.305 , 1.22), Field::yellow_follow_line3.dir));
+	path.add_checkPoint(PathCheckPoint::make_turn(mt::Vec2(0.0 , 1.0)));
+	path.add_checkPoint(PathCheckPoint(mt::Vec2(0.4572 , 3.4876), mt::Vec2(0.0, 1.0)));
 	return path;
 
 }

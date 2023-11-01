@@ -16,7 +16,7 @@
 
 // Uncomment to force the drivebase to align itself with a 
 // wall no matter the context
- #define FORCE_WALL_ALIGN
+//  #define FORCE_WALL_ALIGN
 
 // Uncomment to allow the robot to adjust the drivebase position
 // with game zones (color sensor)

@@ -131,6 +131,11 @@ DrivebaseConcrete DrivebaseConcrete::update(mt::Vec2 actualWheelVelocities, mt::
 	if(dist_to_target < 0.05) {
 		angle_error *= dist_to_target / 0.05;
 	}
+	// Serial.println(angle_error);
+	// print(currentHeading);
+	// Serial.print(" | ");
+	// print(targetHeading);
+	// Serial.println();
 	out.headingError = update_error(headingError, angle_error, 0.0, it_time.delta_s);
 	// Serial.print(it_time.time_ms);
 	// Serial.print(",  ");
@@ -192,11 +197,13 @@ void Drivebase::update_follow_arc(PathCheckPoint follow, Iteration_time it_time)
 	// the target position with a target heading
 	Arc arc = arc_from_targetHeading(state.pos, follow.targPos, follow.targHeading);
 	
+	mt::Vec2 speed_correction = correct_heading();
 	if(follow.backward) { 
 		arc.radius = -arc.radius;
 		arc.tengeantStart = -arc.tengeantStart;
+		speed_correction = -speed_correction;
 	}
-
+	// arc.print();
 	// If the angle between the current heading and the heading to be 
 	// tangeant to the arc is greater than 15 degrees, just turn
 	if(abs(mt::signed_angle(state.heading, arc.tengeantStart) > 0.267)) {
@@ -217,15 +224,14 @@ void Drivebase::update_follow_arc(PathCheckPoint follow, Iteration_time it_time)
 	} else {
 		motor_speeds = { velocity, velocity };
 	}
-
-	// 4. Correct for the heading error
-	mt::Vec2 speed_correction = correct_heading();
-
+	// print(motor_speeds);
+	motor_speeds += speed_correction;
+	// Serial.print(" | ");
+	// print(motor_speeds);
+	// Serial.println();
 	if(follow.backward) {
-		motor_speeds -= speed_correction;
 		concrete = concrete.update(state.wheelsVelocities, -motor_speeds, state.heading, arc.tengeantStart, arc.length, it_time);
 	} else {
-		motor_speeds += speed_correction;
 		concrete = concrete.update(state.wheelsVelocities, motor_speeds, state.heading, arc.tengeantStart, arc.length, it_time);
 	}
 }

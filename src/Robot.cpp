@@ -146,14 +146,14 @@ DrivebaseState adjustDrivebase(DrivebaseState drvbState, SensorState const& curr
 	// Ir alignment
 	if(prevGmState.zone == 0 && gmState.zone == 0 && abs(mt::signed_angle(mt::Vec2(0.0, 1.0), drvbState.heading)) < PI/2) {
 #endif
-		drvbState.heading = heading_from_ir(mt::Vec2(0.0, 1.0), currSensState, drvbState.heading);
+		// drvbState.heading = heading_from_ir(mt::Vec2(0.0, 1.0), currSensState, drvbState.heading);
 		return drvbState;
 #ifndef FORCE_WALL_ALIGN
 	}
 #endif
 
 	if(prevGmState.zone == 4 && gmState.zone == 4 && abs(mt::signed_angle(mt::Vec2(0.0, -1.0), drvbState.heading) < PI/2)) {
-		drvbState.heading = heading_from_ir(mt::Vec2(0.0, -1.0), currSensState, drvbState.heading);
+		// drvbState.heading = heading_from_ir(mt::Vec2(0.0, -1.0), currSensState, drvbState.heading);
 		return drvbState;
 	}
 
