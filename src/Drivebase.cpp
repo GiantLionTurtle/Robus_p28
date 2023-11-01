@@ -203,6 +203,12 @@ void Drivebase::update_follow_arc(PathCheckPoint follow, Iteration_time it_time)
 		arc.tengeantStart = -arc.tengeantStart;
 		speed_correction = -speed_correction;
 	}
+	// print(state.pos);
+	// Serial.print(" | ");
+	// print(state.heading);
+	// Serial.print(" | ");
+	// print(arc.end);
+	// Serial.println();
 	// arc.print();
 	// If the angle between the current heading and the heading to be 
 	// tangeant to the arc is greater than 15 degrees, just turn

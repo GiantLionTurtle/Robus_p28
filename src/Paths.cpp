@@ -39,10 +39,10 @@ DrivebasePath gen_yellowLane()
 	Serial.println("Beginning yellow Path");
 
 	
-	path.add_checkPoint(PathCheckPoint(mt::Vec2(0.4572 , 3.64), mt::Vec2(0.0, 1.0)));
-	path.add_checkPoint(PathCheckPoint(mt::Vec2(1.219 , 4.4696), mt::Vec2(1.0, 0.0)));
-	path.add_checkPoint(PathCheckPoint(mt::Vec2(1.829 , 4.4696), mt::Vec2(1.0,0.0)));
-	path.add_checkPoint(PathCheckPoint(mt::Vec2(2.701 , 3.64), mt::Vec2(0.0,-1.0)));
+	path.add_checkPoint(PathCheckPoint(mt::Vec2(0.4572 , 3.64), mt::Vec2(0.0, 1.0), kEndSegmentVel));
+	path.add_checkPoint(PathCheckPoint(mt::Vec2(1.219 , 4.4696), mt::Vec2(1.0, 0.0), 0.15));
+	path.add_checkPoint(PathCheckPoint(mt::Vec2(1.829 , 4.4696), mt::Vec2(1.0,0.0), kEndSegmentVel));
+	path.add_checkPoint(PathCheckPoint(mt::Vec2(2.701 , 3.64), mt::Vec2(0.0,-1.0), kEndSegmentVel));
 	path.add_checkPoint(PathCheckPoint(mt::Vec2(2.701 , 1.2192 - 0.16), mt::Vec2(0.0,-1.0)));
 	path.add_checkPoint(PathCheckPoint::make_turn(Field::yellow_follow_line1.dir));
 	path.add_checkPoint(PathCheckPoint(Field::yellow_follow_line2.origin, Field::yellow_follow_line1.dir));
