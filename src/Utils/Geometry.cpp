@@ -12,6 +12,14 @@ Vec2 Line::line_intersection(Line const& l2) const
 
 	return origin + dir * mt::cross(l2.dir, originDiff) / dirCross;
 }
+Vec2 Line::closest_point(Vec2 const& pt) const
+{
+	return line_intersection(Line{.origin=pt, .dir=mt::cw_perpendicular(dir)});
+}
+Line Line::offset(Vec2 const& by) const
+{
+	return Line { .origin=origin+by, .dir=dir};
+}
 bool Box::point_inside(mt::Vec2 pos) const
 {
 	return pos.x > bottomLeft.x && pos.x < topRight.x && pos.y > bottomLeft.y && pos.y < bottomLeft.y;    

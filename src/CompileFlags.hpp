@@ -24,7 +24,7 @@
 
 // Uncomment to use the left bumper to manualy switch the internal zone state
 // FOR DEBUG & TESTS ONLY
-#define LEFT_BUMPER_FOR_ZONE_INCREMENT
+// #define LEFT_BUMPER_FOR_ZONE_INCREMENT
 
 // Uncomment to enable race mode vs qualification mode
 // #define RACE_MODE

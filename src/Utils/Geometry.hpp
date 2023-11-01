@@ -13,6 +13,8 @@ struct Line {
 	Vec2 dir;
 
 	Vec2 line_intersection(Line const& l2) const;
+    Vec2 closest_point(Vec2 const& pt) const;
+    Line offset(Vec2 const& by) const;
 };
 
 struct Box {

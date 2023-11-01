@@ -16,6 +16,10 @@ DrivebaseState adjustDrivebase(DrivebaseState drvbState, SensorState const&  cur
 mt::Vec2 heading_from_ir(mt::Vec2 baseVec, SensorState const& sensState, mt::Vec2 fallback);
 Drivebase follow_line (Drivebase drvb);
 
+Robot Robot::initial()
+{
+	
+}
 
 void Robot::generate_next(  SensorState prevSensState, SensorState currSensState, 
 				   			 GameState prevGmState, GameState gmState, Iteration_time it_time)
@@ -125,16 +129,16 @@ DrivebaseState adjustDrivebase(DrivebaseState drvbState, SensorState const& curr
 #ifdef ENABLE_ZONESWITCH_DRIVEBASE_ADJUSTMENTS
 	// Zone change
 	if(prevGmState.zone == 1 && gmState.zone == 2) {
-		return drvbState.intersect_line(Field::zone_1_to_2_line);
+		return drvbState.pos = Field::zone_1_to_2_line.offset(-drvbState.heading*kColorSensorToCenter).closest_point(drvbState.pos);
 	}
 	if(prevGmState.zone == 2 && gmState.zone == 3) {
-		return drvbState.intersect_line(Field::zone_2_to_3_line);
+		return drvbState.pos = Field::zone_2_to_3_line.offset(-drvbState.heading*kColorSensorToCenter).closest_point(drvbState.pos);
 	}
 	if(prevGmState.zone == 5 && gmState.zone == 6) {
-		return drvbState.intersect_line(Field::zone_5_to_6_line);
+		return drvbState.pos = Field::zone_5_to_6_line.offset(-drvbState.heading*kColorSensorToCenter).closest_point(drvbState.pos);;
 	}
 	if(prevGmState.zone == 8 && gmState.zone == 9) {
-		return drvbState.intersect_line(Field::zone_8_to_9_line);
+		return drvbState.pos = Field::zone_8_to_9_line.offset(-drvbState.heading*kColorSensorToCenter).closest_point(drvbState.pos);;
 	}
 #endif
 
