@@ -29,9 +29,10 @@ void setup()
 	robot.drvb.concrete.right.pid = { 1.4, 35.5555, 0.03333333 };
 	// robot.drvb.concrete.headingPID = { 0.4, 0.18, 0.006 };
 	robot.drvb.concrete.headingPID = { 0.3, 0.135, 0.0045 };
-	robot.drvb.state.pos = Field::green_startPos;
+	//robot.drvb.state.pos = {2.286 , 3.64};
+	//robot.drvb.state.pos = Field::green_startPos;
 	// robot.drvb.state.pos  = mt::Vec2(2.701 , 1.2192 - 0.16);
-	robot.drvb.state.heading = {0.0, 1.0};
+	//robot.drvb.state.heading = {0.0, -1.0};
 
 	// robot.drvb.concrete.headingPID = { 0.48, 0.18, 0.006 };
 
@@ -42,6 +43,7 @@ void setup()
 
 	sensState = get_sensors();
 	gmState = GameState::initial(sensState);
+	robot = Robot::initial(gmState);
 	prevGmState = gmState;
 	prevSensState = sensState;
 
@@ -51,7 +53,6 @@ void setup()
 
 void loop()
 {
-	delay(40);
 	it_time = it_time.current();
 
 	if(ROBUS_IsBumper(3)) {
