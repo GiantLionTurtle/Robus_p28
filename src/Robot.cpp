@@ -11,9 +11,21 @@ namespace p28 {
 
 mt::Vec2 heading_from_ir(mt::Vec2 baseVec, SensorState const& sensState, mt::Vec2 fallback);
 
-Robot Robot::initial()
+Robot Robot::initial(GameState gmState)
 {
-	
+	Robot robot;
+	robot.drvb.state.heading = mt::Vec2(0.0, 1.0);
+	mt::Vec2 pos_init;
+	if(gmState.lane == 1)
+	{
+		pos_init = Field::green_startPos;
+	}
+	else if(gmState.lane == 2)
+	{
+		pos_init = Field::yellow_startPos;
+	}
+	robot.drvb.state.pos = pos_init;
+	return robot;
 }
 
 void Robot::generate_next(  SensorState prevSensState, SensorState currSensState, 

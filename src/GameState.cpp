@@ -18,7 +18,7 @@ GameState GameState::initial(SensorState sensState)
 {
 	GameState initial_gameState;
 	initial_gameState.over = false;
-	initial_gameState.lane =1; // comp_lane(sensState.colorDetector);
+	initial_gameState.lane = comp_lane(sensState.colorDetector);
 	initial_gameState.target_lane = initial_gameState.lane;
 	// initial_gameState.missions.test.donneness = Objective::Todo;
 	
@@ -57,12 +57,23 @@ GameState GameState::generate_next(SensorState prevSensState, SensorState currSe
 // Try to deduce de lane based on the color sensor
 int comp_lane(COLOR color)
 {
-	switch(color) {
-	case COLOR::BLUE: 	return 0;
-	case COLOR::GREEN: 	return 1;
-	case COLOR::YELLOW: return 2;
-	case COLOR::RED: 	return 3;
-	default: 			return -1;
+	switch(color) 
+	{
+		case COLOR::BLUE:
+			return 0;
+			break;
+		case COLOR::GREEN: 
+			return 1;
+			break;
+		case COLOR::YELLOW: 
+			return 2;
+			break;
+		case COLOR::RED: 
+			return 3;
+			break;
+		default:
+			return -1;
+			break;
 	}
 	return -1;
 }
