@@ -10,14 +10,14 @@ namespace Field {
 
 const float Foot = 0.3048;
 
-const mt::Vec2 zone1_topRight 	= mt::Vec2(0.122, 0.485);
-const mt::Vec2 zone2_bottomLeft = mt::Vec2(0.122, 0.364);
-const mt::Vec2 zone2_topRight 	= mt::Vec2(0.182, 0.485);
-const mt::Vec2 zone3_bottomLeft = mt::Vec2(0.182, 0.364);
-const mt::Vec2 zone5_bottomLeft = mt::Vec2(0.182, 0.123);
-const mt::Vec2 zone6_topRight 	= mt::Vec2(0.302, 0.123);
-const mt::Vec2 zone8_topRight 	= mt::Vec2(0.122, 0.123);
-const mt::Vec2 zone9_bottomLeft = mt::Vec2(0.0, 0.123);
+const mt::Vec2 zone1_topRight 	= mt::Vec2(4*Foot, 16*Foot);
+const mt::Vec2 zone2_bottomLeft = mt::Vec2(4*Foot, 12*Foot);
+const mt::Vec2 zone2_topRight 	= mt::Vec2(6*Foot, 16*Foot);
+const mt::Vec2 zone3_bottomLeft = mt::Vec2(6*Foot, 12*Foot);
+const mt::Vec2 zone5_bottomLeft = mt::Vec2(6*Foot, 4*Foot);
+const mt::Vec2 zone6_topRight 	= mt::Vec2(10*Foot, 4*Foot);
+const mt::Vec2 zone8_topRight 	= mt::Vec2(4*Foot, 4*Foot);
+const mt::Vec2 zone9_bottomLeft = mt::Vec2(0, 4*Foot);
 
 const mt::Line zone_1_to_2_line { .origin=zone1_topRight, 	.dir=zone1_topRight-zone2_bottomLeft };
 const mt::Line zone_2_to_3_line { .origin=zone2_topRight, 	.dir=zone2_topRight-zone3_bottomLeft };
