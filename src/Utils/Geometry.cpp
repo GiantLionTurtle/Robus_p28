@@ -22,7 +22,7 @@ Line Line::offset(Vec2 const& by) const
 }
 bool Box::point_inside(mt::Vec2 pos) const
 {
-	return pos.x > bottomLeft.x && pos.x < topRight.x && pos.y > bottomLeft.y && pos.y < bottomLeft.y;    
+	return pos.x > bottomLeft.x && pos.x < topRight.x && pos.y > bottomLeft.y && pos.y < topRight.y;    
 }
 
 // Are three points aranged in a ccw fashion?

@@ -25,12 +25,10 @@ Robot Robot::initial(GameState gmState)
 	{
 		pos_init = Field::green_startPos;
 	}
-	else if(gmState.lane == 2)
+	else
 	{
 		pos_init = Field::yellow_startPos;
-	} else {
-		pos_init = mt::Vec2(-2, -2);
-	}
+	} 
 	robot.drvb.state.pos = pos_init;
 	return robot;
 }
@@ -163,12 +161,12 @@ void Robot::adjustDrivebase(SensorState const& currSensState,
 
 #ifdef ENABLE_ZONESWITCH_DRIVEBASE_ADJUSTMENTS
 	// Zone change
-	if(prevGmState.zone == 1 && gmState.zone == 2) {
-		drvb.state.pos = Field::zone_1_to_2_line.offset(-drvb.state.heading*kColorSensorToCenter).closest_point(drvb.state.pos);
-	}
-	if(prevGmState.zone == 2 && gmState.zone == 3) {
-		drvb.state.pos = Field::zone_2_to_3_line.offset(-drvb.state.heading*kColorSensorToCenter).closest_point(drvb.state.pos);
-	}
+	// if(prevGmState.zone == 1 && gmState.zone == 2) {
+	// 	drvb.state.pos = Field::zone_1_to_2_line.offset(-drvb.state.heading*kColorSensorToCenter).closest_point(drvb.state.pos);
+	// }
+	// if(prevGmState.zone == 2 && gmState.zone == 3) {
+	// 	drvb.state.pos = Field::zone_2_to_3_line.offset(-drvb.state.heading*kColorSensorToCenter).closest_point(drvb.state.pos);
+	// }
 	// if(prevGmState.zone == 5 && gmState.zone == 6) {
 	// 	drvb.state.pos = Field::zone_5_to_6_line.offset(-drvb.state.heading*kColorSensorToCenter).closest_point(drvb.state.pos);;
 	// }

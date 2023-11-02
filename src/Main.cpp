@@ -39,8 +39,7 @@ void setup()
 	it_time = Iteration_time::first();
 
 	sensState = get_sensors();
-	gmState = GameState::initial(sensState);
-	robot = Robot::initial(gmState);
+
 	prevGmState = gmState;
 	prevSensState = sensState;
 
@@ -53,10 +52,13 @@ void loop()
 	it_time = it_time.current();
 
 	if(ROBUS_IsBumper(3)) {
+		gmState = GameState::initial(sensState);
+		robot = Robot::initial(gmState);
 		while(!gmState.over) {
 			delay(time_to_delay_ms);
 			unsigned int loop_start = millis();
 			sensState = get_sensors();
+			// printSensor(sensState);
 			it_time = it_time.current();
 			gmState = gmState.generate_next(prevSensState, sensState, robot.drvb.state, it_time);
 			robot.generate_next(prevSensState, sensState, prevGmState, gmState, it_time);

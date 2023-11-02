@@ -18,7 +18,7 @@ GameState GameState::initial(SensorState sensState)
 {
 	GameState initial_gameState;
 	initial_gameState.over = false;
-	initial_gameState.lane = 2;//comp_lane(sensState.colorDetector);
+	initial_gameState.lane = comp_lane(sensState.colorDetector);
 	initial_gameState.target_lane = initial_gameState.lane;
 	// initial_gameState.missions.test.donneness = Objective::Todo;
 	
@@ -31,7 +31,7 @@ GameState GameState::generate_next(SensorState prevSensState, SensorState currSe
 	GameState newGmState = *this;
 
 	// Figure out where we are in game zones
-	// tie(newGmState.zone, newGmState.lane) = compute_zoneLane(prevSensState, currSensState, newGmState, drvbState);
+	tie(newGmState.zone, newGmState.lane) = compute_zoneLane(prevSensState, currSensState, newGmState, drvbState);
 
 	if(newGmState.zone != zone) {
 		Serial.print("zone: ");
@@ -88,17 +88,20 @@ Pair<int, int> compute_zoneLane(SensorState const& prevSensState, SensorState co
 	if(prevSensState.bumpersState.left == 0 && currSensState.bumpersState.left == 1)
 		zone++;
 #else
-	if(currSensState.colorDetector == COLOR::BLACK){
-		zone = 2;
-	} else if(currSensState.colorDetector == COLOR::WHITE
-			&& prevSensState.colorDetector != COLOR::WHITE) {
-		zone = 6;
-	} else {
-		if(prevSensState.colorDetector == COLOR::WHITE)
-			zone = 9;
-	}
+	// if(currSensState.colorDetector == COLOR::BLACK){
+	// 	zone = 2;
+	// } else if(currSensState.colorDetector == COLOR::WHITE
+	// 		&& prevSensState.colorDetector != COLOR::WHITE) {
+	// 	zone = 6;
+	// } else {
+	// 	if(prevSensState.colorDetector == COLOR::WHITE)
+	// 		zone = 9;
+	// }
 	for(int i = 0; i < Field::n_zones; ++i) {
+		// Serial.print("Test zone ");
+		// Serial.println(i);
 		if(Field::zones_boxes[i].point_inside(drvbState.pos)) {
+			// Serial.println("Point inside!!\n");
 			zone = i;
 			break;
 		}

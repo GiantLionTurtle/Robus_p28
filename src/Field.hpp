@@ -42,7 +42,7 @@ const mt::Box zones_boxes[n_zones] {
 	mt::Box{ .bottomLeft=mt::Vec2(0.0, 8*Foot), 		.topRight=zone1_topRight}, // 1
 	mt::Box{ .bottomLeft=zone2_bottomLeft, 			.topRight=zone2_topRight}, // 2
 	mt::Box{ .bottomLeft=zone3_bottomLeft,		 	.topRight=mt::Vec2(10*Foot, 16*Foot)}, // 3
-	mt::Box{ .bottomLeft=mt::Vec2(6*Foot, 8*Foot), 	.topRight=mt::Vec2(10*Foot, 12*Foot)}, // 4
+	mt::Box{ .bottomLeft=mt::Vec2(6*Foot, 8*Foot), 	.topRight=mt::Vec2(10*Foot, 12*Foot-0.1)}, // 4
 	mt::Box{ .bottomLeft=zone5_bottomLeft,		 	.topRight=mt::Vec2(10*Foot, 8*Foot)}, // 5
 	mt::Box{ .bottomLeft=mt::Vec2(6*Foot, 0.0), 		.topRight=zone6_topRight}, // 6
 	mt::Box{ .bottomLeft=mt::Vec2(4*Foot, 0.0), 		.topRight=mt::Vec2(6*Foot, 4*Foot)}, // 7
