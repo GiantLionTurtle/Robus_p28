@@ -53,7 +53,7 @@ namespace p28 {
         RGB rgb = get_rgb();
         if(equal_color(rgb.red, rgb.blue, 0.2) && equal_color(rgb.red, rgb.green, 0.2))
         {
-            if(rgb.red >= 78)
+            if(rgb.red >= 72)
             {
                 return COLOR::WHITE;
             }
@@ -64,7 +64,7 @@ namespace p28 {
         }
         else
         {
-            if(equal_color(rgb.red, rgb.green, 0.4))
+            if(rgb.red > rgb.blue && equal_color(rgb.red, rgb.green, 0.4))
             {
                 return COLOR::YELLOW;
             }

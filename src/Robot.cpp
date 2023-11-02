@@ -9,12 +9,7 @@
 
 namespace p28 {
 
-// Adjust the drivebase with additional info such as the position in the field
-DrivebaseState adjustDrivebase(DrivebaseState drvbState, SensorState const&  currSensState, 
-								GameState const&  prevGmState, GameState const&  gmState);
-
 mt::Vec2 heading_from_ir(mt::Vec2 baseVec, SensorState const& sensState, mt::Vec2 fallback);
-Drivebase follow_line (Drivebase drvb);
 
 Robot Robot::initial()
 {
@@ -34,7 +29,7 @@ void Robot::generate_next(  SensorState prevSensState, SensorState currSensState
 	drvb.state = drvb.state.update_kinematics(prevSensState.encoders_ticks, currSensState.encoders_ticks, it_time.delta_s);
 
 	// Adjust drivebase with other sensors and knowledge of the game
-	drvb.state = adjustDrivebase(drvb.state, currSensState, prevGmState, gmState);
+	adjustDrivebase(currSensState, prevGmState, gmState);
 	drvb.update_path(it_time);
 	drvb.update_concrete(it_time);
 }
@@ -92,12 +87,22 @@ void Robot::shortCut_helper(GameState gmState, Iteration_time it_time)
 	}
 }
 
-void followLine (Drivebase drvb)
+void Robot::followLine ()
 {
-	
+	float dir =0;
+	char line = get_ir_line();
+	for(int i = 0; i < 8; i++)
+	{
+		if((bool)(line&(1<<i)))
+		{
+			dir+=i-3.5;
+		}
+	}
+	float angle = dir*2*PI/360;
+	drvb.state.heading = mt::normalize(mt::rotate(drvb.path.current().targHeading, -angle));
 }
 
-DrivebaseState adjustDrivebase(DrivebaseState drvbState, SensorState const& currSensState, 
+void Robot::adjustDrivebase(SensorState const& currSensState, 
 								GameState const& prevGmState, GameState const& gmState)
 {
 	// &&Figureout&& how to adjust the drivebase with auxilary sensors
@@ -111,9 +116,19 @@ DrivebaseState adjustDrivebase(DrivebaseState drvbState, SensorState const& curr
 
 		2. Line follower
 			a. Guess which line we are following
-			b. Same as with color change, intersect with line
+			b. Same as with color change, intersect with line*/
+			if(gmState.zone == 6 || gmState.zone == 7 || gmState.zone == 8)
+			{
+				followLine();
+			}
+
+			if(prevGmState.zone == 8 && gmState.zone == 9)
+			{
+				drvb.state.pos = mt::Vec2(2.0/3.281, 4.0/3.281);
+				drvb.state.heading = normalize(mt::Vec2(-1., 1.0));
+			}
 		
-		3. Bumpers in shortcut
+		/*3. Bumpers in shortcut
 			a. If we are in shortcut mission 
 			b. If both bumpers are on for the first time
 			c. set position
@@ -129,35 +144,29 @@ DrivebaseState adjustDrivebase(DrivebaseState drvbState, SensorState const& curr
 #ifdef ENABLE_ZONESWITCH_DRIVEBASE_ADJUSTMENTS
 	// Zone change
 	if(prevGmState.zone == 1 && gmState.zone == 2) {
-		return drvbState.pos = Field::zone_1_to_2_line.offset(-drvbState.heading*kColorSensorToCenter).closest_point(drvbState.pos);
+		drvb.state.pos = Field::zone_1_to_2_line.offset(-drvb.state.heading*kColorSensorToCenter).closest_point(drvb.state.pos);
 	}
 	if(prevGmState.zone == 2 && gmState.zone == 3) {
-		return drvbState.pos = Field::zone_2_to_3_line.offset(-drvbState.heading*kColorSensorToCenter).closest_point(drvbState.pos);
+		drvb.state.pos = Field::zone_2_to_3_line.offset(-drvb.state.heading*kColorSensorToCenter).closest_point(drvb.state.pos);
 	}
 	if(prevGmState.zone == 5 && gmState.zone == 6) {
-		return drvbState.pos = Field::zone_5_to_6_line.offset(-drvbState.heading*kColorSensorToCenter).closest_point(drvbState.pos);;
+		drvb.state.pos = Field::zone_5_to_6_line.offset(-drvb.state.heading*kColorSensorToCenter).closest_point(drvb.state.pos);;
 	}
-	if(prevGmState.zone == 8 && gmState.zone == 9) {
-		return drvbState.pos = Field::zone_8_to_9_line.offset(-drvbState.heading*kColorSensorToCenter).closest_point(drvbState.pos);;
-	}
+
 #endif
 
 #ifndef FORCE_WALL_ALIGN
 	// Ir alignment
-	if(prevGmState.zone == 0 && gmState.zone == 0 && abs(mt::signed_angle(mt::Vec2(0.0, 1.0), drvbState.heading)) < PI/2) {
+	if(prevGmState.zone == 0 && gmState.zone == 0 && abs(mt::signed_angle(mt::Vec2(0.0, 1.0), drvb.state.heading)) < PI/2) {
 #endif
-		drvbState.heading = heading_from_ir(mt::Vec2(0.0, 1.0), currSensState, drvbState.heading);
-		return drvbState;
+		drvb.state.heading = heading_from_ir(mt::Vec2(0.0, 1.0), currSensState, drvb.state.heading);
 #ifndef FORCE_WALL_ALIGN
 	}
 #endif
 
-	if(prevGmState.zone == 4 && gmState.zone == 4 && abs(mt::signed_angle(mt::Vec2(0.0, -1.0), drvbState.heading) < PI/2)) {
-		drvbState.heading = heading_from_ir(mt::Vec2(0.0, -1.0), currSensState, drvbState.heading);
-		return drvbState;
+	if(prevGmState.zone == 4 && gmState.zone == 4 && abs(mt::signed_angle(mt::Vec2(0.0, -1.0), drvb.state.heading) < PI/2)) {
+		drvb.state.heading = heading_from_ir(mt::Vec2(0.0, -1.0), currSensState, drvb.state.heading);
 	}
-
-	return drvbState;
 }
 
 mt::Vec2 heading_from_ir(mt::Vec2 baseVec, SensorState const& sensState, mt::Vec2 fallback)
