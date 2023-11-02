@@ -37,7 +37,7 @@ struct Robot {
 	void oneTurn_helper(GameState gmState, Iteration_time it_time);
 	void shortCut_helper(GameState gmState, Iteration_time it_time);
 	void followLine();
-	void adjustDrivebase(SensorState const& currSensState, 
+	void adjustDrivebase(SensorState const& currSensState, SensorState const& prevSensState,
 								GameState const& prevGmState, GameState const& gmState);
 };
 

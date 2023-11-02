@@ -135,16 +135,16 @@ void Robot::adjustDrivebase(SensorState const& currSensState,  SensorState const
 		2. Line follower
 			a. Guess which line we are following
 			b. Same as with color change, intersect with line*/
-			if((gmState.zone == 6 || gmState.zone == 7 || gmState.zone == 8) && ! gmState.missions.trap_ball.underway())
-			{
-				followLine();
-			}
+			// if((gmState.zone == 6 || gmState.zone == 7 || gmState.zone == 8) && ! gmState.missions.trap_ball.underway())
+			// {
+			// 	followLine();
+			// }
 
-			if(prevGmState.zone == 8 && gmState.zone == 9)
-			{
-				drvb.state.pos = mt::Vec2(2.0/3.281, 4.0/3.281);
-				drvb.state.heading = normalize(mt::Vec2(-1., 1.0));
-			}
+			// if(prevGmState.zone == 8 && gmState.zone == 9)
+			// {
+			// 	drvb.state.pos = mt::Vec2(2.0/3.281, 4.0/3.281);
+			// 	drvb.state.heading = normalize(mt::Vec2(-1., 1.0));
+			// }
 		
 		/*3. Bumpers in shortcut
 			a. If we are in shortcut mission 

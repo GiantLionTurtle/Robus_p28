@@ -78,8 +78,8 @@ void loop()
 			}
 			// print(robot.drvb.state.pos);
 			// Serial.print(" | ");
-			  print(robot.drvb.state.heading, 4);
-			 Serial.println();
+			//   print(robot.drvb.state.heading, 4);
+			//  Serial.println();
 			 //printSensor(sensState);
 			// Serial.print(sensState.frontIR_dist);
 			// Serial.print("'  ");
