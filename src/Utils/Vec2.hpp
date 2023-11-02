@@ -205,6 +205,8 @@ inline T distance(Vec2_any<T> const& first, Vec2_any<T> const& second)
 template<typename T>
 inline T signed_angle(Vec2_any<T> const& lhs, Vec2_any<T> const& rhs)
 {
+	if(lhs == -rhs)
+		return PI;
 	// https://stackoverflow.com/questions/5188561/signed-angle-between-two-3d-vectors-with-same-origin-within-the-same-plane
 	return atan2(cross(lhs, rhs), dot(lhs, rhs));
 }
