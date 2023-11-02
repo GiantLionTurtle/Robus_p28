@@ -149,9 +149,9 @@ void Robot::adjustDrivebase(SensorState const& currSensState,
 	if(prevGmState.zone == 2 && gmState.zone == 3) {
 		drvb.state.pos = Field::zone_2_to_3_line.offset(-drvb.state.heading*kColorSensorToCenter).closest_point(drvb.state.pos);
 	}
-	if(prevGmState.zone == 5 && gmState.zone == 6) {
-		drvb.state.pos = Field::zone_5_to_6_line.offset(-drvb.state.heading*kColorSensorToCenter).closest_point(drvb.state.pos);;
-	}
+	// if(prevGmState.zone == 5 && gmState.zone == 6) {
+	// 	drvb.state.pos = Field::zone_5_to_6_line.offset(-drvb.state.heading*kColorSensorToCenter).closest_point(drvb.state.pos);;
+	// }
 
 #endif
 
