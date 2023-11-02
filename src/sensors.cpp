@@ -41,7 +41,7 @@ SensorState get_sensors()
 	newSensorState.colorDetector = get_color();
 	newSensorState.encoders_ticks = { ENCODER_Read(LEFT), ENCODER_Read(RIGHT) };
 	newSensorState.bumpersState = { ROBUS_IsBumper(LEFT), ROBUS_IsBumper(RIGHT) };
-	//newSensorState.lineDetector = get_ir_line();
+	newSensorState.lineDetector = get_ir_line();
 	return newSensorState;
 }
 

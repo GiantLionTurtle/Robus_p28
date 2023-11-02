@@ -4,8 +4,8 @@
 
 namespace p28 {
     static int PIN_IR[8] {A4, A5, A6, A7, A8, A9, A10, A11};
-    #define BLACK_TRESH 200
-    #define BASIC_TRESH 900
+    #define BLACK_TRESH 550
+    #define BASIC_TRESH 1000
 
 
     char get_ir_line()
@@ -14,9 +14,8 @@ namespace p28 {
         for(int i = 0; i < 8; i++)
         {
             bool state = get_ir(i);
-             byte_line |= state<<i;
+            byte_line |= state<<i;
         }
-        
         return byte_line;
     }
 

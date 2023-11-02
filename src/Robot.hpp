@@ -36,9 +36,10 @@ struct Robot {
 	void trapBall_helper(GameState gmState, Iteration_time it_time);
 	void oneTurn_helper(GameState gmState, Iteration_time it_time);
 	void shortCut_helper(GameState gmState, Iteration_time it_time);
+	void followLine();
+	void adjustDrivebase(SensorState const& currSensState, 
+								GameState const& prevGmState, GameState const& gmState);
 };
-
- Drivebase follow_line(Drivebase drvb);
 
 } // !p28
 

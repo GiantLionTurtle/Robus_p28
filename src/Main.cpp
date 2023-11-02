@@ -22,7 +22,7 @@ void setup()
 {
 	BoardInit();
 	delay(1000);
-
+	init_color_sensor();
 	Serial.println("Begin!");
 
 	robot.drvb.concrete.left.pid = { 1.4, 35.5555, 0.03333333 };
@@ -81,13 +81,22 @@ void loop()
 			//  print(robot.drvb.state.heading, 4);
 			//  Serial.println();
 			 //printSensor(sensState);
-
 			unsigned int loop_end = millis();
 			unsigned int loop_duration = loop_end-loop_start;
 			time_to_delay_ms = loop_duration > kControlLoopDelay ? 0 : kControlLoopDelay - (loop_duration);
 		}		
 	}
-
-
-
+	/*sensState = get_sensors();
+	for(int i = 0; i<8; i++)
+			{
+				if((bool)(sensState.lineDetector&(1<<i)))
+				{
+					Serial.print(1);
+				}
+				else
+				{
+					Serial.print(0);
+				}
+			}
+			Serial.println();*/
 }
