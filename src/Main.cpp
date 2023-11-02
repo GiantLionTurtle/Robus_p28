@@ -5,6 +5,7 @@
 #include "HardwareState.hpp"
 
 #include "UnitTests.hpp"
+#include "Field.hpp"
 
 using namespace p28;
 
@@ -26,7 +27,12 @@ void setup()
 
 	robot.drvb.concrete.left.pid = { 1.4, 35.5555, 0.03333333 };
 	robot.drvb.concrete.right.pid = { 1.4, 35.5555, 0.03333333 };
-	robot.drvb.concrete.headingPID = { 0.4, 0.18, 0.006 };
+	// robot.drvb.concrete.headingPID = { 0.4, 0.18, 0.006 };
+	robot.drvb.concrete.headingPID = { 0.3, 0.135, 0.0045 };
+	robot.drvb.state.pos = {2.286 , 3.64};
+	//robot.drvb.state.pos = Field::green_startPos;
+	// robot.drvb.state.pos  = mt::Vec2(2.701 , 1.2192 - 0.16);
+	robot.drvb.state.heading = {0.0, -1.0};
 
 	// robot.drvb.concrete.headingPID = { 0.48, 0.18, 0.006 };
 
@@ -41,6 +47,7 @@ void setup()
 	prevSensState = sensState;
 
 	set_hardwareState(HardwareState::initial());
+	// Tests::arc_generation();
 }
 
 void loop()
@@ -70,11 +77,11 @@ void loop()
 				set_hardwareState(HardwareState());
 				break;
 			}
-			// print(robot.drvb.state.pos);
-			// Serial.print(" | ");
-			// print(robot.drvb.state.heading, 4);
-			// Serial.println();
-			// printSensor(sensState);
+			//  print(robot.drvb.state.pos);
+			//  Serial.print(" | ");
+			//  print(robot.drvb.state.heading, 4);
+			//  Serial.println();
+			 //printSensor(sensState);
 			unsigned int loop_end = millis();
 			unsigned int loop_duration = loop_end-loop_start;
 			time_to_delay_ms = loop_duration > kControlLoopDelay ? 0 : kControlLoopDelay - (loop_duration);

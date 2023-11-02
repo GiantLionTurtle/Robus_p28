@@ -1,5 +1,6 @@
 
 #include "Paths.hpp"
+#include "Field.hpp"
 
 namespace p28 {
 
@@ -35,31 +36,52 @@ DrivebasePath gen_test()
 DrivebasePath gen_yellowLane()
 {
 	DrivebasePath path;
+	Serial.println("Beginning yellow Path");
 
-	path.add_checkPoint(PathCheckPoint(mt::Vec2(0.0,1.0), mt::Vec2(0.0, 1.0)));
-	path.add_checkPoint(PathCheckPoint(mt::Vec2(0.5, 1.0), mt::Vec2(0.0, -1.0)));
-	path.add_checkPoint(PathCheckPoint(mt::Vec2(0.5, 0.5), mt::Vec2(0.0, -1.0)));
-
+	
+	path.add_checkPoint(PathCheckPoint(mt::Vec2(0.4572 , 3.64), mt::Vec2(0.0, 1.0), kEndSegmentVel));
+	path.add_checkPoint(PathCheckPoint(mt::Vec2(1.219 , 4.4696), mt::Vec2(1.0, 0.0), 0.15));
+	path.add_checkPoint(PathCheckPoint(mt::Vec2(1.829 , 4.4696), mt::Vec2(1.0,0.0), kEndSegmentVel));
+	path.add_checkPoint(PathCheckPoint(mt::Vec2(2.701 , 3.64), mt::Vec2(0.0,-1.0), kEndSegmentVel));
+	path.add_checkPoint(PathCheckPoint(mt::Vec2(2.701 , 1.2192 - 0.16), mt::Vec2(0.0,-1.0)));
+	path.add_checkPoint(PathCheckPoint::make_turn(Field::yellow_follow_line1.dir));
+	path.add_checkPoint(PathCheckPoint(Field::yellow_follow_line2.origin, Field::yellow_follow_line1.dir));
+	path.add_checkPoint(PathCheckPoint::make_turn(Field::yellow_follow_line2.dir));
+	path.add_checkPoint(PathCheckPoint(Field::yellow_follow_line3.origin, Field::yellow_follow_line2.dir));
+	path.add_checkPoint(PathCheckPoint::make_turn(Field::yellow_follow_line3.dir));
+	path.add_checkPoint(PathCheckPoint(mt::Vec2(0.305 , 1.22), Field::yellow_follow_line3.dir));
+	path.add_checkPoint(PathCheckPoint::make_turn(mt::Vec2(0.0 , 1.0)));
+	path.add_checkPoint(PathCheckPoint(mt::Vec2(0.4572 , 3.4876), mt::Vec2(0.0, 1.0)));
 	return path;
 
 }
 DrivebasePath gen_greenLane()
 {
 	DrivebasePath path;
-	bool backward = false;
-	float zone_678_maxSpeed = kMaxVel;
+	bool backward = true;
+	float zone_678_maxSpeed = 0.8;
 
-#ifndef RACE_MODE // Do not turn backward if we are in race mode!
+#ifdef RACE_MODE // Do not turn backward if we are in race mode!
 	// Start backward to knock the cup!
-	path.add_checkPoint(PathCheckPoint::make_turn(mt::Vec2(0.0, -1.0)));
-	backward = true;
+	backward = false;
 
-	zone_678_maxSpeed = 0.8; // Slower when we might have a ball to deal with
+	zone_678_maxSpeed = kMaxVel; // Slower when we might have a ball to deal with
 #endif
-
-	path.add_checkPoint(PathCheckPoint(mt::Vec2(0.0,1.0), mt::Vec2(0.0, 1.0), kEndSegmentVel, backward));
-	path.add_checkPoint(PathCheckPoint(mt::Vec2(0.5, 1.0), mt::Vec2(0.0, -1.0), kEndSegmentVel, backward));
-	path.add_checkPoint(PathCheckPoint(mt::Vec2(0.5, 0.5), mt::Vec2(0.0, -1.0), kEndSegmentVel, backward));
+	
+	// path.add_checkPoint(PathCheckPoint(mt::Vec2(0.762 , 3.64), mt::Vec2(0.0 , 1.0)));
+	// path.add_checkPoint(PathCheckPoint(mt::Vec2(1.219 , 4.115), mt::Vec2(1.0 , 0.0)));
+	// path.add_checkPoint(PathCheckPoint(mt::Vec2(1.829 , 4.115), mt::Vec2(1.0 , 0.0)));
+	// path.add_checkPoint(PathCheckPoint(mt::Vec2(2.286 , 3.64), mt::Vec2(0.0 , -1.0)));
+	path.add_checkPoint(PathCheckPoint::make_turn(0.0 ,1.0));
+	//path.add_checkPoint(PathCheckPoint(mt::Vec2(1.9812,1.219-0.215), mt::Vec2(0.0, 1.0), kEndSegmentVel, backward));
+	// path.add_checkPoint(PathCheckPoint::make_turn(Field::green_follow_line1.dir));
+	// path.add_checkPoint(PathCheckPoint(Field::green_follow_line2.origin, Field::green_follow_line1.dir));
+	// path.add_checkPoint(PathCheckPoint::make_turn(Field::green_follow_line2.dir));
+	// path.add_checkPoint(PathCheckPoint(Field::green_follow_line3.origin, Field::green_follow_line2.dir));
+	// path.add_checkPoint(PathCheckPoint::make_turn(Field::green_follow_line3.dir));
+	// path.add_checkPoint(PathCheckPoint(mt::Vec2(0.305 , 1.22), Field::green_follow_line3.dir));
+	// path.add_checkPoint(PathCheckPoint::make_turn(mt::Vec2(0.0 , 1.0)));
+	// path.add_checkPoint(PathCheckPoint(mt::Vec2(0.762 , 3.64), mt::Vec2(0.0, 1.0)));
 
 	return path;
 }

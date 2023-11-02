@@ -18,7 +18,7 @@ GameState GameState::initial(SensorState sensState)
 {
 	GameState initial_gameState;
 	initial_gameState.over = false;
-	initial_gameState.lane = comp_lane(sensState.colorDetector);
+	initial_gameState.lane =1; // comp_lane(sensState.colorDetector);
 	initial_gameState.target_lane = initial_gameState.lane;
 	// initial_gameState.missions.test.donneness = Objective::Todo;
 	
@@ -31,7 +31,7 @@ GameState GameState::generate_next(SensorState prevSensState, SensorState currSe
 	GameState newGmState = *this;
 
 	// Figure out where we are in game zones
-	tie(newGmState.zone, newGmState.lane) = compute_zoneLane(prevSensState, currSensState, newGmState, drvbState);
+	// tie(newGmState.zone, newGmState.lane) = compute_zoneLane(prevSensState, currSensState, newGmState, drvbState);
 
 	if(newGmState.zone != zone) {
 		Serial.print("zone: ");
@@ -39,8 +39,8 @@ GameState GameState::generate_next(SensorState prevSensState, SensorState currSe
 	}
 	// Figure out what to do now
 	newGmState.missions.one_turn = compute_one_turn_state(newGmState, *this, it_time.time_ms);
-	newGmState.missions.knock_cup = compute_knockCup_state(newGmState, currSensState, it_time.time_ms);
-	newGmState.missions.test = compute_tests_state(newGmState, it_time.time_ms);
+	// newGmState.missions.knock_cup = compute_knockCup_state(newGmState, currSensState, it_time.time_ms);
+	// newGmState.missions.test = compute_tests_state(newGmState, it_time.time_ms);
 
 	// ping pong
 	// shortcut

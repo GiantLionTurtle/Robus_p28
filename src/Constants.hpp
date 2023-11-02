@@ -31,7 +31,7 @@ constexpr int kArm_closeAngle = 150;
 
 
 // Physical movement constraints of the robot
-constexpr float kMaxVel = 0.8;                  // m / s
+constexpr float kMaxVel = 0.4;                  // m / s
 constexpr float kAccel = 0.4; // m/s^2
 constexpr float kMaxAngularVelocity = 0.8; // rad/s
 constexpr float KMinVel = 0.03;
