@@ -14,6 +14,11 @@ mt::Vec2 heading_from_ir(mt::Vec2 baseVec, SensorState const& sensState, mt::Vec
 Robot Robot::initial(GameState gmState)
 {
 	Robot robot;
+	robot.drvb.concrete.left.pid = { 1.4, 35.5555, 0.03333333 };
+	robot.drvb.concrete.right.pid = { 1.4, 35.5555, 0.03333333 };
+	// robot.drvb.concrete.headingPID = { 0.4, 0.18, 0.006 };
+	robot.drvb.concrete.headingPID = { 0.3, 0.135, 0.0045 };
+
 	robot.drvb.state.heading = mt::Vec2(0.0, 1.0);
 	mt::Vec2 pos_init;
 	if(gmState.lane == 1)
@@ -23,6 +28,8 @@ Robot Robot::initial(GameState gmState)
 	else if(gmState.lane == 2)
 	{
 		pos_init = Field::yellow_startPos;
+	} else {
+		pos_init = mt::Vec2(-2, -2);
 	}
 	robot.drvb.state.pos = pos_init;
 	return robot;
@@ -31,6 +38,7 @@ Robot Robot::initial(GameState gmState)
 void Robot::generate_next(  SensorState prevSensState, SensorState currSensState, 
 				   			 GameState prevGmState, GameState gmState, Iteration_time it_time)
 {
+	// Serial.println("YEAH");
 	test_helper(gmState, it_time);
 	oneTurn_helper(gmState, it_time);
 	knockCup_helper(gmState, it_time);
@@ -167,18 +175,18 @@ void Robot::adjustDrivebase(SensorState const& currSensState,
 
 #endif
 
-#ifndef FORCE_WALL_ALIGN
-	// Ir alignment
-	if(prevGmState.zone == 0 && gmState.zone == 0 && abs(mt::signed_angle(mt::Vec2(0.0, 1.0), drvb.state.heading)) < PI/2) {
-#endif
-		drvb.state.heading = heading_from_ir(mt::Vec2(0.0, 1.0), currSensState, drvb.state.heading);
-#ifndef FORCE_WALL_ALIGN
-	}
-#endif
+// #ifndef FORCE_WALL_ALIGN
+// 	// Ir alignment
+// 	if(prevGmState.zone == 0 && gmState.zone == 0 && abs(mt::signed_angle(mt::Vec2(0.0, 1.0), drvb.state.heading)) < PI/2) {
+// #endif
+// 		drvb.state.heading = heading_from_ir(mt::Vec2(0.0, 1.0), currSensState, drvb.state.heading);
+// #ifndef FORCE_WALL_ALIGN
+// 	}
+// #endif
 
-	if(prevGmState.zone == 4 && gmState.zone == 4 && abs(mt::signed_angle(mt::Vec2(0.0, -1.0), drvb.state.heading) < PI/2)) {
-		drvb.state.heading = heading_from_ir(mt::Vec2(0.0, -1.0), currSensState, drvb.state.heading);
-	}
+// 	if(prevGmState.zone == 4 && gmState.zone == 4 && abs(mt::signed_angle(mt::Vec2(0.0, -1.0), drvb.state.heading) < PI/2)) {
+// 		drvb.state.heading = heading_from_ir(mt::Vec2(0.0, -1.0), currSensState, drvb.state.heading);
+// 	}
 }
 
 mt::Vec2 heading_from_ir(mt::Vec2 baseVec, SensorState const& sensState, mt::Vec2 fallback)
