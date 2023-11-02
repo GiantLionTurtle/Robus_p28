@@ -9,7 +9,7 @@
 
 namespace p28 {
 
-mt::Vec2 heading_from_ir(mt::Vec2 baseVec, SensorState const& sensState, mt::Vec2 fallback);
+mt::Vec2 heading_from_ir(mt::Vec2 baseVec, SensorState const& sensState, SensorState prevSensorState, mt::Vec2 fallback);
 
 Robot Robot::initial(GameState gmState)
 {
@@ -47,7 +47,7 @@ void Robot::generate_next(  SensorState prevSensState, SensorState currSensState
 	drvb.state = drvb.state.update_kinematics(prevSensState.encoders_ticks, currSensState.encoders_ticks, it_time.delta_s);
 
 	// Adjust drivebase with other sensors and knowledge of the game
-	adjustDrivebase(currSensState, prevGmState, gmState);
+	adjustDrivebase(currSensState, prevSensState, prevGmState, gmState);
 	drvb.update_path(it_time);
 	drvb.update_concrete(it_time);
 }
@@ -120,7 +120,7 @@ void Robot::followLine ()
 	drvb.state.heading = mt::normalize(mt::rotate(drvb.path.current().targHeading, -angle));
 }
 
-void Robot::adjustDrivebase(SensorState const& currSensState, 
+void Robot::adjustDrivebase(SensorState const& currSensState,  SensorState const& prevSensState,
 								GameState const& prevGmState, GameState const& gmState)
 {
 	// &&Figureout&& how to adjust the drivebase with auxilary sensors
@@ -135,7 +135,7 @@ void Robot::adjustDrivebase(SensorState const& currSensState,
 		2. Line follower
 			a. Guess which line we are following
 			b. Same as with color change, intersect with line*/
-			if(gmState.zone == 6 || gmState.zone == 7 || gmState.zone == 8)
+			if((gmState.zone == 6 || gmState.zone == 7 || gmState.zone == 8) && ! gmState.missions.trap_ball.underway())
 			{
 				followLine();
 			}
@@ -187,17 +187,24 @@ void Robot::adjustDrivebase(SensorState const& currSensState,
 // 	}
 }
 
-mt::Vec2 heading_from_ir(mt::Vec2 baseVec, SensorState const& sensState, mt::Vec2 fallback)
+mt::Vec2 heading_from_ir(mt::Vec2 baseVec, SensorState const& sensState, SensorState prevSensorState, mt::Vec2 fallback)
 {
+	if (sensState.frontIR_dist > 500 || sensState.backIR_dist > 500)
+		return fallback;
 	// See fig.4
 
 	// Add Previous sensorstate to make an everage???
 	float dist_diff = sensState.backIR_dist - sensState.frontIR_dist;
-	if(dist_diff >= kIRSensor_apartDist)
+	float prev_diff = prevSensorState.backIR_dist - prevSensorState.frontIR_dist;
+	dist_diff = (dist_diff*3+prev_diff)/4;
+	if(abs(dist_diff) >= kIRSensor_apartDist || abs(prev_diff) >= kIRSensor_apartDist)
+
 		return fallback;
-	float heading_angle = asin(dist_diff/kIRSensor_apartDist);
-	// Serial.println(dist_diff);
-	return mt::normalize(mt::rotate(baseVec, heading_angle));
+	float heading_angle = mt::clamp(-asin(dist_diff/kIRSensor_apartDist), mt::to_radians(-15), mt::to_radians(15));
+	//  Serial.println(dist_diff);
+	//  Serial.println(prev_diff);
+	
+	return mt::normalize(mt::rotate(baseVec, heading_angle/3));
 }
 
 } // !p28

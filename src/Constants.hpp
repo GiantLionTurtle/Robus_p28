@@ -22,7 +22,7 @@ constexpr int kTicksPerRotation = 3200;
 constexpr float kCircumference = PI * kRobotWidth;
 constexpr float kColorSensorToCenter = 0.047; // distance forward of the color sensor (m)
 constexpr float kLineSensorToCenter = 0.07; // distance forward of the line sensor (m)
-constexpr int kIRSensor_apartDist = 200; // mm
+constexpr int kIRSensor_apartDist = 213; // mm
 constexpr float kIRSensorBack_centerOffset = 84; // mm
 constexpr int kCup_openAngle = 15;
 constexpr int kCup_closeAngle = 180;
@@ -51,7 +51,7 @@ constexpr float kInfinity = 100000;
 constexpr unsigned int kMaxCheckPointForPath = 20;
 enum class COLOR { RED, GREEN, BLUE, YELLOW, BLACK, WHITE };
 
-
+ 
 
 // Mission specific constants
 constexpr int kCupRelease_pathIndex = 3; // After which checkpoint of the maneuver should the cup be dropped?

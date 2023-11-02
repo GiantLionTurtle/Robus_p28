@@ -297,6 +297,16 @@ inline void print(Vec2 const& vec, int decimals)
 	Serial.print("]");
 }
 
+template<typename Tx, typename Tmin, typename Tmax>
+Tx clamp(Tx x, Tmin min_, Tmax max_)
+{
+	if(x < min_)
+		return min_;
+	if(x > max_)
+		return max_;
+	return x;
+}
+
 } // !mt
 } // !p28
 
