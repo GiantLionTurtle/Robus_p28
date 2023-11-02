@@ -76,11 +76,16 @@ void loop()
 				set_hardwareState(HardwareState());
 				break;
 			}
-			//  print(robot.drvb.state.pos);
-			//  Serial.print(" | ");
-			//  print(robot.drvb.state.heading, 4);
-			//  Serial.println();
+			// print(robot.drvb.state.pos);
+			// Serial.print(" | ");
+			  print(robot.drvb.state.heading, 4);
+			 Serial.println();
 			 //printSensor(sensState);
+			// Serial.print(sensState.frontIR_dist);
+			// Serial.print("'  ");
+			// Serial.println(sensState.backIR_dist);
+		
+
 			unsigned int loop_end = millis();
 			unsigned int loop_duration = loop_end-loop_start;
 			time_to_delay_ms = loop_duration > kControlLoopDelay ? 0 : kControlLoopDelay - (loop_duration);

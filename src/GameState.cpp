@@ -12,6 +12,7 @@ Pair<int, int> compute_zoneLane(SensorState  const& prevSensState, SensorState c
 Objective compute_knockCup_state(GameState const& gmState, SensorState const& sensState, time_t time_ms);
 Objective compute_one_turn_state(GameState const& gmState, GameState const& previousGmState, time_t time_ms);
 Objective compute_tests_state(GameState const& gmState, time_t time_ms);
+Objective compute_trap_ball_state(SensorState const& currentSensorState, GameState const& currentGmState, time_t time_ms);
 int comp_lane(COLOR color);
 
 GameState GameState::initial(SensorState sensState)
@@ -20,7 +21,14 @@ GameState GameState::initial(SensorState sensState)
 	initial_gameState.over = false;
 	initial_gameState.lane = comp_lane(sensState.colorDetector);
 	initial_gameState.target_lane = initial_gameState.lane;
-	// initial_gameState.missions.test.donneness = Objective::Todo;
+	
+#ifdef	ENABLE_TEST_OBJECTIVE
+	initial_gameState.missions.test.donneness = Objective::Todo;
+	initial_gameState.missions.knock_cup.donneness = Objective::Done;
+	initial_gameState.missions.trap_ball.donneness = Objective ::Done;
+	initial_gameState.missions.one_turn.donneness = Objective ::Done;
+	initial_gameState.missions.one_shortcut_turn.donneness = Objective::Done;
+#endif	
 	
 	return initial_gameState;
 }
@@ -39,8 +47,8 @@ GameState GameState::generate_next(SensorState prevSensState, SensorState currSe
 	}
 	// Figure out what to do now
 	newGmState.missions.one_turn = compute_one_turn_state(newGmState, *this, it_time.time_ms);
-	// newGmState.missions.knock_cup = compute_knockCup_state(newGmState, currSensState, it_time.time_ms);
-	// newGmState.missions.test = compute_tests_state(newGmState, it_time.time_ms);
+	newGmState.missions.knock_cup = compute_knockCup_state(newGmState, currSensState, it_time.time_ms);
+	newGmState.missions.test = compute_tests_state(newGmState, it_time.time_ms);
 
 	// ping pong
 	// shortcut
@@ -148,4 +156,11 @@ Objective compute_tests_state(GameState const& gmState, time_t time_ms)
 	
 	return gmState.missions.test.advance(start_cond, end_cond, time_ms);
 }
+Objective compute_trap_ball_state(SensorState const& currentSensorState, GameState const& currentGmState, time_t time_ms)
+{
+	bool start_cond = (currentGmState.zone == 6 ||currentGmState.zone == 7 || currentGmState.zone == 8) && currentSensorState.backIR_dist <= 200;
+	bool end_cond = currentSensorState.lineDetector != 0 && time_ms > currentGmState.missions.trap_ball.start_ms + 1000;
+	return currentGmState.missions.trap_ball.advance(start_cond, end_cond, time_ms);
+}
+
 } // !p28

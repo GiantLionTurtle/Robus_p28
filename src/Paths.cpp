@@ -10,7 +10,7 @@ DrivebasePath gen_test()
 {
 	DrivebasePath path;
 	// path.add_checkPoint(PathCheckPoint(mt::Vec2(0.0, 0.5), mt::Vec2(0.0, 1.0), 0.0, 0, false));
-	// path.add_checkPoint(PathCheckPoint(mt::Vec2(0.0, 20), mt::Vec2(0.0, 1.0)));
+	path.add_checkPoint(PathCheckPoint(mt::Vec2(0.0, 20), mt::Vec2(0.0, 1.0)));
 
 	// path.add_checkPoint(PathCheckPoint(mt::Vec2(0.0, 0.5), mt::Vec2(0.0, 1.0), kEndSegmentVel));
 	// path.add_checkPoint(PathCheckPoint(mt::Vec2(0.5, 0.5), mt::Vec2(0.0, -1.0), kEndSegmentVel));
@@ -22,12 +22,12 @@ DrivebasePath gen_test()
 	// path.add_checkPoint(PathCheckPoint(mt::Vec2(1, 0.0), mt::Vec2(0.0, -1.0), kEndSegmentVel));
 	// path.add_checkPoint(PathCheckPoint(mt::Vec2(0.0, 0.0), mt::Vec2(0.0, 1.0), 0.0));
 
-	path.add_checkPoint(PathCheckPoint::make_turn(mt::Vec2(0.0, -1.0)));
-	path.add_checkPoint(PathCheckPoint(mt::Vec2(0.0, 1), mt::Vec2(0.0, 1.0), kEndSegmentVel, true));
-	path.add_checkPoint(PathCheckPoint(mt::Vec2(1, 1), mt::Vec2(0.0, -1.0), kEndSegmentVel, true));
-	path.add_checkPoint(PathCheckPoint(mt::Vec2(1, 0.0), mt::Vec2(0.0, -1.0), kEndSegmentVel, true));
-	path.add_checkPoint(PathCheckPoint(mt::Vec2(0.0, 0.0), mt::Vec2(0.0, 1.0), 0.0, true));
-	path.add_checkPoint(PathCheckPoint::make_turn(mt::Vec2(0.0, 1.0)));
+	// path.add_checkPoint(PathCheckPoint::make_turn(mt::Vec2(0.0, -1.0)));
+	// path.add_checkPoint(PathCheckPoint(mt::Vec2(0.0, 1), mt::Vec2(0.0, 1.0), kEndSegmentVel, true));
+	// path.add_checkPoint(PathCheckPoint(mt::Vec2(1, 1), mt::Vec2(0.0, -1.0), kEndSegmentVel, true));
+	// path.add_checkPoint(PathCheckPoint(mt::Vec2(1, 0.0), mt::Vec2(0.0, -1.0), kEndSegmentVel, true));
+	// path.add_checkPoint(PathCheckPoint(mt::Vec2(0.0, 0.0), mt::Vec2(0.0, 1.0), 0.0, true));
+	// path.add_checkPoint(PathCheckPoint::make_turn(mt::Vec2(0.0, 1.0)));
 
 
 	return path;
@@ -113,9 +113,9 @@ DrivebasePath add_pingPong(DrivebasePath currentPath, DrivebaseState drvbState)
 	swervePath.add_checkPoint(PathCheckPoint::make_turn(mt::rotate(drvbState.heading, mt::to_radians(90)), 1000));
 
 	// Add two arcs to get back to the line
+	swervePath.add_checkPoint(PathCheckPoint(drvbState.pos + drvbState.heading*.15 + mt::cw_perpendicular(drvbState.heading), -drvbState.heading ));
 
-
-	// combine the paths
+	// combine the paths 
 	currentPath = hot_insert(currentPath, swervePath);
 
 	// This part of the original path was slower to allow the robot to break

@@ -4,15 +4,7 @@
 
 namespace p28 {
 
-template<typename Tx, typename Tmin, typename Tmax>
-Tx clamp(Tx x, Tmin min_, Tmax max_)
-{
-	if(x < min_)
-		return min_;
-	if(x > max_)
-		return max_;
-	return x;
-}
+
 
 void Arc::print() const
 {
@@ -60,7 +52,7 @@ float Motor::hardware_output() const
 {
 	// Serial.print("P: ");
 	// Serial.println(pid.P);
-	return clamp(get(pid, error), -1.0f, 1.0f);
+	return mt::clamp(get(pid, error), -1.0f, 1.0f);
 }
 
 float DrivebaseState::velocity() const
@@ -129,10 +121,8 @@ DrivebaseConcrete DrivebaseConcrete::update(mt::Vec2 actualWheelVelocities, mt::
 	// The heading error doesn't need to know the actual heading angle, only the
 	// difference between target vector and current vector + goal is 0.0
 
-	float angle_error = clamp(mt::signed_angle(currentHeading, targetHeading), -PI/2, PI/2);
-	// print(currentHeading);
-	// print(targetHeading);
-	// Serial.println();
+	float angle_error = mt::clamp(mt::signed_angle(currentHeading, targetHeading), -PI/2, PI/2);
+
 	if(dist_to_target < 0.05) {
 		angle_error *= dist_to_target / 0.05;
 	}
