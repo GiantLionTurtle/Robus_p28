@@ -12,7 +12,7 @@
 #define DEBUG_MODE
 
 // Uncomment to enable the test objective
-#define ENABLE_TEST_OBJECTIVE
+// #define ENABLE_TEST_OBJECTIVE
 
 // Uncomment to force the drivebase to align itself with a 
 // wall no matter the context
@@ -24,7 +24,7 @@
 
 // Uncomment to use the left bumper to manualy switch the internal zone state
 // FOR DEBUG & TESTS ONLY
-#define LEFT_BUMPER_FOR_ZONE_INCREMENT
+//#define LEFT_BUMPER_FOR_ZONE_INCREMENT
 
 // Uncomment to enable race mode vs qualification mode
 // #define RACE_MODE

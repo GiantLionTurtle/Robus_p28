@@ -8,6 +8,7 @@ namespace Paths {
     
 DrivebasePath gen_test()
 {
+	Serial.println("Gen test");
 	DrivebasePath path;
 	// path.add_checkPoint(PathCheckPoint(mt::Vec2(0.0, 0.5), mt::Vec2(0.0, 1.0), 0.0, 0, false));
 	path.add_checkPoint(PathCheckPoint(mt::Vec2(0.0, 20), mt::Vec2(0.0, 1.0)));
@@ -22,12 +23,12 @@ DrivebasePath gen_test()
 	// path.add_checkPoint(PathCheckPoint(mt::Vec2(1, 0.0), mt::Vec2(0.0, -1.0), kEndSegmentVel));
 	// path.add_checkPoint(PathCheckPoint(mt::Vec2(0.0, 0.0), mt::Vec2(0.0, 1.0), 0.0));
 
-	// path.add_checkPoint(PathCheckPoint::make_turn(mt::Vec2(0.0, -1.0)));
-	// path.add_checkPoint(PathCheckPoint(mt::Vec2(0.0, 1), mt::Vec2(0.0, 1.0), kEndSegmentVel, true));
-	// path.add_checkPoint(PathCheckPoint(mt::Vec2(1, 1), mt::Vec2(0.0, -1.0), kEndSegmentVel, true));
-	// path.add_checkPoint(PathCheckPoint(mt::Vec2(1, 0.0), mt::Vec2(0.0, -1.0), kEndSegmentVel, true));
-	// path.add_checkPoint(PathCheckPoint(mt::Vec2(0.0, 0.0), mt::Vec2(0.0, 1.0), 0.0, true));
-	// path.add_checkPoint(PathCheckPoint::make_turn(mt::Vec2(0.0, 1.0)));
+	path.add_checkPoint(PathCheckPoint::make_turn(mt::Vec2(0.0, -1.0)));
+	path.add_checkPoint(PathCheckPoint(mt::Vec2(0.0, 1), mt::Vec2(0.0, 1.0), kEndSegmentVel, true));
+	path.add_checkPoint(PathCheckPoint(mt::Vec2(1, 1), mt::Vec2(0.0, -1.0), kEndSegmentVel, true));
+	path.add_checkPoint(PathCheckPoint(mt::Vec2(1, 0.0), mt::Vec2(0.0, -1.0), kEndSegmentVel, true));
+	path.add_checkPoint(PathCheckPoint(mt::Vec2(0.0, 0.0), mt::Vec2(0.0, 1.0), 0.0, true));
+	path.add_checkPoint(PathCheckPoint::make_turn(mt::Vec2(0.0, 1.0)));
 
 
 	return path;
@@ -59,6 +60,7 @@ DrivebasePath gen_yellowLane()
 }
 DrivebasePath gen_greenLane()
 {
+	Serial.println("Beginning green path");
 	DrivebasePath path;
 	bool backward = true;
 	float zone_678_maxSpeed = 0.8;
