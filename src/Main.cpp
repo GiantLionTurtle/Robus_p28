@@ -43,6 +43,7 @@ void setup()
 
 	sensState = get_sensors();
 	gmState = GameState::initial(sensState);
+	robot = Robot::initial(gmState);
 	prevGmState = gmState;
 	prevSensState = sensState;
 
