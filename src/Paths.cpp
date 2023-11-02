@@ -39,19 +39,21 @@ DrivebasePath gen_yellowLane()
 	Serial.println("Beginning yellow Path");
 
 	
-	path.add_checkPoint(PathCheckPoint(mt::Vec2(0.4572 , 3.64), mt::Vec2(0.0, 1.0), kEndSegmentVel));
-	path.add_checkPoint(PathCheckPoint(mt::Vec2(1.219 , 4.4696), mt::Vec2(1.0, 0.0), 0.15));
-	path.add_checkPoint(PathCheckPoint(mt::Vec2(1.829 , 4.4696), mt::Vec2(1.0,0.0), kEndSegmentVel));
-	path.add_checkPoint(PathCheckPoint(mt::Vec2(2.701 , 3.64), mt::Vec2(0.0,-1.0), kEndSegmentVel));
-	path.add_checkPoint(PathCheckPoint(mt::Vec2(2.701 , 1.2192 - 0.16), mt::Vec2(0.0,-1.0)));
-	path.add_checkPoint(PathCheckPoint::make_turn(Field::yellow_follow_line1.dir));
-	path.add_checkPoint(PathCheckPoint(Field::yellow_follow_line2.origin, Field::yellow_follow_line1.dir));
-	path.add_checkPoint(PathCheckPoint::make_turn(Field::yellow_follow_line2.dir));
-	path.add_checkPoint(PathCheckPoint(Field::yellow_follow_line3.origin, Field::yellow_follow_line2.dir));
-	path.add_checkPoint(PathCheckPoint::make_turn(Field::yellow_follow_line3.dir));
-	path.add_checkPoint(PathCheckPoint(mt::Vec2(0.305 , 1.22), Field::yellow_follow_line3.dir));
-	path.add_checkPoint(PathCheckPoint::make_turn(mt::Vec2(0.0 , 1.0)));
-	path.add_checkPoint(PathCheckPoint(mt::Vec2(0.4572 , 3.4876), mt::Vec2(0.0, 1.0)));
+	path.add_checkPoint(PathCheckPoint(mt::Vec2(0.4572 , 3.64), mt::Vec2(0.0, 1.0)));
+	path.add_checkPoint(PathCheckPoint(mt::Vec2(1.219 , 4.4696), mt::Vec2(1.0, 0.0)));
+	path.add_checkPoint(PathCheckPoint(mt::Vec2(1.829 , 4.4696), mt::Vec2(1.0,0.0)));
+	path.add_checkPoint(PathCheckPoint(mt::Vec2(2.701 , 3.64), mt::Vec2(0.0,-1.0)));
+	path.add_checkPoint(PathCheckPoint(mt::Vec2(2.701 , 1.2192), mt::Vec2(0.0,-1.0)));
+	path.add_checkPoint(PathCheckPoint(mt::Vec2(-1.0 , 1.05), mt::Vec2(-1.0 , 0.0)));
+	//Hardcoded line following section
+	// path.add_checkPoint(PathCheckPoint::make_turn(Field::yellow_follow_line1.dir));
+	// path.add_checkPoint(PathCheckPoint(Field::yellow_follow_line2.origin, Field::yellow_follow_line1.dir));
+	// path.add_checkPoint(PathCheckPoint::make_turn(Field::yellow_follow_line2.dir));
+	// path.add_checkPoint(PathCheckPoint(Field::yellow_follow_line3.origin, Field::yellow_follow_line2.dir));
+	// path.add_checkPoint(PathCheckPoint::make_turn(Field::yellow_follow_line3.dir));
+	// path.add_checkPoint(PathCheckPoint(mt::Vec2(0.305 , 1.22), Field::yellow_follow_line3.dir));
+	// path.add_checkPoint(PathCheckPoint::make_turn(mt::Vec2(0.0 , 1.0)));
+	 path.add_checkPoint(PathCheckPoint(mt::Vec2(00.762 , 3.64), mt::Vec2(0.0, 1.0))); //startting position of the short cute line
 	return path;
 
 }
@@ -73,15 +75,15 @@ DrivebasePath gen_greenLane()
 	path.add_checkPoint(PathCheckPoint(mt::Vec2(1.829 , 4.115), mt::Vec2(1.0 , 0.0)));
 	path.add_checkPoint(PathCheckPoint(mt::Vec2(2.236 , 3.64), mt::Vec2(0.0 , -1.0)));
 	path.add_checkPoint(PathCheckPoint::make_turn(mt::Vec2(0.0 ,1.0)));
-	path.add_checkPoint(PathCheckPoint(mt::Vec2(2.236,1.219-0.215), mt::Vec2(0.0,-1.0), kEndSegmentVel, backward));
-	path.add_checkPoint(PathCheckPoint::make_turn(Field::green_follow_line1.dir));
-	path.add_checkPoint(PathCheckPoint(Field::green_follow_line2.origin, Field::green_follow_line1.dir));
-	path.add_checkPoint(PathCheckPoint::make_turn(Field::green_follow_line2.dir));
-	path.add_checkPoint(PathCheckPoint(Field::green_follow_line3.origin, Field::green_follow_line2.dir));
-	path.add_checkPoint(PathCheckPoint::make_turn(Field::green_follow_line3.dir));
-	path.add_checkPoint(PathCheckPoint(mt::Vec2(0.305 , 1.22), Field::green_follow_line3.dir));
-	path.add_checkPoint(PathCheckPoint::make_turn(mt::Vec2(0.0 , 1.0)));
-	path.add_checkPoint(PathCheckPoint(mt::Vec2(0.762 , 3.64), mt::Vec2(0.0, 1.0)));
+	path.add_checkPoint(PathCheckPoint(mt::Vec2(2.236,-2.0), mt::Vec2(0.0,-1.0), kEndSegmentVel, backward));
+	// path.add_checkPoint(PathCheckPoint::make_turn(Field::green_follow_line1.dir));
+	// path.add_checkPoint(PathCheckPoint(Field::green_follow_line2.origin, Field::green_follow_line1.dir));
+	// path.add_checkPoint(PathCheckPoint::make_turn(Field::green_follow_line2.dir));
+	// path.add_checkPoint(PathCheckPoint(Field::green_follow_line3.origin, Field::green_follow_line2.dir));
+	// path.add_checkPoint(PathCheckPoint::make_turn(Field::green_follow_line3.dir));
+	// path.add_checkPoint(PathCheckPoint(mt::Vec2(0.305 , 1.22), Field::green_follow_line3.dir));
+	// path.add_checkPoint(PathCheckPoint::make_turn(mt::Vec2(0.0 , 1.0)));
+	path.add_checkPoint(PathCheckPoint(mt::Vec2(0.762 , 3.64), mt::Vec2(0.0, 1.0))); //position of the shortcut line beginning
 
 	return path;
 }
