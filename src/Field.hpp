@@ -9,13 +9,13 @@ namespace p28 {
 namespace Field {
 
 const float Foot = 0.3048;
-
+//problème d'un facteur 10 avec les coordonnées des box
 const mt::Vec2 zone1_topRight 	= mt::Vec2(0.122, 0.485);
 const mt::Vec2 zone2_bottomLeft = mt::Vec2(0.122, 0.364);
 const mt::Vec2 zone2_topRight 	= mt::Vec2(0.182, 0.485);
 const mt::Vec2 zone3_bottomLeft = mt::Vec2(0.182, 0.364);
 const mt::Vec2 zone5_bottomLeft = mt::Vec2(0.182, 0.123);
-const mt::Vec2 zone6_topRight 	= mt::Vec2(0.302, 0.123);
+const mt::Vec2 zone6_topRight 	= mt::Vec2(3.117, 1.23);
 const mt::Vec2 zone8_topRight 	= mt::Vec2(0.122, 0.123);
 const mt::Vec2 zone9_bottomLeft = mt::Vec2(0.0, 0.123);
 
@@ -44,8 +44,8 @@ const mt::Box zones_boxes[n_zones] {
 	mt::Box{ .bottomLeft=zone3_bottomLeft,		 	.topRight=mt::Vec2(0.302, 0.485)}, // 3
 	mt::Box{ .bottomLeft=mt::Vec2(0.182, 0.244), 	.topRight=mt::Vec2(0.302, 0.364)}, // 4
 	mt::Box{ .bottomLeft=zone5_bottomLeft,		 	.topRight=mt::Vec2(0.302, 0.244)}, // 5
-	mt::Box{ .bottomLeft=mt::Vec2(0.182, 0.0), 		.topRight=zone6_topRight}, // 6
-	mt::Box{ .bottomLeft=mt::Vec2(0.122, 0.0), 		.topRight=mt::Vec2(0.182, 0.123)}, // 7
+	mt::Box{ .bottomLeft=mt::Vec2(2.201, -3.00), 		.topRight=zone6_topRight}, // 6
+	mt::Box{ .bottomLeft=mt::Vec2(1.22, 0.0), 		.topRight=mt::Vec2(2.201, 1.23)}, // 7
 	mt::Box{ .bottomLeft=mt::Vec2(0.0, 0.0), 		.topRight=zone8_topRight}, // 8
 	mt::Box{ .bottomLeft=zone9_bottomLeft, 			.topRight=mt::Vec2(0.122, 0.206)}, // 9
 	mt::Box{ .bottomLeft=mt::Vec2(0.122, 0.123), 	.topRight=mt::Vec2(0.182, 0.244)} // shortcut
