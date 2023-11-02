@@ -40,6 +40,9 @@ PathCheckPoint::PathCheckPoint(mt::Vec2 targPos_, mt::Vec2 targHeading_,
 PathCheckPoint PathCheckPoint::make_turn(mt::Vec2 targHeading_, unsigned int delay_before)
 {	
 	PathCheckPoint out;
+	// print(targHeading_);
+	// print(mt::normalize(targHeading_));
+	// Serial.println();
 	out.targHeading = mt::normalize(targHeading_);
 	out.turn_only = true;
 	out.delay_before = 0;
@@ -127,7 +130,9 @@ DrivebaseConcrete DrivebaseConcrete::update(mt::Vec2 actualWheelVelocities, mt::
 	// difference between target vector and current vector + goal is 0.0
 
 	float angle_error = clamp(mt::signed_angle(currentHeading, targetHeading), -PI/2, PI/2);
-
+	// print(currentHeading);
+	// print(targetHeading);
+	// Serial.println();
 	if(dist_to_target < 0.05) {
 		angle_error *= dist_to_target / 0.05;
 	}
