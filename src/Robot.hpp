@@ -20,8 +20,7 @@ namespace p28 {
 
 // Essentialy proprioception for the robot
 struct Robot {
-	bool openArm { false };
-	bool releaseCup { false };
+	
 
 	Drivebase drvb;
 
@@ -30,12 +29,6 @@ struct Robot {
 	// Compute the next robot state from delta of the sensors and the game state
 	void generate_next(	SensorState prevSensState, SensorState currSensState, 
 								GameState prevGmState, GameState gmState, Iteration_time it_time);
-
-	void test_helper(GameState gmState, Iteration_time it_time);
-	void knockCup_helper(GameState gmState, Iteration_time it_time);
-	void trapBall_helper(GameState gmState, Iteration_time it_time);
-	void oneTurn_helper(GameState gmState, Iteration_time it_time);
-	void shortCut_helper(GameState gmState, Iteration_time it_time);
 	void followLine();
 	void adjustDrivebase(SensorState const& currSensState, SensorState const& prevSensState,
 								GameState const& prevGmState, GameState const& gmState);
