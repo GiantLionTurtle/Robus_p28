@@ -29,7 +29,8 @@ struct SensorState {
 
 	bool proximityDetector; // value of 1 or 0
 	char lineDetector; // &&Figureout&& TO BE DEFINED DEPENDING HOW IT WORKS AND ITS RESPONSE
-	COLOR colorDetector; // assign a color depending on the color detector response
+	COLOR colorDetector;
+	bool pixy_legoDist; 
 	
 };
 
