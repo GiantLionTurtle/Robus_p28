@@ -21,13 +21,16 @@ struct HardwareState {
 
 	int armAngle { kArm_closeAngle };   //angle of the arm 
 	int cupAngle { kCup_closeAngle };   //angle of the servomotor that holds the cup
-
+	// angles of the servomotors of the color selected in the bin 
+	int bin_select_angles [3];
 	// Function to mix the current state with a target 
 	// hardware state with an exponential moving average
 	// it helps smooth out motor output
 	HardwareState mix(HardwareState hrdwState) const;
 
 	static HardwareState initial();
+
+
 };
 
 void set_hardwareState(struct HardwareState hwst);
