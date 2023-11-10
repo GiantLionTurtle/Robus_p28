@@ -12,6 +12,8 @@
 #include "Utils/Pair.hpp"
 #include "Iteration_time.hpp"
 #include "Utils/Geometry.hpp"
+#include "sensors.hpp"
+#include "LineDetector.hpp"
 
 /*
 	How the drivebase should work:
@@ -119,6 +121,9 @@ struct DrivebaseConcrete {
 	DrivebaseConcrete update(mt::Vec2 actualWheelVelocities, mt::Vec2 desiredWheelVelocities,
 								mt::Vec2 currentHeading, mt::Vec2 targetHeading, float dist_to_target, Iteration_time it_time) const;
 	mt::Vec2 hardware_output() const;
+	
+	DrivebaseConcrete update(mt::Vec2 actualWheelVelocities, mt::Vec2 desiredWheelVelocities,
+								 Iteration_time it_time) const;
 };
 
 struct Drivebase {
@@ -126,6 +131,10 @@ struct Drivebase {
 	DrivebaseState state;
 	DrivebasePath path;
 
+	bool followLine{false};
+
+	void update(SensorState currentSensState,SensorState prevSensState,Iteration_time it_time);
+	void updateFollowLine(SensorState currentSensState,SensorState prevSensState,Iteration_time it_time);
 	void update_path(Iteration_time it_time);
 	void set_path(DrivebasePath path_, Iteration_time it_time);
 	void update_concrete(Iteration_time it_time);
@@ -148,6 +157,8 @@ mt::i32Vec2 dist_to_ticks(mt::Vec2 dist);
 float velocity_for_point(float current_vel, float target_vel, float max_vel, float target_dist, float accel, float delta_s);
 Arc arc_from_targetHeading(mt::Vec2 start, mt::Vec2 end, mt::Vec2 end_heading);
 mt::Vec2 arcTurnToDest(Arc arc, float angular_vel);
+
+
 
 } // !p28
 

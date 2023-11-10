@@ -54,7 +54,7 @@ void loop()
 	if(ROBUS_IsBumper(3)) {
 		gmState = GameState::initial(sensState);
 		robot = Robot::initial(gmState);
-		while(!gmState.over) {
+		while(true) {
 			delay(time_to_delay_ms);
 			unsigned int loop_start = millis();
 			sensState = get_sensors();
@@ -64,7 +64,6 @@ void loop()
 			robot.generate_next(prevSensState, sensState, prevGmState, gmState, it_time);
 			hrdwState = hrdwState.mix(generate_hardwareState(robot));
 
-
 			// Serial.println(it_time.delta_s, 4);
 
 			set_hardwareState(hrdwState);
@@ -72,7 +71,7 @@ void loop()
 			prevSensState = sensState;
 			prevGmState = gmState;
 
-			if(ROBUS_IsBumper(1) || ROBUS_IsBumper(2)) {
+			if(ROBUS_IsBumper(0) || ROBUS_IsBumper(1) || ROBUS_IsBumper(2)) {
 				set_hardwareState(HardwareState());
 				break;
 			}

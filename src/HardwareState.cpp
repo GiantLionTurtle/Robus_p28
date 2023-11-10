@@ -50,12 +50,6 @@ void printHarwareState(HardwareState state)
 HardwareState generate_hardwareState(Robot const& robot)
 {
 	HardwareState gen_hwst;
-	if (robot.openArm) {
-		gen_hwst.armAngle = kArm_openAngle;
-	}
-	if (robot.releaseCup) {
-		gen_hwst.cupAngle = kCup_openAngle;
-	}
 	gen_hwst.motors = robot.drvb.concrete.hardware_output();
 	return gen_hwst;
 }

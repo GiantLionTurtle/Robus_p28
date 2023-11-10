@@ -107,6 +107,7 @@ mt::Vec2 DrivebaseState::get_motor_speed(mt::i32Vec2 prevEncTicks, mt::i32Vec2 c
 
 DrivebaseConcrete DrivebaseConcrete::update(mt::Vec2 actualWheelVelocities, mt::Vec2 desiredWheelVelocities, 
 											mt::Vec2 currentHeading, mt::Vec2 targetHeading, float dist_to_target, Iteration_time it_time) const
+
 {
 	DrivebaseConcrete out = *this;
 	out.left.error = update_error(left.error, actualWheelVelocities.left, desiredWheelVelocities.left, it_time.delta_s);
@@ -136,6 +137,13 @@ DrivebaseConcrete DrivebaseConcrete::update(mt::Vec2 actualWheelVelocities, mt::
 	// Serial.print(",  ");
 	// Serial.println(angle_error);
 
+	return out;
+}
+DrivebaseConcrete DrivebaseConcrete::update(mt::Vec2 actualWheelVelocities, mt::Vec2 desiredWheelVelocities,
+								 Iteration_time it_time) const{
+	DrivebaseConcrete out = *this;
+	out.left.error = update_error(left.error, actualWheelVelocities.left, desiredWheelVelocities.left, it_time.delta_s);
+	out.right.error = update_error(right.error, actualWheelVelocities.right, desiredWheelVelocities.right, it_time.delta_s);
 	return out;
 }
 
@@ -351,4 +359,35 @@ mt::i32Vec2 dist_to_ticks(mt::Vec2 dist)
 	return { dist_to_ticks(dist.left), dist_to_ticks(dist.right) };
 }
 
+void Drivebase::update(SensorState currentSensState, SensorState prevSensState, Iteration_time it_time)
+{
+	state = state.update_kinematics(prevSensState.encoders_ticks, currentSensState.encoders_ticks, it_time.delta_s);
+	if (followLine){
+		updateFollowLine(currentSensState,prevSensState,it_time);
+	}
+	else {
+		
+	}
+}
+void Drivebase::updateFollowLine(SensorState currentSensState, SensorState prevSensState, Iteration_time it_time)
+{
+	char line = currentSensState.lineDetector;
+	float dir = 0;
+	for(int i = 0; i < 8; i++)
+		{
+			if(is_active(line, i))
+			{
+				Serial.print("#");
+				dir+=i-3.5;
+			} else {
+				Serial.print(" ");
+			}
+		}
+		Serial.print(" => ");
+		Serial.print(dir);
+		Serial.println();
+	//.1 is a magic number for the moment
+	mt::Vec2 motorVel = mt::Vec2(-dir, dir)*.02 + kFollowLineBaseVelocity;
+	concrete = concrete.update(state.wheelsVelocities, mt::Vec2(0), it_time);
+}
 } // !p28
