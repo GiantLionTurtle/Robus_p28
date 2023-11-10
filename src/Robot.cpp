@@ -35,15 +35,5 @@ void Robot::adjustDrivebase(SensorState const& currSensState,  SensorState const
 								GameState const& prevGmState, GameState const& gmState)
 {
 }
-	
-
-
-
-
-
-
-
-
-
 
 } // !p28

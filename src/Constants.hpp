@@ -26,8 +26,10 @@ constexpr int kIRSensor_apartDist = 213; // mm
 constexpr float kIRSensorBack_centerOffset = 84; // mm
 constexpr int kCup_openAngle = 15;
 constexpr int kCup_closeAngle = 180;
-constexpr int kArm_openAngle = 20;
-constexpr int kArm_closeAngle = 150;
+constexpr int kArm_openAngle = 20; // #define
+constexpr int kArm_closeAngle = 150; // #define
+constexpr int kClaw_openAngle = 0; // #define
+constexpr int kClaw_closeAngle = 30; // #define 
 
 
 // Physical movement constraints of the robot
@@ -60,6 +62,8 @@ constexpr int kCupRelease_pathIndex = 3; // After which checkpoint of the maneuv
 constexpr int kCupDetectDist = 350; // mm
 constexpr int kKnockCupDelay = 1500; // ms
 
+// Bin motors
+constexpr float kcolor_selected_angle_open = 180; // nombre a determiner
 
 } // !p28
 
