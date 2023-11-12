@@ -1,5 +1,4 @@
 #include "Bin.hpp"
-#include "sensors.hpp"
 #include "HardwareState.hpp"
 #include "Constants.hpp"
 

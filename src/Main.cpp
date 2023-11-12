@@ -4,7 +4,7 @@
 #include "Robot.hpp"
 #include "HardwareState.hpp"
 
-#include "UnitTests.hpp"
+#include "Tests/UnitTests.hpp"
 #include "Field.hpp"
 
 using namespace p28;
@@ -13,7 +13,6 @@ Robot robot;
 SensorState sensState, prevSensState;
 Iteration_time it_time;
 
-GameState gmState, prevGmState;
 HardwareState hrdwState;
 
 unsigned int time_to_delay_ms;
@@ -22,7 +21,9 @@ void setup()
 {
 	BoardInit();
 	delay(1000);
-	init_color_sensor();
+	
+	SensorState::init();
+
 	Serial.println("Begin!");
 
 
@@ -40,7 +41,6 @@ void setup()
 
 	sensState = get_sensors();
 
-	prevGmState = gmState;
 	prevSensState = sensState;
 
 	set_hardwareState(HardwareState::initial());
@@ -52,16 +52,14 @@ void loop()
 	it_time = it_time.current();
 
 	if(ROBUS_IsBumper(3)) {
-		gmState = GameState::initial(sensState);
-		robot = Robot::initial(gmState);
+		robot = Robot::initial();
 		while(true) {
 			delay(time_to_delay_ms);
 			unsigned int loop_start = millis();
 			sensState = get_sensors();
-			// printSensor(sensState);
+			// print(sensState);
 			it_time = it_time.current();
-			gmState = gmState.generate_next(prevSensState, sensState, robot.drvb.state, it_time);
-			robot.generate_next(prevSensState, sensState, prevGmState, gmState, it_time);
+			robot.generate_next(prevSensState, sensState, it_time);
 			hrdwState = hrdwState.mix(generate_hardwareState(robot));
 
 			// Serial.println(it_time.delta_s, 4);
@@ -69,7 +67,6 @@ void loop()
 			set_hardwareState(hrdwState);
 
 			prevSensState = sensState;
-			prevGmState = gmState;
 
 			if(ROBUS_IsBumper(0) || ROBUS_IsBumper(1) || ROBUS_IsBumper(2)) {
 				set_hardwareState(HardwareState());
@@ -79,7 +76,7 @@ void loop()
 			// Serial.print(" | ");
 			//   print(robot.drvb.state.heading, 4);
 			//  Serial.println();
-			 //printSensor(sensState);
+			 //print(sensState);
 			// Serial.print(sensState.frontIR_dist);
 			// Serial.print("'  ");
 			// Serial.println(sensState.backIR_dist);
@@ -90,17 +87,4 @@ void loop()
 			time_to_delay_ms = loop_duration > kControlLoopDelay ? 0 : kControlLoopDelay - (loop_duration);
 		}		
 	}
-	/*sensState = get_sensors();
-	for(int i = 0; i<8; i++)
-			{
-				if((bool)(sensState.lineDetector&(1<<i)))
-				{
-					Serial.print(1);
-				}
-				else
-				{
-					Serial.print(0);
-				}
-			}
-			Serial.println();*/
 }

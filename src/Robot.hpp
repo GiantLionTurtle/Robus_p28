@@ -3,9 +3,8 @@
 #define P28_ROBOTSTATE_HPP_
 
 #include "Utils/Vec2.hpp"
-#include "Drivebase.hpp"
-#include "sensors.hpp"
-#include "GameState.hpp"
+#include "Subsystems/Drivebase.hpp"
+#include "SensorsState.hpp"
 #include "Iteration_time.hpp"
 
 /*
@@ -24,14 +23,11 @@ struct Robot {
 
 	Drivebase drvb;
 
-	static Robot initial(GameState gmState);
+	static Robot initial();
 
 	// Compute the next robot state from delta of the sensors and the game state
-	void generate_next(	SensorState prevSensState, SensorState currSensState, 
-								GameState prevGmState, GameState gmState, Iteration_time it_time);
-	void followLine();
-	void adjustDrivebase(SensorState const& currSensState, SensorState const& prevSensState,
-								GameState const& prevGmState, GameState const& gmState);
+	void generate_next(	SensorState prevSensState, SensorState currSensState, Iteration_time it_time);
+	void adjustDrivebase(SensorState const& currSensState, SensorState const& prevSensState);
 };
 
 struct Objective {

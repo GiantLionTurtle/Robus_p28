@@ -32,7 +32,7 @@ void set_hardwareState (HardwareState hwst)
 
 }
 
-void printHarwareState(HardwareState state)
+void print(HardwareState state)
 {
     Serial.print("motors:");
     print(state.motors);

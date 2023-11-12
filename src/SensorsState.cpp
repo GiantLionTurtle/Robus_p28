@@ -1,17 +1,23 @@
 
 #include <LibRobus.h>
-#include "sensors.hpp"
+#include "SensorsState.hpp"
 #include <Arduino.h>
-#include "ProximityDetector.hpp"
-#include "ColorSensor.hpp"
+#include "Sensors/ProximityDetector.hpp"
+#include "Sensors/ColorSensor.hpp"
 #include "Constants.hpp"
-#include "IRSensor.hpp"
-#include "LineDetector.hpp"
+#include "Sensors/IRSensor.hpp"
+#include "Sensors/LineDetector.hpp"
 
 
 namespace p28 {
 
-void printSensor(SensorState state)
+void SensorState::init()
+{
+	init_color_sensor();
+	init_detector();
+}
+
+void print(SensorState state)
 {
 	Serial.print("bumper:");
 	print(state.bumpersState);
@@ -44,6 +50,7 @@ SensorState get_sensors()
 	newSensorState.lineDetector = get_ir_line();
 	return newSensorState;
 }
+
 
 } // !p28
 

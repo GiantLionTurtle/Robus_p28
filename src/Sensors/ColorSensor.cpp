@@ -1,7 +1,7 @@
 
 #include <Adafruit_TCS34725.h>
 #include <Wire.h>
-#include <ColorSensor.hpp>
+#include "ColorSensor.hpp"
 #include "CompileFlags.hpp"
 
 namespace p28 {

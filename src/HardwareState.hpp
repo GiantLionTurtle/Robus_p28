@@ -38,7 +38,7 @@ void set_hardwareState(struct HardwareState hwst);
 
 HardwareState generate_hardwareState(Robot const& robot);
 
-void printHarwareState (HardwareState state);
+void print (HardwareState state);
 
 } // !p28
 

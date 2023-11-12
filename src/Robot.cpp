@@ -3,14 +3,14 @@
 #include <Arduino.h>
 #include "Constants.hpp"
 #include "Field.hpp"
-#include "LineDetector.hpp"
+#include "Sensors/LineDetector.hpp"
 
 #include "Paths.hpp"
 
 namespace p28 {
 
 
-Robot Robot::initial(GameState gmState)
+Robot Robot::initial()
 {
 	Robot robot;
 	robot.drvb.concrete.left.pid = { 1.4, 35.5555, 0.03333333 };
@@ -23,17 +23,14 @@ Robot Robot::initial(GameState gmState)
 	return robot;
 }
 
-void Robot::generate_next(  SensorState prevSensState, SensorState currSensState, 
-				   			 GameState prevGmState, GameState gmState, Iteration_time it_time)
+void Robot::generate_next(  SensorState prevSensState, SensorState currSensState, Iteration_time it_time)
 {
 	drvb.update(currSensState, prevSensState, it_time);
 }
 
-
-
-void Robot::adjustDrivebase(SensorState const& currSensState,  SensorState const& prevSensState,
-								GameState const& prevGmState, GameState const& gmState)
+void Robot::adjustDrivebase(SensorState const& currSensState,  SensorState const& prevSensState)
 {
+
 }
 
 } // !p28

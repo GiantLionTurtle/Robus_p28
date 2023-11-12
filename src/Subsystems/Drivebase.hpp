@@ -12,8 +12,8 @@
 #include "Utils/Pair.hpp"
 #include "Iteration_time.hpp"
 #include "Utils/Geometry.hpp"
-#include "sensors.hpp"
-#include "LineDetector.hpp"
+#include "SensorsState.hpp"
+#include "Sensors/LineDetector.hpp"
 
 /*
 	How the drivebase should work:

@@ -3,7 +3,6 @@
 
 #include "Utils/Vec2.hpp"
 #include "Constants.hpp"
-#include "ColorSensor.hpp"
 
 /*
 	How SensorsState should work
@@ -29,13 +28,14 @@ struct SensorState {
 
 	bool proximityDetector; // value of 1 or 0
 	char lineDetector; // &&Figureout&& TO BE DEFINED DEPENDING HOW IT WORKS AND ITS RESPONSE
-	COLOR colorDetector;
+	COLOR colorDetector; // assign a color depending on the color detector response
 	bool pixy_legoDist; 
-	
+
+	static void init();
 };
 
 SensorState get_sensors();
-void printSensor (SensorState state);
+void print (SensorState state);
 } // !p28
 
 
