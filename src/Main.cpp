@@ -26,17 +26,6 @@ void setup()
 
 	Serial.println("Begin!");
 
-
-	//robot.drvb.state.pos = {2.286 , 3.64};
-	//robot.drvb.state.pos = Field::green_startPos;
-	// robot.drvb.state.pos  = mt::Vec2(2.701 , 1.2192 - 0.16);
-	//robot.drvb.state.heading = {0.0, -1.0};
-
-	// robot.drvb.concrete.headingPID = { 0.48, 0.18, 0.006 };
-
-	// robot.drvb.state.heading = mt::normalize(mt::rotate(mt::Vec2(0.0, 1.0), (float)PI));
-	// robot.drvb.state.heading = { 0.0, -1.0 };
-
 	it_time = Iteration_time::first();
 
 	sensState = get_sensors();
@@ -44,7 +33,6 @@ void setup()
 	prevSensState = sensState;
 
 	set_hardwareState(HardwareState::initial());
-	// Tests::arc_generation();
 }
 
 void loop()
@@ -57,12 +45,11 @@ void loop()
 			delay(time_to_delay_ms);
 			unsigned int loop_start = millis();
 			sensState = get_sensors();
-			// print(sensState);
+
 			it_time = it_time.current();
 			robot.generate_next(prevSensState, sensState, it_time);
-			hrdwState = hrdwState.mix(generate_hardwareState(robot));
+			hrdwState = hrdwState.mix(robot.generate_hardwareState());
 
-			// Serial.println(it_time.delta_s, 4);
 
 			set_hardwareState(hrdwState);
 

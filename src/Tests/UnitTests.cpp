@@ -64,38 +64,40 @@ void vector_maths()
 	print_successRate(successes, n_trials);
 }
 
-bool epsilon_equal(DrivebaseState st1, DrivebaseState st2, float epsilon)
-{
-	return 	mt::epsilon_equal(st1.pos, st2.pos, epsilon) && 
-			mt::epsilon_equal(st1.heading, st2.heading, epsilon);
-}
+
+// bool epsilon_equal(DrivebaseState st1, DrivebaseState st2, float epsilon)
+// {
+// 	// return 	mt::epsilon_equal(st1.pos, st2.pos, epsilon) && 
+// 	// 		mt::epsilon_equal(st1.heading, st2.heading, epsilon);
+// }
 void forward_kinematics()
 {
-	struct Trial {
-		DrivebaseState init;
-		mt::i32Vec2 encTicks;
-		float delta_s;
-		DrivebaseState expected;
-	};
 
-	const int n_trials = 1;
-	Trial trials[n_trials] {
-		Trial { .init=DrivebaseState{}, .encTicks=dist_to_ticks(mt::Vec2(1.0)), .delta_s=2.0, .expected=DrivebaseState(mt::Vec2(0.0, 1.0))}
-	};
+	// struct Trial {
+	// 	DrivebaseState init;
+	// 	mt::i32Vec2 encTicks;
+	// 	float delta_s;
+	// 	DrivebaseState expected;
+	// };
 
-	Serial.println("Testing forward kinematics");
-	// https://onlinemschool.com/math/assistance/vector/angl/
-	int successes = 0;
-	for(int i = 0; i < n_trials; ++i) {
-		DrivebaseState out = trials[i].init.update_kinematics(mt::i32Vec2(0), trials[i].encTicks, trials[i].delta_s);
-		if(epsilon_equal(out, trials[i].expected, 0.0001f)) {
-			successes++;
-		} else {
-			Serial.print("Failed ind=");
-			Serial.println(i);
-		}
-	}
-	print_successRate(successes, n_trials);
+	// const int n_trials = 1;
+	// Trial trials[n_trials] {
+	// 	Trial { .init=DrivebaseState{}, .encTicks=dist_to_ticks(mt::Vec2(1.0)), .delta_s=2.0, .expected=DrivebaseState(mt::Vec2(0.0, 1.0))}
+	// };
+
+	// Serial.println("Testing forward kinematics");
+	// // https://onlinemschool.com/math/assistance/vector/angl/
+	// int successes = 0;
+	// for(int i = 0; i < n_trials; ++i) {
+	// 	DrivebaseState out = trials[i].init.update_kinematics(mt::i32Vec2(0), trials[i].encTicks, trials[i].delta_s);
+	// 	if(epsilon_equal(out, trials[i].expected, 0.0001f)) {
+	// 		successes++;
+	// 	} else {
+	// 		Serial.print("Failed ind=");
+	// 		Serial.println(i);
+	// 	}
+	// }
+	// print_successRate(successes, n_trials);
 }
 
 void print_helper_accelProfile(float time, float current_vel, float traveled_dist)

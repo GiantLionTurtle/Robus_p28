@@ -13,10 +13,10 @@ namespace p28 {
 Robot Robot::initial()
 {
 	Robot robot;
-	robot.drvb.concrete.left.pid = { 1.4, 35.5555, 0.03333333 };
-	robot.drvb.concrete.right.pid = { 1.4, 35.5555, 0.03333333 };
+	robot.drvb.leftWheel.pid = { 1.4, 35.5555, 0.03333333 };
+	robot.drvb.rightWheel.pid = { 1.4, 35.5555, 0.03333333 };
 	// robot.drvb.concrete.headingPID = { 0.4, 0.18, 0.006 };
-	robot.drvb.concrete.headingPID = { 0.3, 0.135, 0.0045 };
+	robot.drvb.headingPID = { 0.3, 0.135, 0.0045 };
 	robot.drvb.followLine = true;
 
 	
@@ -26,6 +26,12 @@ Robot Robot::initial()
 void Robot::generate_next(  SensorState prevSensState, SensorState currSensState, Iteration_time it_time)
 {
 	drvb.update(currSensState, prevSensState, it_time);
+}
+HardwareState Robot::generate_hardwareState()
+{
+	HardwareState hrdwState;
+	hrdwState = drvb.aggregate(hrdwState);
+	return hrdwState;
 }
 
 void Robot::adjustDrivebase(SensorState const& currSensState,  SensorState const& prevSensState)

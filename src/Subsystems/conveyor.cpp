@@ -1,8 +1,7 @@
+
 #include "conveyor.hpp"
 #include "Constants.hpp"
-
-
-
+#include <SensorsState.hpp>
 
 namespace p28 {
     HardwareState update_conveyorSequence(SensorState sensorState,Conveyor previousState){
@@ -30,16 +29,5 @@ namespace p28 {
         }
         return hrdwState;
     }
-
-
-
-
-
-
-
-
-
-
-
 
 }

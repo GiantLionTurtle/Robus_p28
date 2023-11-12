@@ -55,7 +55,49 @@ float Motor::hardware_output() const
 	return mt::clamp(get(pid, error), -1.0f, 1.0f);
 }
 
-float DrivebaseState::velocity() const
+void Drivebase::update_path(Iteration_time it_time)
+{
+	if(path.finished())
+		return;
+
+	PathCheckPoint checkPoint = path.current();
+
+	// Go to next checkpoint in path if the current checkpoint is done
+	if((!checkPoint.turn_only && mt::epsilon_equal2(pos, checkPoint.targPos, kPathFollower_distEpsilon2)) || 
+		(checkPoint.turn_only && mt::epsilon_equal2(heading, checkPoint.targHeading, kPathFollower_headingEpsilon2))) {
+		Serial.println("Neeext");
+		path.index++;
+		headingError = Error{};
+		if(!path.finished()) {
+			// path.current is not the same as current because we
+			// just incremented the path!
+			waitUntil_ms = it_time.time_ms + path.current().delay_before;
+			checkPoint = path.current();
+		} else {
+			return;
+		}
+	}
+
+	// Don't move if the drivebase should be waiting for actions	
+	if(waitUntil_ms > it_time.time_ms || path.finished()) {
+		update_wheels({0.0f}, it_time.delta_s);
+		return;
+	}
+
+	if(checkPoint.turn_only) {
+		update_turn(checkPoint, it_time);
+	} else {
+		update_follow_arc(checkPoint, it_time);
+	}
+}
+void Drivebase::set_path(DrivebasePath path_, Iteration_time it_time)
+{
+	path = path_;
+	if(!path.finished()) {
+		waitUntil_ms = it_time.time_ms + path.current().delay_before;
+	}
+}
+float Drivebase::velocity()
 {
 	if(trajectory_radius == kInfinity) {
 		return abs(wheelsVelocities.left); // Going in a perfect straigth line, both weels go at the drivebase velocity
@@ -63,142 +105,26 @@ float DrivebaseState::velocity() const
 		return abs(angular_velocity * trajectory_radius);
 	}
 }
-DrivebaseState DrivebaseState::update_kinematics(mt::i32Vec2 prevEncTicks, mt::i32Vec2 currEncTicks, float delta_s) const
+
+void Drivebase::update_wheels(mt::Vec2 target_wheelVels, double delta_s)
 {
-	// Do read
-	// https://www.eecs.yorku.ca/course_archive/2017-18/W/4421/lectures/Wheeled%20robots%20forward%20kinematics.pdf
-
-	DrivebaseState new_drvbState;
-	mt::Vec2 wheelVels = get_motor_speed(prevEncTicks, currEncTicks, delta_s);
-	new_drvbState.wheelsVelocities = wheelVels;
-	new_drvbState.waitUntil = waitUntil; // Keep timer up
-
-
-	// Solving for velocity 
-	// Page 11
-	if(wheelVels.left == wheelVels.right) {
-		new_drvbState.trajectory_radius = kInfinity; // Not particulary a fan of div by 0
-		new_drvbState.angular_velocity = 0;
-	} else {
-		new_drvbState.trajectory_radius = kRobotWidth_2 * (wheelVels.right+wheelVels.left) / (wheelVels.right-wheelVels.left);
-		new_drvbState.angular_velocity = (wheelVels.right-wheelVels.left) / kRobotWidth;
-	}
-
-	// Forward kinematics
-	// page 20
-
-	new_drvbState.pos = pos + (wheelVels.left+wheelVels.right)/2.0f * heading * delta_s;
-	new_drvbState.heading = mt::normalize(mt::rotate(heading, 1/kRobotWidth * (wheelVels.right - wheelVels.left) * delta_s));
-
-	return new_drvbState;
+	leftWheel.error = update_error(leftWheel.error, wheelsVelocities.left, target_wheelVels.left, delta_s);
+	rightWheel.error = update_error(rightWheel.error, wheelsVelocities.right, target_wheelVels.right, delta_s);
 }
-DrivebaseState DrivebaseState::intersect_line(mt::Line ln) const
+void Drivebase::update_wheels(mt::Vec2 target_wheelVels, mt::Vec2 target_heading, double delta_s)
 {
-	DrivebaseState out = *this;
-	out.pos = ln.line_intersection(mt::Line{.origin=pos, .dir=heading});
-	return out;
-}
-mt::Vec2 DrivebaseState::get_motor_speed(mt::i32Vec2 prevEncTicks, mt::i32Vec2 currEncTicks, float delta_s) const
-{
-	mt::i32Vec2 ticks_diff = currEncTicks - prevEncTicks;
-	mt::Vec2 motor_speed = ticks_to_dist(ticks_diff) / delta_s;
-	return motor_speed;
+	update_wheels(target_wheelVels, delta_s);
+
+	float angle_error = mt::clamp(mt::signed_angle(heading, target_heading), -PI/2, PI/2);
+
+	headingError = update_error(headingError, angle_error, 0.0, delta_s);
 }
 
-DrivebaseConcrete DrivebaseConcrete::update(mt::Vec2 actualWheelVelocities, mt::Vec2 desiredWheelVelocities, 
-											mt::Vec2 currentHeading, mt::Vec2 targetHeading, float dist_to_target, Iteration_time it_time) const
-
-{
-	DrivebaseConcrete out = *this;
-	out.left.error = update_error(left.error, actualWheelVelocities.left, desiredWheelVelocities.left, it_time.delta_s);
-	out.right.error = update_error(right.error, actualWheelVelocities.right, desiredWheelVelocities.right, it_time.delta_s);
-
-	// Serial.print("desired vs actual ");
-	// print(desiredWheelVelocities);
-	// Serial.print(" :: ");
-	// print(actualWheelVelocities);
-	// Serial.println();
-
-	// The heading error doesn't need to know the actual heading angle, only the
-	// difference between target vector and current vector + goal is 0.0
-
-	float angle_error = mt::clamp(mt::signed_angle(currentHeading, targetHeading), -PI/2, PI/2);
-
-	if(dist_to_target < 0.05) {
-		angle_error *= dist_to_target / 0.05;
-	}
-	// Serial.println(angle_error);
-	// print(currentHeading);
-	// Serial.print(" | ");
-	// print(targetHeading);
-	// Serial.println();
-	out.headingError = update_error(headingError, angle_error, 0.0, it_time.delta_s);
-	// Serial.print(it_time.time_ms);
-	// Serial.print(",  ");
-	// Serial.println(angle_error);
-
-	return out;
-}
-DrivebaseConcrete DrivebaseConcrete::update(mt::Vec2 actualWheelVelocities, mt::Vec2 desiredWheelVelocities,
-								 Iteration_time it_time) const{
-	DrivebaseConcrete out = *this;
-	out.left.error = update_error(left.error, actualWheelVelocities.left, desiredWheelVelocities.left, it_time.delta_s);
-	out.right.error = update_error(right.error, actualWheelVelocities.right, desiredWheelVelocities.right, it_time.delta_s);
-	return out;
-}
-
-mt::Vec2 DrivebaseConcrete::hardware_output() const
-{
-	return { left.hardware_output(), right.hardware_output() };
-}
-void Drivebase::update_path(Iteration_time it_time)
-{
-	if(path.finished())
-		return;
-
-	PathCheckPoint current = path.current();
-	
-
-	if((!current.turn_only && mt::epsilon_equal2(state.pos, current.targPos, kPathFollower_distEpsilon2)) || 
-		(current.turn_only && mt::epsilon_equal2(state.heading, current.targHeading, kPathFollower_headingEpsilon2))) {
-		Serial.println("Neeext");
-		path.index++;
-		concrete.headingError = Error{};
-		if(!path.finished()) {
-			// path.current is not the same as current because we
-			// just incremented the path!
-			state.waitUntil = it_time.time_ms + path.current().delay_before;
-		}
-	}
-}
-void Drivebase::set_path(DrivebasePath path_, Iteration_time it_time)
-{
-	path = path_;
-	if(!path.finished()) {
-		state.waitUntil = it_time.time_ms + path.current().delay_before;
-	}
-}
-void Drivebase::update_concrete(Iteration_time it_time)
-{
-	// Don't move if the drivebase should be waiting for actions	
-	if(state.waitUntil > it_time.time_ms || path.finished()) {
-		concrete = concrete.update(state.wheelsVelocities, {0.0f}, {1.0f}, {1.0f}, 0.0, it_time);
-		return;
-	}
-
-	PathCheckPoint follow = path.current();
-
-	if(follow.turn_only) {
-		update_turn(follow, it_time);
-	} else {
-		update_follow_arc(follow, it_time);
-	}
-}
 void Drivebase::update_follow_arc(PathCheckPoint follow, Iteration_time it_time)
 {
 	// 1. Find the arc that takes us from our current position to
 	// the target position with a target heading
-	Arc arc = arc_from_targetHeading(state.pos, follow.targPos, follow.targHeading);
+	Arc arc = arc_from_targetHeading(pos, follow.targPos, follow.targHeading);
 	
 	mt::Vec2 speed_correction = correct_heading();
 	if(follow.backward) { 
@@ -206,32 +132,26 @@ void Drivebase::update_follow_arc(PathCheckPoint follow, Iteration_time it_time)
 		arc.tengeantStart = -arc.tengeantStart;
 		speed_correction = -speed_correction;
 	}
-	// print(state.pos);
-	// Serial.print(" | ");
-	// print(state.heading);
-	// Serial.print(" | ");
-	// print(arc.end);
-	// Serial.println();
-	// arc.print();
+
 	// If the angle between the current heading and the heading to be 
 	// tangeant to the arc is greater than 15 degrees, just turn
-	if(abs(mt::signed_angle(state.heading, arc.tengeantStart) > 0.267)) {
+	if(abs(mt::signed_angle(heading, arc.tengeantStart) > 0.267)) {
 		update_turn(PathCheckPoint::make_turn(arc.tengeantStart), it_time);
 		return;
 	}
 
-	float velocity = velocity_for_point(state.velocity(), follow.targVel, follow.maxVel, arc.length, kAccel, it_time.delta_s);
+	float targVel = velocity_for_point(velocity(), follow.targVel, follow.maxVel, arc.length, kAccel, it_time.delta_s);
 
 	mt::Vec2 motor_speeds;
 	if(arc.radius != kInfinity) {	
 		// Transform m/s into rad/s
-		float angular_vel = abs(velocity / arc.radius);
+		float angular_vel = abs(targVel / arc.radius);
 
 
 		// 3. Find the motor speeds needed to follow said arc, assuming
 		motor_speeds = arcTurnToDest(arc, angular_vel);
 	} else {
-		motor_speeds = { velocity, velocity };
+		motor_speeds = { targVel, targVel };
 	}
 	// print(motor_speeds);
 	motor_speeds += speed_correction;
@@ -239,30 +159,61 @@ void Drivebase::update_follow_arc(PathCheckPoint follow, Iteration_time it_time)
 	// print(motor_speeds);
 	// Serial.println();
 	if(follow.backward) {
-		concrete = concrete.update(state.wheelsVelocities, -motor_speeds, state.heading, arc.tengeantStart, arc.length, it_time);
+		update_wheels(-motor_speeds, arc.tengeantStart, it_time.delta_s);
 	} else {
-		concrete = concrete.update(state.wheelsVelocities, motor_speeds, state.heading, arc.tengeantStart, arc.length, it_time);
+		update_wheels(motor_speeds, arc.tengeantStart, it_time.delta_s);
 	}
 }
 void Drivebase::update_turn(PathCheckPoint follow, Iteration_time it_time)
 {
-	float err = abs(concrete.headingError.error);
+	float err = abs(headingError.error);
 	float motor_speed = KMinVel;
 	if(err > PI/2) {
 		motor_speed = 0.3;
 	} else if(err > PI/4) {
 		motor_speed = 0.1;
 	}
-	if(concrete.headingError.error < 0) {
+	if(headingError.error < 0) {
 		motor_speed = -motor_speed;
 	}
-	concrete = concrete.update(state.wheelsVelocities, {motor_speed, -motor_speed}, state.heading, follow.targHeading, kInfinity, it_time);
+
+	update_wheels({motor_speed, -motor_speed}, follow.targHeading, it_time.delta_s);
 }
 
 mt::Vec2 Drivebase::correct_heading() const
 {
-	float velocity_offset = get(concrete.headingPID, concrete.headingError);
+	float velocity_offset = get(headingPID, headingError);
 	return mt::Vec2(velocity_offset, -velocity_offset);
+}
+
+void Drivebase::update_kinematics(mt::i32Vec2 prevEncTicks, mt::i32Vec2 currEncTicks, float delta_s)
+{
+	// Do read
+	// https://www.eecs.yorku.ca/course_archive/2017-18/W/4421/lectures/Wheeled%20robots%20forward%20kinematics.pdf
+
+	mt::i32Vec2 ticks_diff = currEncTicks - prevEncTicks;
+	wheelsVelocities = ticks_to_dist(ticks_diff) / delta_s;
+
+	// Solving for velocity 
+	// Page 11
+	if(wheelsVelocities.left == wheelsVelocities.right) {
+		trajectory_radius = kInfinity; // Not particulary a fan of div by 0
+		angular_velocity = 0;
+	} else {
+		trajectory_radius = kRobotWidth_2 * (wheelsVelocities.right+wheelsVelocities.left) / (wheelsVelocities.right-wheelsVelocities.left);
+		angular_velocity = (wheelsVelocities.right-wheelsVelocities.left) / kRobotWidth;
+	}
+
+	// Forward kinematics
+	// page 20
+
+	pos = pos + (wheelsVelocities.left+wheelsVelocities.right)/2.0f * heading * delta_s;
+	heading = mt::normalize(mt::rotate(heading, 1/kRobotWidth * (wheelsVelocities.right - wheelsVelocities.left) * delta_s));
+}
+
+HardwareState Drivebase::aggregate(HardwareState hrdwState)
+{
+	hrdwState.motors = { leftWheel.hardware_output(), rightWheel.hardware_output() };
 }
 
 
@@ -361,15 +312,15 @@ mt::i32Vec2 dist_to_ticks(mt::Vec2 dist)
 
 void Drivebase::update(SensorState currentSensState, SensorState prevSensState, Iteration_time it_time)
 {
-	state = state.update_kinematics(prevSensState.encoders_ticks, currentSensState.encoders_ticks, it_time.delta_s);
+	update_kinematics(prevSensState.encoders_ticks, currentSensState.encoders_ticks, it_time.delta_s);
 	if (followLine){
-		updateFollowLine(currentSensState,prevSensState,it_time);
+		update_followLine(currentSensState,prevSensState,it_time);
 	}
 	else {
 		
 	}
 }
-void Drivebase::updateFollowLine(SensorState currentSensState, SensorState prevSensState, Iteration_time it_time)
+void Drivebase::update_followLine(SensorState currentSensState, SensorState prevSensState, Iteration_time it_time)
 {
 	char line = currentSensState.lineDetector;
 	float dir = 0;
@@ -386,8 +337,9 @@ void Drivebase::updateFollowLine(SensorState currentSensState, SensorState prevS
 		Serial.print(" => ");
 		Serial.print(dir);
 		Serial.println();
-	//.1 is a magic number for the moment
+	//.02 is a magic number for the moment
 	mt::Vec2 motorVel = mt::Vec2(-dir, dir)*.02 + kFollowLineBaseVelocity;
-	concrete = concrete.update(state.wheelsVelocities, mt::Vec2(0), it_time);
+	update_wheels(motorVel, it_time.delta_s);
 }
+
 } // !p28

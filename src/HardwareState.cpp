@@ -43,13 +43,4 @@ void print(HardwareState state)
 
 }
 
-HardwareState generate_hardwareState(Robot const& robot)
-{
-	HardwareState gen_hwst;
-	
-	
-	gen_hwst.motors = robot.drvb.concrete.hardware_output();
-	return gen_hwst;
-}
-
 } // !p28

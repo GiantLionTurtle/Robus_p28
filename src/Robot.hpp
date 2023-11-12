@@ -27,6 +27,8 @@ struct Robot {
 
 	// Compute the next robot state from delta of the sensors and the game state
 	void generate_next(	SensorState prevSensState, SensorState currSensState, Iteration_time it_time);
+	HardwareState generate_hardwareState();
+
 	void adjustDrivebase(SensorState const& currSensState, SensorState const& prevSensState);
 };
 
