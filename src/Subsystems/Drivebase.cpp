@@ -4,14 +4,72 @@
 
 namespace p28 {
 
-float Motor::hardware_output() const
+void Drivebase::update(SensorState currentSensState, SensorState prevSensState, Iteration_time it_time)
 {
-	// Serial.print("P: ");
-	// Serial.println(pid.P);
-	return mt::clamp(get(pid, error), -1.0f, 1.0f);
+	update_kinematics(prevSensState.encoders_ticks, currentSensState.encoders_ticks, it_time.delta_s);
+	if (drvMode == followLine){
+		update_followLine(currentSensState, prevSensState, it_time);
+	}
+	else if(drvMode == followCam) {
+		update_followCam(currentSensState, prevSensState, it_time);
+	} else { // Follow path
+		update_followPath(it_time);
+	}
+}
+void Drivebase::update_kinematics(mt::i32Vec2 prevEncTicks, mt::i32Vec2 currEncTicks, float delta_s)
+{
+	// Do read
+	// https://www.eecs.yorku.ca/course_archive/2017-18/W/4421/lectures/Wheeled%20robots%20forward%20kinematics.pdf
+
+	mt::i32Vec2 ticks_diff = currEncTicks - prevEncTicks;
+	wheelsVelocities = ticks_to_dist(ticks_diff) / delta_s;
+
+	// Solving for velocity 
+	// Page 11
+	if(wheelsVelocities.left == wheelsVelocities.right) {
+		trajectory_radius = kInfinity; // Not particulary a fan of div by 0
+		angular_velocity = 0;
+	} else {
+		trajectory_radius = kRobotWidth_2 * (wheelsVelocities.right+wheelsVelocities.left) / (wheelsVelocities.right-wheelsVelocities.left);
+		angular_velocity = (wheelsVelocities.right-wheelsVelocities.left) / kRobotWidth;
+	}
+
+	// Forward kinematics
+	// page 20
+
+	pos = pos + (wheelsVelocities.left+wheelsVelocities.right)/2.0f * heading * delta_s;
+	heading = mt::normalize(mt::rotate(heading, 1/kRobotWidth * (wheelsVelocities.right - wheelsVelocities.left) * delta_s));
 }
 
-void Drivebase::update_path(Iteration_time it_time)
+void Drivebase::update_followLine(SensorState currentSensState, SensorState prevSensState, Iteration_time it_time)
+{
+	char line = currentSensState.lineDetector;
+	float dir = 0;
+	for(int i = 0; i < 8; i++)
+		{
+			if(is_active(line, i))
+			{
+				Serial.print("#");
+				dir+=i-3.5;
+			} else {
+				Serial.print(" ");
+			}
+		}
+		Serial.print(" => ");
+		Serial.print(dir);
+		Serial.println();
+	//.02 is a magic number for the moment
+	mt::Vec2 motorVel = mt::Vec2(-dir, dir)*.02 + kFollowLineBaseVel;
+	update_wheels(motorVel, it_time.delta_s);
+}
+void Drivebase::update_followCam(SensorState currentSensState, SensorState prevSensState, Iteration_time it_time)
+{
+	float motorDelta = pow(currentSensState.pixy_lego_horizOffset, 3);
+	mt::Vec2 motorVel = mt::Vec2(-motorDelta, motorDelta)*.02 + kFollowCamBaseVel;
+	update_wheels(motorVel, it_time.delta_s);
+}
+
+void Drivebase::update_followPath(Iteration_time it_time)
 {
 	if(path.finished())
 		return;
@@ -53,29 +111,6 @@ void Drivebase::set_path(Paths::Path path_, Iteration_time it_time)
 		waitUntil_ms = it_time.time_ms + path.current().delay_before;
 	}
 }
-float Drivebase::velocity()
-{
-	if(trajectory_radius == kInfinity) {
-		return abs(wheelsVelocities.left); // Going in a perfect straigth line, both weels go at the drivebase velocity
-	} else {
-		return abs(angular_velocity * trajectory_radius);
-	}
-}
-
-void Drivebase::update_wheels(mt::Vec2 target_wheelVels, double delta_s)
-{
-	leftWheel.error = update_error(leftWheel.error, wheelsVelocities.left, target_wheelVels.left, delta_s);
-	rightWheel.error = update_error(rightWheel.error, wheelsVelocities.right, target_wheelVels.right, delta_s);
-}
-void Drivebase::update_wheels(mt::Vec2 target_wheelVels, mt::Vec2 target_heading, double delta_s)
-{
-	update_wheels(target_wheelVels, delta_s);
-
-	float angle_error = mt::clamp(mt::signed_angle(heading, target_heading), -PI/2, PI/2);
-
-	headingError = update_error(headingError, angle_error, 0.0, delta_s);
-}
-
 void Drivebase::update_follow_arc(Paths::CheckPoint follow, Iteration_time it_time)
 {
 	// 1. Find the arc that takes us from our current position to
@@ -135,6 +170,8 @@ void Drivebase::update_turn(Paths::CheckPoint follow, Iteration_time it_time)
 
 	update_wheels({motor_speed, -motor_speed}, follow.targHeading, it_time.delta_s);
 }
+
+
 //makes the robot turn following a circular arc
 mt::Vec2 Drivebase::arc_to_motorVels(Paths::Arc arc, float angular_vel)
 {
@@ -153,37 +190,43 @@ mt::Vec2 Drivebase::correct_heading() const
 	return mt::Vec2(velocity_offset, -velocity_offset);
 }
 
-void Drivebase::update_kinematics(mt::i32Vec2 prevEncTicks, mt::i32Vec2 currEncTicks, float delta_s)
+
+float Motor::hardware_output() const
 {
-	// Do read
-	// https://www.eecs.yorku.ca/course_archive/2017-18/W/4421/lectures/Wheeled%20robots%20forward%20kinematics.pdf
+	// Serial.print("P: ");
+	// Serial.println(pid.P);
+	return mt::clamp(get(pid, error), -1.0f, 1.0f);
+}
 
-	mt::i32Vec2 ticks_diff = currEncTicks - prevEncTicks;
-	wheelsVelocities = ticks_to_dist(ticks_diff) / delta_s;
 
-	// Solving for velocity 
-	// Page 11
-	if(wheelsVelocities.left == wheelsVelocities.right) {
-		trajectory_radius = kInfinity; // Not particulary a fan of div by 0
-		angular_velocity = 0;
+float Drivebase::velocity()
+{
+	if(trajectory_radius == kInfinity) {
+		return abs(wheelsVelocities.left); // Going in a perfect straigth line, both weels go at the drivebase velocity
 	} else {
-		trajectory_radius = kRobotWidth_2 * (wheelsVelocities.right+wheelsVelocities.left) / (wheelsVelocities.right-wheelsVelocities.left);
-		angular_velocity = (wheelsVelocities.right-wheelsVelocities.left) / kRobotWidth;
+		return abs(angular_velocity * trajectory_radius);
 	}
+}
 
-	// Forward kinematics
-	// page 20
+void Drivebase::update_wheels(mt::Vec2 target_wheelVels, double delta_s)
+{
+	leftWheel.error = update_error(leftWheel.error, wheelsVelocities.left, target_wheelVels.left, delta_s);
+	rightWheel.error = update_error(rightWheel.error, wheelsVelocities.right, target_wheelVels.right, delta_s);
+}
+void Drivebase::update_wheels(mt::Vec2 target_wheelVels, mt::Vec2 target_heading, double delta_s)
+{
+	update_wheels(target_wheelVels, delta_s);
 
-	pos = pos + (wheelsVelocities.left+wheelsVelocities.right)/2.0f * heading * delta_s;
-	heading = mt::normalize(mt::rotate(heading, 1/kRobotWidth * (wheelsVelocities.right - wheelsVelocities.left) * delta_s));
+	float angle_error = mt::clamp(mt::signed_angle(heading, target_heading), -PI/2, PI/2);
+
+	headingError = update_error(headingError, angle_error, 0.0, delta_s);
 }
 
 HardwareState Drivebase::aggregate(HardwareState hrdwState)
 {
 	hrdwState.motors = { leftWheel.hardware_output(), rightWheel.hardware_output() };
+	return hrdwState;
 }
-
-
 
 // Gives a velocity that tries to follow a trapezoidal acceleration patern
 float velocity_for_point(float current_vel, float target_vel, float max_vel, float target_dist, float accel, float delta_s)
@@ -205,7 +248,6 @@ float velocity_for_point(float current_vel, float target_vel, float max_vel, flo
 	}
 }
 
-
 // Public functions
 float ticks_to_dist(int32_t ticks)
 {
@@ -224,36 +266,5 @@ mt::i32Vec2 dist_to_ticks(mt::Vec2 dist)
 	return { dist_to_ticks(dist.left), dist_to_ticks(dist.right) };
 }
 
-void Drivebase::update(SensorState currentSensState, SensorState prevSensState, Iteration_time it_time)
-{
-	update_kinematics(prevSensState.encoders_ticks, currentSensState.encoders_ticks, it_time.delta_s);
-	if (followLine){
-		update_followLine(currentSensState,prevSensState,it_time);
-	}
-	else {
-		
-	}
-}
-void Drivebase::update_followLine(SensorState currentSensState, SensorState prevSensState, Iteration_time it_time)
-{
-	char line = currentSensState.lineDetector;
-	float dir = 0;
-	for(int i = 0; i < 8; i++)
-		{
-			if(is_active(line, i))
-			{
-				Serial.print("#");
-				dir+=i-3.5;
-			} else {
-				Serial.print(" ");
-			}
-		}
-		Serial.print(" => ");
-		Serial.print(dir);
-		Serial.println();
-	//.02 is a magic number for the moment
-	mt::Vec2 motorVel = mt::Vec2(-dir, dir)*.02 + kFollowLineBaseVelocity;
-	update_wheels(motorVel, it_time.delta_s);
-}
 
 } // !p28

@@ -38,7 +38,8 @@ constexpr float kAccel = 0.4; // m/s^2
 constexpr float kMaxAngularVelocity = 0.8; // rad/s
 constexpr float KMinVel = 0.03;
 constexpr float kEndSegmentVel = 0.08;
-constexpr float kFollowLineBaseVelocity = 0.1;
+constexpr float kFollowLineBaseVel = 0.1;
+constexpr float kFollowCamBaseVel = 0.1;
 
 
 // Control constants 

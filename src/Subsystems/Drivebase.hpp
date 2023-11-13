@@ -57,11 +57,15 @@ struct Drivebase {
 	time_t waitUntil_ms { 0 };
 	
 	Paths::Path path;
-	bool followLine{false};
+
+	enum Drivemodes { followPath, followLine, followCam };
+
+	Drivemodes drvMode { followPath };
 
 	void update(SensorState currentSensState, SensorState prevSensState, Iteration_time it_time);
 	void update_followLine(SensorState currentSensState, SensorState prevSensState, Iteration_time it_time);
-	void update_path(Iteration_time it_time);
+	void update_followCam(SensorState currentSensState, SensorState prevSensState, Iteration_time it_time);
+	void update_followPath(Iteration_time it_time);
 	void set_path(Paths::Path path_, Iteration_time it_time);
 
 	float velocity();
