@@ -4,50 +4,6 @@
 
 namespace p28 {
 
-
-
-void Arc::print() const
-{
-	mt::print(tengeantStart, 4);
-	Serial.print(",  ");
-	mt::print(end, 4);
-	Serial.print(",  ");
-	Serial.print(radius, 4);
-	Serial.print(",  ");
-	Serial.println(length, 4);
-}
-
-PathCheckPoint::PathCheckPoint(mt::Vec2 targPos_, mt::Vec2 targHeading_,
-								float targVel_, bool backward_, 
-								float maxVel_, unsigned int delay_before_)
-	: targPos(targPos_)
-	, targHeading(mt::normalize(targHeading_))
-	, targVel(targVel_)
-	, maxVel(maxVel_)
-	, delay_before(delay_before_)
-	, backward(backward_)
-{
-	
-}
-PathCheckPoint PathCheckPoint::make_turn(mt::Vec2 targHeading_, unsigned int delay_before)
-{	
-	PathCheckPoint out;
-	// print(targHeading_);
-	// print(mt::normalize(targHeading_));
-	// Serial.println();
-	out.targHeading = mt::normalize(targHeading_);
-	out.turn_only = true;
-	out.delay_before = 0;
-	return out;
-}
-void DrivebasePath::add_checkPoint(PathCheckPoint checkPoint)
-{
-	if(size >= kMaxCheckPointForPath)
-		return;
-	segments[size] = checkPoint;
-	size++;
-}
-
 float Motor::hardware_output() const
 {
 	// Serial.print("P: ");
@@ -60,7 +16,7 @@ void Drivebase::update_path(Iteration_time it_time)
 	if(path.finished())
 		return;
 
-	PathCheckPoint checkPoint = path.current();
+	Paths::CheckPoint checkPoint = path.current();
 
 	// Go to next checkpoint in path if the current checkpoint is done
 	if((!checkPoint.turn_only && mt::epsilon_equal2(pos, checkPoint.targPos, kPathFollower_distEpsilon2)) || 
@@ -90,7 +46,7 @@ void Drivebase::update_path(Iteration_time it_time)
 		update_follow_arc(checkPoint, it_time);
 	}
 }
-void Drivebase::set_path(DrivebasePath path_, Iteration_time it_time)
+void Drivebase::set_path(Paths::Path path_, Iteration_time it_time)
 {
 	path = path_;
 	if(!path.finished()) {
@@ -120,11 +76,11 @@ void Drivebase::update_wheels(mt::Vec2 target_wheelVels, mt::Vec2 target_heading
 	headingError = update_error(headingError, angle_error, 0.0, delta_s);
 }
 
-void Drivebase::update_follow_arc(PathCheckPoint follow, Iteration_time it_time)
+void Drivebase::update_follow_arc(Paths::CheckPoint follow, Iteration_time it_time)
 {
 	// 1. Find the arc that takes us from our current position to
 	// the target position with a target heading
-	Arc arc = arc_from_targetHeading(pos, follow.targPos, follow.targHeading);
+	Paths::Arc arc = Paths::arc_from_targetHeading(pos, follow.targPos, follow.targHeading);
 	
 	mt::Vec2 speed_correction = correct_heading();
 	if(follow.backward) { 
@@ -136,7 +92,7 @@ void Drivebase::update_follow_arc(PathCheckPoint follow, Iteration_time it_time)
 	// If the angle between the current heading and the heading to be 
 	// tangeant to the arc is greater than 15 degrees, just turn
 	if(abs(mt::signed_angle(heading, arc.tengeantStart) > 0.267)) {
-		update_turn(PathCheckPoint::make_turn(arc.tengeantStart), it_time);
+		update_turn(Paths::CheckPoint::make_turn(arc.tengeantStart), it_time);
 		return;
 	}
 
@@ -149,7 +105,7 @@ void Drivebase::update_follow_arc(PathCheckPoint follow, Iteration_time it_time)
 
 
 		// 3. Find the motor speeds needed to follow said arc, assuming
-		motor_speeds = arcTurnToDest(arc, angular_vel);
+		motor_speeds = arc_to_motorVels(arc, angular_vel);
 	} else {
 		motor_speeds = { targVel, targVel };
 	}
@@ -164,7 +120,7 @@ void Drivebase::update_follow_arc(PathCheckPoint follow, Iteration_time it_time)
 		update_wheels(motor_speeds, arc.tengeantStart, it_time.delta_s);
 	}
 }
-void Drivebase::update_turn(PathCheckPoint follow, Iteration_time it_time)
+void Drivebase::update_turn(Paths::CheckPoint follow, Iteration_time it_time)
 {
 	float err = abs(headingError.error);
 	float motor_speed = KMinVel;
@@ -178,6 +134,17 @@ void Drivebase::update_turn(PathCheckPoint follow, Iteration_time it_time)
 	}
 
 	update_wheels({motor_speed, -motor_speed}, follow.targHeading, it_time.delta_s);
+}
+//makes the robot turn following a circular arc
+mt::Vec2 Drivebase::arc_to_motorVels(Paths::Arc arc, float angular_vel)
+{
+	angular_vel = abs(angular_vel);
+	// See https://www.eecs.yorku.ca/course_archive/2017-18/W/4421/lectures/Wheeled%20robots%20forward%20kinematics.pdf
+	angular_vel = min(angular_vel, kMaxAngularVelocity); // Ensure we do not go over the maximum angular velocity
+	mt::Vec2 speedBothMotor;
+	speedBothMotor.left 	= abs(angular_vel * ( arc.radius - kRobotWidth_2 ));   // speed of the interior wheel in m/s 
+	speedBothMotor.right 	= abs(angular_vel * ( arc.radius + kRobotWidth_2 ));   //speed of the exteriorwheel in m/s 
+	return speedBothMotor;
 }
 
 mt::Vec2 Drivebase::correct_heading() const
@@ -217,48 +184,6 @@ HardwareState Drivebase::aggregate(HardwareState hrdwState)
 }
 
 
-// Create an arc that can be followed by the robot
-Arc arc_from_targetHeading(mt::Vec2 start, mt::Vec2 end, mt::Vec2 end_heading)
-{
-	// See fig.3
-	if(mt::epsilon_equal(end_heading, mt::normalize(end-start), 0.01f)) { // Protect against overflow and div by 0
-		return Arc{ .tengeantStart=end_heading, .end=end, .radius=kInfinity, .length=mt::distance(end, start) };
-	}
-
-	Arc arcTGH;
-	arcTGH.end = end;
-
-	mt::Vec2 vecStartEnd = end - start;
-	mt::Vec2 orientationCenterEnd = { end_heading.y,-end_heading.x };
-	mt::Line line_end_center { .origin=end, .dir=orientationCenterEnd};
-	mt::Line line_mid_startend_center {.origin=vecStartEnd/2.0f+start, .dir={-vecStartEnd.y, vecStartEnd.x}};
-
-	mt::Vec2 center = line_end_center.line_intersection(line_mid_startend_center);
-
-	mt::Vec2 center_to_end = end-center;
-	mt::Vec2 center_to_start = start-center;
-
-	float angleRadius_CenterEnd = angle(orientationCenterEnd,vecStartEnd);
-	arcTGH.radius = (magnitude(vecStartEnd)/2)/(cos(angleRadius_CenterEnd));
-
-	if(abs(arcTGH.radius) >= kInfinity) {
-		return Arc{ .tengeantStart=end_heading, .end=end, .radius=kInfinity, .length=mt::distance(end, start) };
-	}
-
-	float circumference = 2*PI*abs(arcTGH.radius);
-	float angleArc = mt::angle(center_to_start, center_to_end);
-
-	arcTGH.tengeantStart = mt::normalize(mt::ccw_perpendicular(center_to_start));
-
-	if(arcTGH.radius < 0.0f) { // If we are going clock wise
-		angleArc = 2*PI-angleArc; // The angle is the complement of ccw angle
-		arcTGH.tengeantStart = -arcTGH.tengeantStart; // Reverse start heading;		
-	}
-
-	arcTGH.length = circumference * (angleArc/(2*PI));
-
-	return arcTGH;
-}
 
 // Gives a velocity that tries to follow a trapezoidal acceleration patern
 float velocity_for_point(float current_vel, float target_vel, float max_vel, float target_dist, float accel, float delta_s)
@@ -278,17 +203,6 @@ float velocity_for_point(float current_vel, float target_vel, float max_vel, flo
 	} else {
 		return max(current_vel - decel * delta_s, target_vel);
 	}
-}
-//makes the robot turn following a circular arc
-mt::Vec2 arcTurnToDest(Arc arc, float angular_vel)
-{
-	angular_vel = abs(angular_vel);
-	// See https://www.eecs.yorku.ca/course_archive/2017-18/W/4421/lectures/Wheeled%20robots%20forward%20kinematics.pdf
-	angular_vel = min(angular_vel, kMaxAngularVelocity); // Ensure we do not go over the maximum angular velocity
-	mt::Vec2 speedBothMotor;
-	speedBothMotor.left 	= abs(angular_vel * ( arc.radius - kRobotWidth_2 ));   // speed of the interior wheel in m/s 
-	speedBothMotor.right 	= abs(angular_vel * ( arc.radius + kRobotWidth_2 ));   //speed of the exteriorwheel in m/s 
-	return speedBothMotor;
 }
 
 

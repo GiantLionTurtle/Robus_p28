@@ -3,8 +3,11 @@
 
 #include "Utils/Vec2.hpp"
 #include <Subsystems/Drivebase.hpp>
+#include <Paths.hpp>
 
 namespace p28 {
+
+using namespace Paths;
 
 namespace Tests {
 
@@ -160,7 +163,7 @@ void arc_generation()
 		mt::Vec2 start, end, end_heading;
 		Arc expected;
 	};
-
+	
 	const int n_trials = 5;
 	Trial trials[n_trials] = {
 		Trial { .start=mt::Vec2(0.0, 0.0), .end=mt::Vec2(0.0, 1.0), .end_heading=mt::Vec2(1.0, 0.0), 

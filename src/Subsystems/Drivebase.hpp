@@ -15,6 +15,7 @@
 #include "SensorsState.hpp"
 #include "Sensors/LineDetector.hpp"
 #include <HardwareState.hpp>
+#include <Paths.hpp>
 
 /*
 	How the drivebase should work:
@@ -31,46 +32,6 @@
 */
 
 namespace p28 {
-
-struct Arc {
-	mt::Vec2 tengeantStart;
-	mt::Vec2 end;
-	float radius;
-	float length;
-
-	void print() const;
-};
-
-// Action that the drivebase can do (high level)
-struct PathCheckPoint {
-	mt::Vec2 targPos { 0.0 }; // Target position 
-	mt::Vec2 targHeading { 0.0 };
-	float targVel { 0.0 }; // Speed at the target position
-	float maxVel { kMaxVel };
-	unsigned int delay_before { 0 };
-	bool turn_only { false };
-	bool backward { false };
-
-	PathCheckPoint() = default;
-	PathCheckPoint(mt::Vec2 targPos_, mt::Vec2 targHeading_, 
-					float targVel_ = 0.0, bool backward_ = false, float maxVel_ = kMaxVel, unsigned int delay_before_ = 0);
-
-	static PathCheckPoint make_turn(mt::Vec2 targHeading_, unsigned int delay_before = 0);
-};
-
-// Arcs to follow and delays after it's done
-
-struct DrivebasePath {
-	PathCheckPoint segments[kMaxCheckPointForPath];
-	
-	unsigned int index { 0 };
-	unsigned int size { 0 };
-
-	PathCheckPoint& current() { return segments[index]; }
-	void add_checkPoint(PathCheckPoint segment);
-	bool finished() const { return index >= size; }
-};
-
 
 struct Motor {
 	PID pid;
@@ -94,14 +55,14 @@ struct Drivebase {
 	Error headingError;
 
 	time_t waitUntil_ms { 0 };
-
-	DrivebasePath path;
+	
+	Paths::Path path;
 	bool followLine{false};
 
 	void update(SensorState currentSensState, SensorState prevSensState, Iteration_time it_time);
 	void update_followLine(SensorState currentSensState, SensorState prevSensState, Iteration_time it_time);
 	void update_path(Iteration_time it_time);
-	void set_path(DrivebasePath path_, Iteration_time it_time);
+	void set_path(Paths::Path path_, Iteration_time it_time);
 
 	float velocity();
 	
@@ -113,12 +74,14 @@ private:
 	void update_wheels(mt::Vec2 target_wheelVels, double delta_s);
 	void update_wheels(mt::Vec2 target_wheelVels, mt::Vec2 target_heading, double delta_s);
 
-	void update_follow_arc(PathCheckPoint follow, Iteration_time it_time);
-	void update_turn(PathCheckPoint follow, Iteration_time it_time);
+	void update_follow_arc(Paths::CheckPoint follow, Iteration_time it_time);
+	void update_turn(Paths::CheckPoint follow, Iteration_time it_time);
 
 	// Returns an offset to wheel velocities to correct 
 	// the heading
 	mt::Vec2 correct_heading() const;
+
+	mt::Vec2 arc_to_motorVels(Paths::Arc arc, float angular_vel);
 };
 
 // Conversion for encoders to distance (meters)
@@ -129,9 +92,6 @@ int32_t dist_to_ticks(float dist);
 mt::i32Vec2 dist_to_ticks(mt::Vec2 dist);
 
 float velocity_for_point(float current_vel, float target_vel, float max_vel, float target_dist, float accel, float delta_s);
-Arc arc_from_targetHeading(mt::Vec2 start, mt::Vec2 end, mt::Vec2 end_heading);
-mt::Vec2 arcTurnToDest(Arc arc, float angular_vel);
-
 
 } // !p28
 
