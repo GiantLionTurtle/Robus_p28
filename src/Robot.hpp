@@ -6,6 +6,7 @@
 #include "Subsystems/Drivebase.hpp"
 #include "SensorsState.hpp"
 #include "Iteration_time.hpp"
+#include "Subsystems/Bin.hpp"
 
 /*
 	How the Robot should work
@@ -20,6 +21,9 @@ namespace p28 {
 // Essentialy proprioception for the robot
 struct Robot {
 	
+	Bin bin;
+
+	bool going_home;
 
 	Drivebase drvb;
 

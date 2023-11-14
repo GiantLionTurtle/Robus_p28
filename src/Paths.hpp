@@ -44,6 +44,8 @@ struct Path {
 
 	CheckPoint& current() { return checkPoints[index]; }
 	void add_checkPoint(CheckPoint checkpoint);
+	void add_line(float distance);
+	void add_turn(float turnAngle_rad);
 	bool finished() const { return index >= size; }
 };
 
