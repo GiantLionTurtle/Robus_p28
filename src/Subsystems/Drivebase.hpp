@@ -41,6 +41,7 @@ struct Motor {
 };
 
 struct Drivebase {
+	bool finish = false;
 	mt::Vec2 pos { 0.0, 0.0 }; // Position in m
 	mt::Vec2 heading { 0.0, 1.0 }; // Normalised heading
 	float angular_velocity { 0.0 };
@@ -67,6 +68,7 @@ struct Drivebase {
 	void update_followCam(SensorState currentSensState, SensorState prevSensState, Iteration_time it_time);
 	void update_followPath(Iteration_time it_time);
 	void set_path(Paths::Path path_, Iteration_time it_time);
+	void setDriveMode(Drivebase drvb, Drivemodes mode);
 
 	float velocity();
 	
