@@ -148,6 +148,40 @@ void Path::add_checkPoint(CheckPoint checkPoint)
 	size++;
 }
 
+void Path::add_line(float distance)
+{
+	if(size<=0){
+		Serial.println("Error");
+	}else 
+	{
+		CheckPoint lineCheckPoint (checkPoints[size-1].targPos + checkPoints[size-1].targHeading*distance, checkPoints[size-1].targHeading);
+		add_checkPoint(lineCheckPoint);
+	}
+}
+
+void Path::add_turn(float turnAngle_rad)
+{
+	if(size<=0){
+		Serial.println("Error");
+	}else 
+	{
+		CheckPoint turnCheckPoint = CheckPoint::make_turn(mt::rotate(checkPoints[size-1].targHeading, turnAngle_rad));
+		add_checkPoint(turnCheckPoint);
+	}
+}
+
+Path gen_test ()
+{
+	Path path;
+	Serial.println("Gen test");
+	path.add_checkPoint(CheckPoint(mt::Vec2(0.0, 0.0), mt::Vec2(0.0, 1.0)));
+	path.add_line(.50);
+	path.add_turn(mt::to_radians(135));
+	path.add_line(.25);
+	path.add_turn(mt::to_radians(135));
+	path.add_line(0.30);
+	return path;//fix(path);
+}
 
 } // !Paths
 
