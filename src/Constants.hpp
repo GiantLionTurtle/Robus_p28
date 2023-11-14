@@ -67,11 +67,11 @@ constexpr int kKnockCupDelay = 1500; // ms
 constexpr float kcolor_selected_angle_open = 180; // nombre a determiner
 
 //Color code for the controller
-constexpr char kRed = R;
-constexpr char KGreen = G;
-constexpr char kBlue = B;
-constexpr char kYellow = Y;
-constexpr char KAll = A;
+constexpr int kRed = 0;
+constexpr int KGreen = 1;
+constexpr int kBlue = 2;
+constexpr int kYellow = 3;
+constexpr int KAll = 4;
 
 } // !p28
 
