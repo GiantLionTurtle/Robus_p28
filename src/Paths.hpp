@@ -49,7 +49,11 @@ struct Path {
 
 Path fix(Path path);
 Path hot_insert(Path prevPath, Path insert);
-
+Path generateDropRed();
+Path generateDropGreen();
+Path generateDropBlue();
+Path generateDropYellow();
+Path generateDropAll();
 Path gen_test();
 
 Arc arc_from_targetHeading(mt::Vec2 start, mt::Vec2 end, mt::Vec2 end_heading);

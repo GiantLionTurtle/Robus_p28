@@ -6,6 +6,36 @@ namespace p28 {
 
 namespace Paths {
 
+Path generateDropRed()
+{
+	Path dropRed;
+	return dropRed;
+}
+
+Path generateDropGreen()
+{
+	Path dropGreen;
+	return dropGreen;
+}
+
+Path generateDropBlue()
+{
+	Path dropBlue;
+	return dropBlue;
+}
+
+Path generateDropYellow()
+{
+	Path dropYellow;
+	return dropYellow;
+}
+
+Path generateDropAll()
+{
+	Path dropAll;
+	return dropAll;
+}
+
 Arc arc_from_targetHeading(mt::Vec2 start, mt::Vec2 end, mt::Vec2 end_heading);
 
 Path fix(Path path)

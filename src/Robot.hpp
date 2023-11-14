@@ -33,7 +33,7 @@ struct Robot {
 	void generate_next(	SensorState prevSensState, SensorState currSensState, Iteration_time it_time);
 	HardwareState generate_hardwareState();
 
-	void adjustDrivebase(SensorState const& currSensState, SensorState const& prevSensState);
+	void adjustDrivebase(SensorState const& currSensState, SensorState const& prevSensState, Iteration_time it_time);
 };
 
 struct Objective {
