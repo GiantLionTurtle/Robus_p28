@@ -20,6 +20,7 @@ unsigned int time_to_delay_ms;
 void setup()
 {
 	BoardInit();
+	Serial1.begin(9600);
 	delay(1000);
 	
 	SensorState::init();

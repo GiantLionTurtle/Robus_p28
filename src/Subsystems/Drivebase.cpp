@@ -58,10 +58,15 @@ void Drivebase::update_followLine(SensorState currentSensState, SensorState prev
 		Serial.print(" => ");
 		Serial.print(dir);
 		Serial.println();
+		if(line == 0)
+		{
+			finish = true;
+		}
 	//.02 is a magic number for the moment
 	mt::Vec2 motorVel = mt::Vec2(-dir, dir)*.02 + kFollowLineBaseVel;
 	update_wheels(motorVel, it_time.delta_s);
 }
+
 void Drivebase::update_followCam(SensorState currentSensState, SensorState prevSensState, Iteration_time it_time)
 {
 	float motorDelta = pow(currentSensState.pixy_lego_horizOffset, 3);
@@ -72,8 +77,10 @@ void Drivebase::update_followCam(SensorState currentSensState, SensorState prevS
 void Drivebase::update_followPath(Iteration_time it_time)
 {
 	if(path.finished())
+	{
+		finish=true;
 		return;
-
+	}
 	Paths::CheckPoint checkPoint = path.current();
 
 	// Go to next checkpoint in path if the current checkpoint is done
@@ -104,6 +111,13 @@ void Drivebase::update_followPath(Iteration_time it_time)
 		update_follow_arc(checkPoint, it_time);
 	}
 }
+
+void Drivebase::setDriveMode(Drivebase drvb, Drivemodes mode)
+{
+	drvb.drvMode = mode;
+	finish = false;
+}
+
 void Drivebase::set_path(Paths::Path path_, Iteration_time it_time)
 {
 	path = path_;

@@ -26,11 +26,13 @@ Robot Robot::initial()
 void Robot::generate_next(  SensorState prevSensState, SensorState currSensState, Iteration_time it_time)
 {
 	drvb.update(currSensState, prevSensState, it_time);
+	going_home = bin.is_full();
 }
 HardwareState Robot::generate_hardwareState()
 {
 	HardwareState hrdwState;
 	hrdwState = drvb.aggregate(hrdwState);
+	hrdwState = bin.Aggregate_hardwareState(hrdwState);
 	return hrdwState;
 }
 
