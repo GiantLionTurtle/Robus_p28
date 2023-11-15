@@ -6,36 +6,6 @@ namespace p28 {
 
 namespace Paths {
 
-Path generateDropRed()
-{
-	Path dropRed;
-	return dropRed;
-}
-
-Path generateDropGreen()
-{
-	Path dropGreen;
-	return dropGreen;
-}
-
-Path generateDropBlue()
-{
-	Path dropBlue;
-	return dropBlue;
-}
-
-Path generateDropYellow()
-{
-	Path dropYellow;
-	return dropYellow;
-}
-
-Path generateDropAll()
-{
-	Path dropAll;
-	return dropAll;
-}
-
 Arc arc_from_targetHeading(mt::Vec2 start, mt::Vec2 end, mt::Vec2 end_heading);
 
 Path fix(Path path)
@@ -57,7 +27,7 @@ Path fix(Path path)
 }
 Path hot_insert(Path prevPath, Path insert)
 {
-	for(int i = prevPath.index; i < prevPath.size; ++i) {
+	for(unsigned int i = prevPath.index; i < prevPath.size; ++i) {
 		insert.add_checkPoint(prevPath.checkPoints[i]);
 	}
 	return insert;
@@ -148,7 +118,7 @@ void Path::add_checkPoint(CheckPoint checkPoint)
 	size++;
 }
 
-void Path::add_line(float distance)
+void Path::add_line(float distance, float targVel_, bool backward_, float maxVel_, unsigned int delay_before_, int id_)
 {
 	if(size<=0){
 		Serial.println("No suitable previous checkpoint to generate line");
@@ -165,7 +135,8 @@ void Path::add_line(float distance)
 			Serial.println("No suitable position to generate line");
 			return;
 		}
-		CheckPoint lineCheckPoint (last_pos + checkPoints[size-1].targHeading*distance, checkPoints[size-1].targHeading);
+		CheckPoint lineCheckPoint (last_pos + checkPoints[size-1].targHeading*distance, checkPoints[size-1].targHeading, 
+						targVel_, backward_, maxVel_, delay_before_, id_);
 		add_checkPoint(lineCheckPoint);
 	}
 }
@@ -191,6 +162,35 @@ Path gen_test ()
 	path.add_line(.25);
 	path.add_turn(mt::to_radians(135));
 	path.add_line(0.30);
+	return fix(path);
+}
+Path gen_getToLine(mt::Vec2 currPos, mt::Vec2 currHeading, int target_color)
+{
+	Serial.print("Gen get to line ");
+	Serial.println(target_color);
+	Path path;
+	path.add_checkPoint(CheckPoint(currPos, currHeading));
+
+	int prev_color = target_color == 0 ? kYellow : target_color-1;
+
+	mt::Vec2 midPoint = (Field::kDumps[target_color]+Field::kDumps[prev_color]) / 2;
+	mt::Vec2 perpToLine = mt::cw_perpendicular(Field::kDumps[target_color]-Field::kDumps[prev_color]);
+	path.add_checkPoint(CheckPoint(midPoint, perpToLine));
+	path.add_turn(mt::to_radians(90));
+	return fix(path);
+}
+Path gen_drop(mt::Vec2 currPos, mt::Vec2 currHeading, int target_color)
+{
+	Serial.print("Gen drop ");
+	Serial.println(target_color);
+
+	mt::Vec2 toward_center = Field::kDimensions/2.0 - currPos;
+	Path path;
+	path.add_checkPoint(CheckPoint(currPos, currHeading));
+	path.add_checkPoint(CheckPoint::make_turn(toward_center));
+	path.add_line(-0.24, 0.0, true);
+	path.add_checkPoint(CheckPoint(Field::kDimensions/2.0, toward_center, 0.0, false, 0.4, 2000, kDumpPointId));
+
 	return fix(path);
 }
 

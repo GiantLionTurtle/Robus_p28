@@ -18,24 +18,6 @@
 
 namespace p28 {
 
-// Essentialy proprioception for the robot
-struct Robot {
-	
-	Bin bin;
-
-	bool going_home;
-
-	Drivebase drvb;
-
-	static Robot initial();
-
-	// Compute the next robot state from delta of the sensors and the game state
-	void generate_next(	SensorState prevSensState, SensorState currSensState, Iteration_time it_time);
-	HardwareState generate_hardwareState();
-
-	void adjustDrivebase(SensorState const& currSensState, SensorState const& prevSensState, Iteration_time it_time);
-};
-
 struct Objective {
 	enum Doneness : char { Todo, Start, UnderWay, Done };
 
@@ -61,8 +43,40 @@ struct Objective {
 		return *this;
 	}
 
-}; // !p28
+};
 
-}
+struct DoDumpObjective {
+	enum Steps {
+		Start,
+		GetToLine,
+		GetToDump,
+		DoDump,
+		Done
+	};
+	int step;
+};
+
+// Essentialy proprioception for the robot
+struct Robot {
+	
+	Bin bin;
+	Drivebase drvb;
+
+	int targetColor { kRed };
+	DoDumpObjective dumpObjective { DoDumpObjective::Done };
+
+	static Robot initial();
+	void start_calibration();
+
+	// Compute the next robot state from delta of the sensors and the game state
+	void update(SensorState prevSensState, SensorState currSensState, Iteration_time it_time);
+	HardwareState generate_hardwareState();
+
+	void gameLogic(SensorState const& currSensState, SensorState const& prevSensState, Iteration_time it_time);
+};
+
+
+
+} // !p28
 
 #endif

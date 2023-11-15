@@ -75,6 +75,8 @@ constexpr int kBlue = 2;
 constexpr int kYellow = 3;
 constexpr int KAll = 4;
 
+constexpr int kDumpPointId = 57;
+
 } // !p28
 
 #endif

@@ -119,9 +119,9 @@ void Drivebase::update_followPath(Iteration_time it_time)
 	}
 }
 
-void Drivebase::setDriveMode(Drivebase drvb, Drivemodes mode)
+void Drivebase::setDriveMode(Drivemodes mode)
 {
-	drvb.drvMode = mode;
+	drvMode = mode;
 	finish = false;
 }
 

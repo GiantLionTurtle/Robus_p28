@@ -17,16 +17,19 @@ Robot Robot::initial()
 	robot.drvb.rightWheel.pid = { 1.4, 35.5555, 0.03333333 };
 	// robot.drvb.concrete.headingPID = { 0.4, 0.18, 0.006 };
 	robot.drvb.headingPID = { 0.3, 0.135, 0.0045 };
-	robot.drvb.drvMode = Drivebase::followPath;
-	robot.drvb.path = Paths::gen_test();
 	
 	return robot;
 }
-
-void Robot::generate_next(  SensorState prevSensState, SensorState currSensState, Iteration_time it_time)
+void Robot::start_calibration()
 {
+	dumpObjective.step = DoDumpObjective::GetToDump;
+	targetColor = kRed;
+	drvb.setDriveMode(Drivebase::followLine);
+}
+void Robot::update(  SensorState prevSensState, SensorState currSensState, Iteration_time it_time)
+{
+	gameLogic(currSensState, prevSensState, it_time);
 	drvb.update(currSensState, prevSensState, it_time);
-	going_home = bin.is_full();
 }
 HardwareState Robot::generate_hardwareState()
 {
@@ -36,31 +39,37 @@ HardwareState Robot::generate_hardwareState()
 	return hrdwState;
 }
 
-void Robot::adjustDrivebase(SensorState const& currSensState,  SensorState const& prevSensState, Iteration_time it_time)
+void Robot::gameLogic(SensorState const& currSensState,  SensorState const& prevSensState, Iteration_time it_time)
 {
-	if(Robot::going_home && drvb.finish && drvb.drvMode == Drivebase::Drivemodes::followLine)
-	{
-		drvb.pos = mt::Vec2(0, 0);
-		drvb.heading = mt::Vec2(1, 0);
-		char color_bidon;
-		switch(color_bidon)
-		{
-			case kRed:
-				drvb.set_path(Paths::generateDropRed(), it_time);
-				break;
-			case KGreen:
-				drvb.set_path(Paths::generateDropGreen(), it_time);
-				break;
-			case kBlue:
-				drvb.set_path(Paths::generateDropBlue(), it_time);
-				break;
-			case kYellow:
-				drvb.set_path(Paths::generateDropYellow(), it_time);
-				break;
-			default:
-				drvb.set_path(Paths::generateDropAll(), it_time);
-				break;
-		}
+	if(bin.is_full() && dumpObjective.step == DoDumpObjective::Done) {
+		dumpObjective.step = DoDumpObjective::Start;
+	}
+
+	int internalColor = targetColor;
+	if(internalColor == KAll) {
+		internalColor = kRed;
+	}
+
+	if(dumpObjective.step == DoDumpObjective::Start) {
+		drvb.set_path(Paths::gen_getToLine(drvb.pos, drvb.heading, internalColor), it_time);
+		dumpObjective.step++;
+	}
+	if(dumpObjective.step == DoDumpObjective::GetToLine && drvb.finish) {
+		drvb.setDriveMode(Drivebase::followLine);
+		dumpObjective.step++;
+	}
+	if(dumpObjective.step == DoDumpObjective::GetToDump && drvb.finish) {
+		drvb.pos = Field::kDumps[internalColor];
+		drvb.heading = Field::kDumps[internalColor];
+		drvb.set_path(Paths::gen_drop(drvb.pos, drvb.heading, internalColor), it_time);
+		dumpObjective.step++;
+	}
+	// if(dumpObjective.step == DoDumpObjective::DoDump && drvb.move_id() == kDumpPointId) {
+	// 	bin.release();
+	// }
+	if(dumpObjective.step == DoDumpObjective::DoDump && drvb.finish) {
+		// bin.close();
+		dumpObjective.step++;
 	}
 }
 

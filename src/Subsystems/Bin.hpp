@@ -10,7 +10,7 @@ struct Bin
 
     int set_bin_color(int bin_selected_color);
    
-    int nb_of_blocks [3];
+    int nb_of_blocks [3] { 0, 0, 0 };
 
     bool is_full();
 

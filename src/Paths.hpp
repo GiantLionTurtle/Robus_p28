@@ -44,18 +44,17 @@ struct Path {
 
 	CheckPoint& current() { return checkPoints[index]; }
 	void add_checkPoint(CheckPoint checkpoint);
-	void add_line(float distance);
+	void add_line(float distance, float targVel_ = 0.0, bool backward_ = false, float maxVel_ = kMaxVel, unsigned int delay_before_ = 0, int id_ = -1);
 	void add_turn(float turnAngle_rad);
 	bool finished() const { return index >= size; }
 };
 
 Path fix(Path path);
 Path hot_insert(Path prevPath, Path insert);
-Path generateDropRed();
-Path generateDropGreen();
-Path generateDropBlue();
-Path generateDropYellow();
-Path generateDropAll();
+
+Path gen_getToLine(mt::Vec2 currPos, mt::Vec2 currHeading, int target_color);
+Path gen_drop(mt::Vec2 currPos, mt::Vec2 currHeading, int target_color);
+
 Path gen_test();
 
 Arc arc_from_targetHeading(mt::Vec2 start, mt::Vec2 end, mt::Vec2 end_heading);
