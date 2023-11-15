@@ -4,6 +4,8 @@
 
 #include "CompileFlags.hpp"
 
+#include <Arduino.h>
+
 /*
     All physical constants of the robot in SI units where applicable
 */

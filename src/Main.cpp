@@ -60,10 +60,10 @@ void loop()
 				set_hardwareState(HardwareState());
 				break;
 			}
-			// print(robot.drvb.state.pos);
-			// Serial.print(" | ");
-			//   print(robot.drvb.state.heading, 4);
-			//  Serial.println();
+			print(robot.drvb.pos);
+			Serial.print(" | ");
+			  print(robot.drvb.heading, 4);
+			 Serial.println();
 			 //print(sensState);
 			// Serial.print(sensState.frontIR_dist);
 			// Serial.print("'  ");

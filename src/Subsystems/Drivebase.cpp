@@ -7,6 +7,12 @@ namespace p28 {
 void Drivebase::update(SensorState currentSensState, SensorState prevSensState, Iteration_time it_time)
 {
 	update_kinematics(prevSensState.encoders_ticks, currentSensState.encoders_ticks, it_time.delta_s);
+
+	if(finish) {
+		update_wheels(mt::Vec2(0.0f), it_time.delta_s);
+		return;
+	}
+
 	if (drvMode == followLine){
 		update_followLine(currentSensState, prevSensState, it_time);
 	}
@@ -78,6 +84,7 @@ void Drivebase::update_followPath(Iteration_time it_time)
 {
 	if(path.finished())
 	{
+		Serial.println("Fiiinhished");
 		finish=true;
 		return;
 	}

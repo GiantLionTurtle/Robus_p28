@@ -151,10 +151,21 @@ void Path::add_checkPoint(CheckPoint checkPoint)
 void Path::add_line(float distance)
 {
 	if(size<=0){
-		Serial.println("Error");
+		Serial.println("No suitable previous checkpoint to generate line");
 	}else 
 	{
-		CheckPoint lineCheckPoint (checkPoints[size-1].targPos + checkPoints[size-1].targHeading*distance, checkPoints[size-1].targHeading);
+		mt::Vec2 last_pos(kInfinity, kInfinity);
+		for(int i = size-1; i >= 0; --i) {
+			if(!checkPoints[i].turn_only) {
+				last_pos = checkPoints[i].targPos;
+				break;
+			}		
+		}
+		if(last_pos.x == kInfinity) {
+			Serial.println("No suitable position to generate line");
+			return;
+		}
+		CheckPoint lineCheckPoint (last_pos + checkPoints[size-1].targHeading*distance, checkPoints[size-1].targHeading);
 		add_checkPoint(lineCheckPoint);
 	}
 }
@@ -162,7 +173,7 @@ void Path::add_line(float distance)
 void Path::add_turn(float turnAngle_rad)
 {
 	if(size<=0){
-		Serial.println("Error");
+		Serial.println("No suitable previous checkpoint to generate turn");
 	}else 
 	{
 		CheckPoint turnCheckPoint = CheckPoint::make_turn(mt::rotate(checkPoints[size-1].targHeading, turnAngle_rad));
@@ -180,7 +191,7 @@ Path gen_test ()
 	path.add_line(.25);
 	path.add_turn(mt::to_radians(135));
 	path.add_line(0.30);
-	return path;//fix(path);
+	return fix(path);
 }
 
 } // !Paths

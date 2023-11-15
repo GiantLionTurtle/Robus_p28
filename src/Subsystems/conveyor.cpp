@@ -30,14 +30,14 @@ namespace p28 {
 
     HardwareState update_conveyorSequence(Conveyor conveyorState, Step sequence, HardwareState hrdwState,Iteration_time it_time ){
         
-        int stepIndex = conveyorState.conveyorSequence;
-        unsigned long sequenceTime = conveyorState.sequenceTime;
+        // int stepIndex = conveyorState.conveyorSequence;
+        // unsigned long sequenceTime = conveyorState.sequenceTime;
         
         
-        if (stepIndex = -1 & stepIndex < 4){
-            if (sequence[stepIndex])
-        }
+        // if (stepIndex = -1 & stepIndex < 4){
+        //     if (sequence[stepIndex])
+        // }
         
-        return hrdwState;
+        // return hrdwState;
      }
 }
