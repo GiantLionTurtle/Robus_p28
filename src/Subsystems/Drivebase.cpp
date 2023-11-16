@@ -129,6 +129,8 @@ void Drivebase::set_path(Paths::Path path_, Iteration_time it_time)
 {
 	path = path_;
 	if(!path.finished()) {
+		finish = false;
+		drvMode = followPath;
 		waitUntil_ms = it_time.time_ms + path.current().delay_before;
 	}
 }
@@ -141,16 +143,16 @@ void Drivebase::update_follow_arc(Paths::CheckPoint follow, Iteration_time it_ti
 	mt::Vec2 speed_correction = correct_heading();
 	if(follow.backward) { 
 		arc.radius = -arc.radius;
-		arc.tengeantStart = -arc.tengeantStart;
+		// arc.tengeantStart = -arc.tengeantStart;
 		speed_correction = -speed_correction;
 	}
 
-	// If the angle between the current heading and the heading to be 
-	// tangeant to the arc is greater than 15 degrees, just turn
-	if(abs(mt::signed_angle(heading, arc.tengeantStart) > 0.267)) {
-		update_turn(Paths::CheckPoint::make_turn(arc.tengeantStart), it_time);
-		return;
-	}
+	// // If the angle between the current heading and the heading to be 
+	// // tangeant to the arc is greater than 15 degrees, just turn
+	// if(abs(mt::signed_angle(heading, arc.tengeantStart) > 0.267)) {
+	// 	update_turn(Paths::CheckPoint::make_turn(arc.tengeantStart), it_time);
+	// 	return;
+	// }
 
 	float targVel = velocity_for_point(velocity(), follow.targVel, follow.maxVel, arc.length, kAccel, it_time.delta_s);
 

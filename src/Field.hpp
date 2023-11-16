@@ -21,6 +21,13 @@ const mt::Vec2 kDumps[4] {
 	{ kDumpBorderOffset, kDimensions.y-kDumpBorderOffset } // Yellow
 };
 
+const mt::Vec2 kDumpHeading[4]{
+	{1, -1}, // Red
+	{1, 1}, // Green
+	{-1, 1}, // Blue
+	{-1, -1} // Yellow
+};
+
 const mt::Vec2 kDumpConnectors[4] {
 	{ kDumpBorderOffset, kDimensions.y/2 },
 	{ kDimensions.x/2, kDumpBorderOffset },

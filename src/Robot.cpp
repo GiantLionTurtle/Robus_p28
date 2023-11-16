@@ -18,6 +18,11 @@ Robot Robot::initial()
 	// robot.drvb.concrete.headingPID = { 0.4, 0.18, 0.006 };
 	robot.drvb.headingPID = { 0.3, 0.135, 0.0045 };
 	
+	robot.drvb.pos = Field::kDumps[0];
+	robot.drvb.heading = Field::kDumpHeading[0];
+
+	//robot.drvb.set_path(Paths::gen_test(), Iteration_time::first());
+	robot.drvb.set_path(Paths::gen_drop(Field::kDumps[0], Field::kDumpHeading[0], 0), Iteration_time::first());
 	return robot;
 }
 void Robot::start_calibration()

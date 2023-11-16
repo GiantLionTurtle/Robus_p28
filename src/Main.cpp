@@ -59,7 +59,7 @@ void loop()
 			break_ = control_step();
 		}
 	}
-	Serial.println("out");
+	//Serial.println("out");
 }
 
 bool control_step()
@@ -73,7 +73,7 @@ bool control_step()
 	hrdwState = hrdwState.mix(robot.generate_hardwareState());
 
 
-	// set_hardwareState(hrdwState);
+	set_hardwareState(hrdwState);
 
 	prevSensState = sensState;
 
@@ -81,10 +81,10 @@ bool control_step()
 		set_hardwareState(HardwareState());
 		return true;
 	}
-	// print(robot.drvb.pos);
-	// Serial.print(" | ");
-	// print(robot.drvb.heading, 4);
-	// Serial.println();
+	print(robot.drvb.pos);
+	 Serial.print(" | ");
+	 print(robot.drvb.heading, 4);
+	 Serial.println();
 	// print(sensState);
 	// Serial.print(sensState.frontIR_dist);
 	// Serial.print("'  ");
