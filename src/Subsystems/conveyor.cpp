@@ -18,21 +18,21 @@ namespace p28 {
 
     };
     const int Nsteps = 4;
-    Step sequence[Nsteps] = {
+    Step const sequence[Nsteps] = {
         Step { .clawServo = kClaw_openAngle, .armServo = kArm_openAngle, .stepTime =2000},
         Step { .clawServo = kClaw_closeAngle, .armServo = kArm_openAngle, .stepTime = 2000},
         Step { .clawServo = kClaw_closeAngle, .armServo = kArm_closeAngle, .stepTime = 2000},
         Step { .clawServo = kClaw_openAngle, .armServo = kArm_closeAngle, .stepTime =2000}
         
     };
-    Conveyor Start_ConveyorTime(Iteration_time it_time, Conveyor conveyorState){
+    Conveyor Conveyor::Start_ConveyorTime(Iteration_time it_time, Conveyor conveyorState){
         conveyorState.startStepTime = it_time.time_ms;
         conveyorState.conveyorSequence = 0;
         return conveyorState;
     }
 
 
-    HardwareState update_conveyorSequence(Conveyor conveyorState, Step sequence[], HardwareState hrdwState,Iteration_time it_time ){
+    HardwareState Conveyor::update_conveyorSequence(Conveyor conveyorState, HardwareState hrdwState,Iteration_time it_time ){
         
         int stepIndex = conveyorState.conveyorSequence;
         if ( stepIndex < 4){

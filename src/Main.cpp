@@ -38,15 +38,15 @@ void setup()
 	set_hardwareState(HardwareState::initial());
 
 	robot = Robot::initial();
-	robot.start_calibration();
+	// robot.start_calibration();
 
-	while(!ROBUS_IsBumper(3)) {}
+	// while(!ROBUS_IsBumper(3)) {}
 
-	it_time = it_time.current();
-	bool break_ = false;
-	while(robot.dumpObjective.step != DoDumpObjective::Done && !break_) {
-		break_ = control_step();
-	}
+	// it_time = it_time.current();
+	// bool break_ = false;
+	// while(robot.dumpObjective.step != DoDumpObjective::Done && !break_) {
+	// 	break_ = control_step();
+	// }
 }
 
 void loop()
@@ -69,7 +69,7 @@ bool control_step()
 
 	it_time = it_time.current();
 	robot.update(prevSensState, sensState, it_time);
-	hrdwState = hrdwState.mix(robot.generate_hardwareState());
+	hrdwState = hrdwState.mix(robot.generate_hardwareState(it_time));
 
 
 	set_hardwareState(hrdwState);

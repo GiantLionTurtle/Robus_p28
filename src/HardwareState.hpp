@@ -16,7 +16,7 @@
 namespace p28 {
 
 struct HardwareState {
-	p28::mt::Vec2 motors; // Values from [-1,1]
+	p28::mt::Vec2 motors {0, 0}; // Values from [-1,1]
 
 	int clawAngle { kClaw_openAngle};
 	int armAngle { kArm_openAngle};

@@ -7,6 +7,7 @@
 #include "SensorsState.hpp"
 #include "Iteration_time.hpp"
 #include "Subsystems/Bin.hpp"
+#include "Subsystems/conveyor.hpp"
 
 /*
 	How the Robot should work
@@ -61,6 +62,7 @@ struct Robot {
 	
 	Bin bin;
 	Drivebase drvb;
+	Conveyor cnvr;
 
 	int targetColor { kRed };
 	DoDumpObjective dumpObjective { DoDumpObjective::Done };
@@ -70,7 +72,7 @@ struct Robot {
 
 	// Compute the next robot state from delta of the sensors and the game state
 	void update(SensorState prevSensState, SensorState currSensState, Iteration_time it_time);
-	HardwareState generate_hardwareState();
+	HardwareState generate_hardwareState(Iteration_time it_time);
 
 	void gameLogic(SensorState const& currSensState, SensorState const& prevSensState, Iteration_time it_time);
 };
