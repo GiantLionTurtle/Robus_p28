@@ -28,7 +28,8 @@ void set_hardwareState (HardwareState hwst)
 {
 	MOTOR_SetSpeed (RIGHT, hwst.motors.right);      //Sets the motors speed according to the hardware state received
 	MOTOR_SetSpeed (LEFT, hwst.motors.left);
-
+	SERVO_SetAngle (0 , hwst.clawAngle);
+	SERVO_SetAngle (1, hwst.armAngle);
 
 }
 

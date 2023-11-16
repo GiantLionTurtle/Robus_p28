@@ -12,14 +12,21 @@ Path fix(Path path)
 {
 	if(path.finished())
 		return Path();
+	if(path.checkPoints[0].turn_only)
+		return path;
+
 	Path newPath;
 	newPath.add_checkPoint(path.checkPoints[0]);
 
+	int prevPos_ind = 0;
 	for(unsigned int i = 1; i < path.size; ++i) {
-		Arc arc = arc_from_targetHeading(path.checkPoints[i-1].targPos, path.checkPoints[i].targPos, path.checkPoints[i].targHeading);
-		if(mt::signed_angle(arc.tengeantStart, path.checkPoints[i-1].targHeading) > mt::to_radians(10)) {
-			newPath.checkPoints[i-1].targVel = 0.0; // Stop the robot before adjusting the angle
-			newPath.add_checkPoint(CheckPoint::make_turn(arc.tengeantStart));
+		if(!path.checkPoints[i].turn_only) {
+			Arc arc = arc_from_targetHeading(path.checkPoints[prevPos_ind].targPos, path.checkPoints[i].targPos, path.checkPoints[i].targHeading);
+			if(mt::signed_angle(arc.tengeantStart, path.checkPoints[prevPos_ind].targHeading) > mt::to_radians(10)) {
+				newPath.checkPoints[i-1].targVel = 0.0; // Stop the robot before adjusting the angle
+				newPath.add_checkPoint(CheckPoint::make_turn(arc.tengeantStart));
+			}
+			prevPos_ind = i;
 		}
 		newPath.add_checkPoint(path.checkPoints[i]);
 	}

@@ -7,6 +7,8 @@
 #include "Tests/UnitTests.hpp"
 #include "Field.hpp"
 
+#include "Controller.hpp"
+
 using namespace p28;
 
 Robot robot;
@@ -53,7 +55,10 @@ void loop()
 {
 	it_time = it_time.current();
 
-	if(ROBUS_IsBumper(3)) {
+	int controller_color = get_controller_color(Serial1);
+
+	if(controller_color != -1) {
+		robot.set_target_color(controller_color);
 		bool break_ = false;
 		while(true && !break_) {
 			break_ = control_step();

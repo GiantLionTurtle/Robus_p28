@@ -5,8 +5,8 @@
 namespace p28 {
 
     struct Conveyor{
-        int conveyorSequence = -1;
-        float sequenceTime = millis();
+        int conveyorSequence = 4;
+        unsigned long startStepTime = 0.0;
     };
 
 }

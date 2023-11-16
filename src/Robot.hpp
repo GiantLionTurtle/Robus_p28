@@ -62,6 +62,8 @@ struct Robot {
 	Bin bin;
 	Drivebase drvb;
 
+	int drop_zone;
+
 	int targetColor { kRed };
 	DoDumpObjective dumpObjective { DoDumpObjective::Done };
 
@@ -73,6 +75,10 @@ struct Robot {
 	HardwareState generate_hardwareState();
 
 	void gameLogic(SensorState const& currSensState, SensorState const& prevSensState, Iteration_time it_time);
+
+	void set_target_color(int controller_color);
+
+	
 };
 
 

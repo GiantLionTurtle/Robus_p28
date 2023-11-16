@@ -4,8 +4,9 @@
 #include "Constants.hpp"
 #include "Field.hpp"
 #include "Sensors/LineDetector.hpp"
-
+#include "Controller.hpp"
 #include "Paths.hpp"
+#include "Subsystems/Bin.hpp"
 
 namespace p28 {
 
@@ -42,6 +43,11 @@ HardwareState Robot::generate_hardwareState()
 	hrdwState = drvb.aggregate(hrdwState);
 	hrdwState = bin.Aggregate_hardwareState(hrdwState);
 	return hrdwState;
+}
+void Robot::set_target_color(int controller_color)
+{
+	targetColor = controller_color;
+	bin.set_bin_color(targetColor);
 }
 
 void Robot::gameLogic(SensorState const& currSensState,  SensorState const& prevSensState, Iteration_time it_time)
