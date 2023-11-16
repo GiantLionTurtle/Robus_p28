@@ -4,10 +4,11 @@
 #include "Constants.hpp"
 #include "Field.hpp"
 #include "Sensors/LineDetector.hpp"
-
+#include "Controller.hpp"
 
 
 #include "Paths.hpp"
+#include "Subsystems/Bin.hpp"
 
 namespace p28 {
 
@@ -23,6 +24,11 @@ Robot Robot::initial()
 	robot.drvb.headingPID = { 0.3, 0.135, 0.0045 };
 	robot.cnvr = cnvr.Start_ConveyorTime(it_time,cnvr); //test
 	
+	robot.drvb.pos = Field::kDumps[0];
+	robot.drvb.heading = Field::kDumpHeading[0];
+
+	//robot.drvb.set_path(Paths::gen_test(), Iteration_time::first());
+	robot.drvb.set_path(Paths::gen_drop(Field::kDumps[0], Field::kDumpHeading[0], 0), Iteration_time::first());
 	return robot;
 }
 void Robot::start_calibration()
@@ -45,6 +51,11 @@ HardwareState Robot::generate_hardwareState(Iteration_time it_time)
 	hrdwState = bin.Aggregate_hardwareState(hrdwState);
 	hrdwState = cnvr.update_conveyorSequence(cnvrState, hrdwState, it_time);
 	return hrdwState;
+}
+void Robot::set_target_color(int controller_color)
+{
+	targetColor = controller_color;
+	bin.set_bin_color(targetColor);
 }
 
 void Robot::gameLogic(SensorState const& currSensState,  SensorState const& prevSensState, Iteration_time it_time)

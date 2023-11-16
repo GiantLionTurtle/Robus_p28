@@ -7,6 +7,8 @@
 #include "Tests/UnitTests.hpp"
 #include "Field.hpp"
 
+#include "Controller.hpp"
+
 using namespace p28;
 
 Robot robot;
@@ -53,12 +55,16 @@ void loop()
 {
 	it_time = it_time.current();
 
-	if(ROBUS_IsBumper(3)) {
+	int controller_color = get_controller_color(Serial1);
+
+	if(controller_color != -1) {
+		robot.set_target_color(controller_color);
 		bool break_ = false;
 		while(true && !break_) {
 			break_ = control_step();
 		}
 	}
+	//Serial.println("out");
 }
 
 bool control_step()
@@ -80,10 +86,10 @@ bool control_step()
 		set_hardwareState(HardwareState());
 		return true;
 	}
-	// print(robot.drvb.pos);
-	// Serial.print(" | ");
-	// print(robot.drvb.heading, 4);
-	// Serial.println();
+	print(robot.drvb.pos);
+	 Serial.print(" | ");
+	 print(robot.drvb.heading, 4);
+	 Serial.println();
 	// print(sensState);
 	// Serial.print(sensState.frontIR_dist);
 	// Serial.print("'  ");

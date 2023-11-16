@@ -1,3 +1,5 @@
+#ifndef P28_BIN_HPP
+#define P28_BIN_HPP
 
 #include "HardwareState.hpp"
 
@@ -19,3 +21,5 @@ struct Bin
 };
 
 }
+
+#endif

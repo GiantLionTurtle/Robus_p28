@@ -164,12 +164,8 @@ Path gen_test ()
 	Path path;
 	Serial.println("Gen test");
 	path.add_checkPoint(CheckPoint(mt::Vec2(0.0, 0.0), mt::Vec2(0.0, 1.0)));
-	path.add_line(.50);
-	path.add_turn(mt::to_radians(135));
-	path.add_line(.25);
-	path.add_turn(mt::to_radians(135));
-	path.add_line(0.30);
-	return fix(path);
+	path.add_checkPoint(CheckPoint(mt::Vec2(0.0, -1.0), mt::Vec2(0.0, 1.0), 0.0, true));
+	return path;
 }
 Path gen_getToLine(mt::Vec2 currPos, mt::Vec2 currHeading, int target_color)
 {
@@ -192,13 +188,14 @@ Path gen_drop(mt::Vec2 currPos, mt::Vec2 currHeading, int target_color)
 	Serial.println(target_color);
 
 	mt::Vec2 toward_center = Field::kDimensions/2.0 - currPos;
+	mt::print(toward_center);
 	Path path;
 	path.add_checkPoint(CheckPoint(currPos, currHeading));
 	path.add_checkPoint(CheckPoint::make_turn(toward_center));
-	path.add_line(-0.24, 0.0, true);
-	path.add_checkPoint(CheckPoint(Field::kDimensions/2.0, toward_center, 0.0, false, 0.4, 2000, kDumpPointId));
+	  path.add_line(-0.24, 0.0, true);
+	  path.add_checkPoint(CheckPoint(Field::kDimensions/2.0, toward_center, 0.0, false, 0.4, 2000, kDumpPointId));
 
-	return fix(path);
+	return path;
 }
 
 } // !Paths
