@@ -1,7 +1,10 @@
 #include "Controller.hpp"
 #include "Constants.hpp"
 
- int get_controller_color(HardwareSerial Serial1){
+namespace p28 {
+
+ int get_controller_color(HardwareSerial Serial1)
+ {
     char caractere;
     String reponse;
     int color_selected;
@@ -12,23 +15,23 @@
     }
     if(reponse == "R")
     {
-        color_selected = 0;
+        color_selected = kRed;
     }
     else if(reponse == "G")
     {
-        color_selected = 1;
+        color_selected = KGreen;
     }
     else if(reponse == "B")
     {
-       color_selected = 2;
+       color_selected = kBlue;
     }
     else if(reponse == "Y")
     {
-       color_selected = 3;
+       color_selected = kYellow;
     }
     else if(reponse == "A")
     {
-        color_selected = 4;
+        color_selected = KAll;
     }
     else 
     {
@@ -37,3 +40,4 @@
     return color_selected;
  }
 
+}
