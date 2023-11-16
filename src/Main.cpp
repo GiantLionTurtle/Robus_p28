@@ -55,9 +55,10 @@ void loop()
 {
 	it_time = it_time.current();
 
-	int controller_color = get_controller_color(Serial1);
+	int controller_color = 0;//get_controller_color(Serial1);
 
-	if(controller_color != -1) {
+	// if(controller_color != -1) {
+	if(ROBUS_IsBumper(3)) {
 		robot.set_target_color(controller_color);
 		bool break_ = false;
 		while(true && !break_) {
@@ -82,14 +83,17 @@ bool control_step()
 
 	prevSensState = sensState;
 
-	if(ROBUS_IsBumper(0) || ROBUS_IsBumper(1) || ROBUS_IsBumper(2)) {
+	if(ROBUS_IsBumper(RIGHT)) {
+		robot.cnvr.start_sequence(it_time);
+	}
+	if(ROBUS_IsBumper(0) || ROBUS_IsBumper(2)) {
 		set_hardwareState(HardwareState());
 		return true;
 	}
-	print(robot.drvb.pos);
-	 Serial.print(" | ");
-	 print(robot.drvb.heading, 4);
-	 Serial.println();
+	// print(robot.drvb.pos);
+	//  Serial.print(" | ");
+	//  print(robot.drvb.heading, 4);
+	//  Serial.println();
 	// print(sensState);
 	// Serial.print(sensState.frontIR_dist);
 	// Serial.print("'  ");

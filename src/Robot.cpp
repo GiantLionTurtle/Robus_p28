@@ -16,13 +16,10 @@ namespace p28 {
 Robot Robot::initial()
 {
 	Robot robot;
-	Conveyor cnvr; //testconveyor
-	Iteration_time it_time = Iteration_time::first();  //test conveyor
 	robot.drvb.leftWheel.pid = { 1.4, 35.5555, 0.03333333 };
 	robot.drvb.rightWheel.pid = { 1.4, 35.5555, 0.03333333 };
 	// robot.drvb.concrete.headingPID = { 0.4, 0.18, 0.006 };
 	robot.drvb.headingPID = { 0.3, 0.135, 0.0045 };
-	robot.cnvr = cnvr.Start_ConveyorTime(it_time,cnvr); //test
 	
 	robot.drvb.pos = Field::kDumps[0];
 	robot.drvb.heading = Field::kDumpHeading[0];
@@ -41,6 +38,7 @@ void Robot::update(  SensorState prevSensState, SensorState currSensState, Itera
 {
 	gameLogic(currSensState, prevSensState, it_time);
 	drvb.update(currSensState, prevSensState, it_time);
+	cnvr.update(it_time);
 }
 HardwareState Robot::generate_hardwareState(Iteration_time it_time)
 {
@@ -49,7 +47,7 @@ HardwareState Robot::generate_hardwareState(Iteration_time it_time)
 
 	//hrdwState = drvb.aggregate(hrdwState);
 	hrdwState = bin.Aggregate_hardwareState(hrdwState);
-	hrdwState = cnvr.update_conveyorSequence(cnvrState, hrdwState, it_time);
+	hrdwState = cnvr.agregate(hrdwState);
 	return hrdwState;
 }
 void Robot::set_target_color(int controller_color)

@@ -7,7 +7,7 @@
 #include "SensorsState.hpp"
 #include "Iteration_time.hpp"
 #include "Subsystems/Bin.hpp"
-#include "Subsystems/conveyor.hpp"
+#include "Subsystems/Conveyor.hpp"
 
 /*
 	How the Robot should work

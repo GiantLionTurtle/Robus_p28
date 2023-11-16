@@ -30,8 +30,8 @@ constexpr int kCup_openAngle = 15;
 constexpr int kCup_closeAngle = 180;
 constexpr int kArm_openAngle = 45; 
 constexpr int kArm_closeAngle = 180; 
-constexpr int kClaw_openAngle = 40; 
-constexpr int kClaw_closeAngle = 75; 
+constexpr int kClaw_openAngle = 75; 
+constexpr int kClaw_closeAngle = 40; 
 
 
 // Physical movement constraints of the robot
