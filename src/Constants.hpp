@@ -28,10 +28,10 @@ constexpr int kIRSensor_apartDist = 213; // mm
 constexpr float kIRSensorBack_centerOffset = 84; // mm
 constexpr int kCup_openAngle = 15;
 constexpr int kCup_closeAngle = 180;
-constexpr int kArm_openAngle = 20; // #define
-constexpr int kArm_closeAngle = 150; // #define
-constexpr int kClaw_openAngle = 0; // #define
-constexpr int kClaw_closeAngle = 30; // #define 
+constexpr int kArm_openAngle = 45; 
+constexpr int kArm_closeAngle = 180; 
+constexpr int kClaw_openAngle = 40; 
+constexpr int kClaw_closeAngle = 75; 
 
 
 // Physical movement constraints of the robot

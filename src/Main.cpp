@@ -64,7 +64,6 @@ void loop()
 			break_ = control_step();
 		}
 	}
-	Serial.println("out");
 }
 
 bool control_step()
@@ -78,7 +77,7 @@ bool control_step()
 	hrdwState = hrdwState.mix(robot.generate_hardwareState());
 
 
-	// set_hardwareState(hrdwState);
+	set_hardwareState(hrdwState);
 
 	prevSensState = sensState;
 
