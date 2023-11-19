@@ -75,7 +75,7 @@ void Drivebase::update_followLine(SensorState currentSensState, SensorState prev
 
 void Drivebase::update_followCam(SensorState currentSensState, SensorState prevSensState, Iteration_time it_time)
 {
-	float motorDelta = pow(currentSensState.pixy_lego_horizOffset, 3);
+	float motorDelta = static_cast<float>(currentSensState.block_offset.x) / 40.0f;
 	mt::Vec2 motorVel = mt::Vec2(-motorDelta, motorDelta)*.02 + kFollowCamBaseVel;
 	update_wheels(motorVel, it_time.delta_s);
 }
