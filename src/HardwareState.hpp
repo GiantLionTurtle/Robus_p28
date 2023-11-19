@@ -21,6 +21,7 @@ struct HardwareState {
 	int clawAngle { kClaw_openAngle};
 	int armAngle { kArm_openAngle};
 	int conveyorSteps;
+	int trapAngle { 0 };    // angle for closed trap
 	// angles of the servomotors of the color selected in the bin 
 	int bin_select_angles [3];	
 	// Function to mix the current state with a target 

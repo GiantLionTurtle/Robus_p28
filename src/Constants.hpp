@@ -67,6 +67,7 @@ constexpr int kKnockCupDelay = 1500; // ms
 
 // Bin motors
 constexpr float kcolor_selected_angle_open = 180; // nombre a determiner
+constexpr float kopen_trap_angle = 70; // a verifier
 
 //Color code for the controller
 constexpr int kRed = 0;

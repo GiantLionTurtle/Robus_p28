@@ -1,6 +1,7 @@
 #include "Bin.hpp"
 #include "HardwareState.hpp"
 #include "Constants.hpp"
+#include "HardwareState.hpp"
 
 namespace p28 {
 
@@ -19,7 +20,12 @@ bool Bin::is_full(){
 
 HardwareState Bin::Aggregate_hardwareState(HardwareState hardwareSate){
     hardwareSate.bin_select_angles [color_selected] = kcolor_selected_angle_open;
+    if(open_trap = true){
+        hardwareSate.trapAngle = kopen_trap_angle;
+    }
+   
     return hardwareSate;
+    
 }
 
 

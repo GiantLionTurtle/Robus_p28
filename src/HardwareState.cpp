@@ -30,7 +30,8 @@ void set_hardwareState (HardwareState hwst)
 	MOTOR_SetSpeed (LEFT, hwst.motors.left);
 	SERVO_SetAngle (0 , hwst.clawAngle);
 	SERVO_SetAngle (1, hwst.armAngle);
-
+	//SERVO_SetAngle (2, kopen_trap_angle)       implementation of the servo library needed for more servos 
+ 
 }
 
 void print(HardwareState state)

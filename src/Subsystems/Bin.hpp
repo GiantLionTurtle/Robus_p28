@@ -16,6 +16,8 @@ struct Bin
 
     bool is_full();
 
+    bool open_trap;
+
    HardwareState Aggregate_hardwareState (HardwareState hardwareSate);
 
 };
