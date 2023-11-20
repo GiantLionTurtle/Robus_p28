@@ -13,16 +13,22 @@ struct Line {
 	Vec2 dir;
 
 	Vec2 line_intersection(Line const& l2) const;
-    Vec2 closest_point(Vec2 const& pt) const;
-    Line offset(Vec2 const& by) const;
+	Vec2 closest_point(Vec2 const& pt) const;
+	Line offset(Vec2 const& by) const;
 };
 
-struct Box {
-    Vec2 bottomLeft;
-    Vec2 topRight;
+template<typename T>
+struct Box_any {
+	Vec2_any<T> bottomLeft;
+	Vec2_any<T> topRight;
 
-    bool point_inside(mt::Vec2 pos) const;
+	bool point_inside(mt::Vec2_any<T> pos) const
+	{
+		return pos.x > bottomLeft.x && pos.x < topRight.x && pos.y > bottomLeft.y && pos.y < topRight.y;
+	}
 };
+using Box = Box_any<float>;
+using i32Box = Box_any<int32_t>;
 
 bool threePoints_ccw(mt::Vec2 A, mt::Vec2 B, mt::Vec2 C);
 

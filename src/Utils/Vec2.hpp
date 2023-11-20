@@ -224,6 +224,12 @@ inline bool operator==(Vec2_any<T> const& lhs, Vec2_any<T>  const& rhs)
 {
 	return lhs.x == rhs.x && lhs.y == rhs.y;
 }
+template<typename T>
+inline bool operator!=(Vec2_any<T> const& lhs, Vec2_any<T>  const& rhs)
+{
+	return !(lhs==rhs);
+}
+
 
 template<typename T>
 inline bool epsilon_equal(T const& lhs, T const& rhs, T epsilon)

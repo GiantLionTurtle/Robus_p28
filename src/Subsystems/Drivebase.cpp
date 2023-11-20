@@ -13,14 +13,14 @@ void Drivebase::update(SensorState currentSensState, SensorState prevSensState, 
 		return;
 	}
 
-	if (drvMode == followLine){
-		update_followLine(currentSensState, prevSensState, it_time);
-	}
-	else if(drvMode == followCam) {
+	// if (drvMode == followLine){
+		// update_followLine(currentSensState, prevSensState, it_time);
+	// }
+	// else if(drvMode == followCam) {
 		update_followCam(currentSensState, prevSensState, it_time);
-	} else { // Follow path
-		update_followPath(it_time);
-	}
+	// } else { // Follow path
+		// update_followPath(it_time);
+	// }
 }
 void Drivebase::update_kinematics(mt::i32Vec2 prevEncTicks, mt::i32Vec2 currEncTicks, float delta_s)
 {
@@ -75,8 +75,15 @@ void Drivebase::update_followLine(SensorState currentSensState, SensorState prev
 
 void Drivebase::update_followCam(SensorState currentSensState, SensorState prevSensState, Iteration_time it_time)
 {
-	float motorDelta = static_cast<float>(currentSensState.block_offset.x) / 40.0f;
-	mt::Vec2 motorVel = mt::Vec2(-motorDelta, motorDelta)*.02 + kFollowCamBaseVel;
+	float motorDelta = (static_cast<float>(currentSensState.block_offset.x) / 100.0f) * 0.08f;
+	// if(motorDelta < 0.01) {
+	// 	motorDelta = 0.0;
+	// }
+
+	mt::Vec2 motorVel = mt::Vec2(-motorDelta, motorDelta);// + kFollowCamBaseVel;
+	// Serial.print("Motorvel ");
+	// print(motorVel, 6);
+	// Serial.println();
 	update_wheels(motorVel, it_time.delta_s);
 }
 
@@ -234,7 +241,9 @@ float Drivebase::velocity()
 void Drivebase::update_wheels(mt::Vec2 target_wheelVels, double delta_s)
 {
 	leftWheel.error = update_error(leftWheel.error, wheelsVelocities.left, target_wheelVels.left, delta_s);
-	rightWheel.error = update_error(rightWheel.error, wheelsVelocities.right, target_wheelVels.right, delta_s);
+	// Serial.print("error ");
+	// Serial.println(leftWheel.error.error);
+	// rightWheel.error = update_error(rightWheel.error, wheelsVelocities.right, target_wheelVels.right, delta_s);
 }
 void Drivebase::update_wheels(mt::Vec2 target_wheelVels, mt::Vec2 target_heading, double delta_s)
 {

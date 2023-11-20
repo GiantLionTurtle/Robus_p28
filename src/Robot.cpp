@@ -43,11 +43,10 @@ void Robot::update(  SensorState prevSensState, SensorState currSensState, Itera
 HardwareState Robot::generate_hardwareState(Iteration_time it_time)
 {
 	HardwareState hrdwState;
-	Conveyor cnvrState;
 
-	//hrdwState = drvb.aggregate(hrdwState);
-	hrdwState = bin.Aggregate_hardwareState(hrdwState);
-	hrdwState = cnvr.agregate(hrdwState);
+	hrdwState = drvb.aggregate(hrdwState);
+	hrdwState = bin.aggregate(hrdwState);
+	hrdwState = cnvr.aggregate(hrdwState);
 	return hrdwState;
 }
 void Robot::set_target_color(int controller_color)
@@ -88,6 +87,11 @@ void Robot::gameLogic(SensorState const& currSensState,  SensorState const& prev
 		// bin.close();
 		dumpObjective.step++;
 	}
+
+	// if(currSensState.block_in_claw) {
+	// 	Serial.println("Start sequence!");
+	// 	cnvr.start_squenceIfDown(it_time);
+	// }
 }
 
 } // !p28

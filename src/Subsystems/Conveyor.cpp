@@ -26,16 +26,24 @@ void Conveyor::start_sequence(Iteration_time it_time)
 	startStepTime = it_time.time_ms;
 	sequenceIndex = 0; // First index
 }
+void Conveyor::start_squenceIfDown(Iteration_time it_time)
+{
+	if(sequenceIndex < Nsteps)
+		return;
+	start_sequence(it_time);
+}
 void Conveyor::update(Iteration_time it_time)
 {
-	if (sequenceIndex < 4){
+	Serial.print("Seq index: ");
+	Serial.println(sequenceIndex);
+	if (sequenceIndex < Nsteps){
 		if ((it_time.time_ms - startStepTime) >= sequence[sequenceIndex].stepTime) {
 			sequenceIndex++;
 			startStepTime = it_time.time_ms;
 		}
 	}
 }
-HardwareState Conveyor::agregate(HardwareState hrdwState)
+HardwareState Conveyor::aggregate(HardwareState hrdwState)
 {
 	hrdwState.armAngle = sequence[sequenceIndex%Nsteps].armServo;
 	hrdwState.clawAngle = sequence[sequenceIndex%Nsteps].clawServo;
