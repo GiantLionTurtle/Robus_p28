@@ -32,6 +32,8 @@ constexpr int kArm_openAngle = 45;
 constexpr int kArm_closeAngle = 180; 
 constexpr int kClaw_openAngle = 75; 
 constexpr int kClaw_closeAngle = 40; 
+constexpr int kConveyor_stepsPerRevoulution = 2038;
+constexpr int kConveyor_stepsUntilUp = 4000; // #define
 
 
 // Physical movement constraints of the robot
@@ -49,6 +51,7 @@ constexpr float kMotorHarwareStateMixFactor = 0.85; // Used for exponential movi
 constexpr unsigned int kControlLoopDelay = 50; // ms
 constexpr float kPathFollower_distEpsilon2 = 0.0001; // square of precision (1cm)
 constexpr float kPathFollower_headingEpsilon2 = 0.00005; // square of precision
+constexpr float kConveyor_speed = 5; //in RPM #define
 
 
 // Code constants and constructs
