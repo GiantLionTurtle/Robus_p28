@@ -13,14 +13,14 @@ void Drivebase::update(SensorState currentSensState, SensorState prevSensState, 
 		return;
 	}
 
-	// if (drvMode == followLine){
-		// update_followLine(currentSensState, prevSensState, it_time);
-	// }
-	// else if(drvMode == followCam) {
+	if (drvMode == followLine){
+		update_followLine(currentSensState, prevSensState, it_time);
+	}
+	else if(drvMode == followCam) {
 		update_followCam(currentSensState, prevSensState, it_time);
-	// } else { // Follow path
-		// update_followPath(it_time);
-	// }
+	} else { // Follow path
+		update_followPath(it_time);
+	}
 }
 void Drivebase::update_kinematics(mt::i32Vec2 prevEncTicks, mt::i32Vec2 currEncTicks, float delta_s)
 {
@@ -55,36 +55,44 @@ void Drivebase::update_followLine(SensorState currentSensState, SensorState prev
 		{
 			if(is_active(line, i))
 			{
-				Serial.print("#");
+				// Serial.print("#");
 				dir+=i-3.5;
 			} else {
-				Serial.print(" ");
+				// Serial.print(" ");
 			}
 		}
-		Serial.print(" => ");
-		Serial.print(dir);
-		Serial.println();
+		// Serial.print(" => ");
+		// Serial.print(dir);
+		// Serial.println();
 		if(line == 0)
 		{
 			finish = true;
 		}
 	//.02 is a magic number for the moment
-	mt::Vec2 motorVel = mt::Vec2(-dir, dir)*.02 + kFollowLineBaseVel;
+	mt::Vec2 motorVel = mt::Vec2(dir, -dir)*.02 + kFollowLineBaseVel;
 	update_wheels(motorVel, it_time.delta_s);
 }
 
 void Drivebase::update_followCam(SensorState currentSensState, SensorState prevSensState, Iteration_time it_time)
 {
-	float motorDelta = (static_cast<float>(currentSensState.block_offset.x) / 100.0f) * 0.08f;
-	// if(motorDelta < 0.01) {
-	// 	motorDelta = 0.0;
-	// }
+	// Serial.print("Block offset");
+	// println(currentSensState.block_offset);
+	mt::Vec2 motorVels;
+	if(currentSensState.block_offset == mt::i32Vec2(0.0) && !currentSensState.block_in_claw) {
+		motorVels = 0.0f;
+	} else if(currentSensState.block_offset.y < -5) {
+		motorVels = -kFollowCamBaseVel;
+	} else if(abs(currentSensState.block_offset.x) < 30) {
+		motorVels = kFollowCamBaseVel;
+	} else {
+		float motorDelta = (static_cast<float>(currentSensState.block_offset.x) / 100.0f) * 0.08f;
+		motorVels = mt::Vec2(-motorDelta, motorDelta);
+	}
 
-	mt::Vec2 motorVel = mt::Vec2(-motorDelta, motorDelta);// + kFollowCamBaseVel;
 	// Serial.print("Motorvel ");
 	// print(motorVel, 6);
 	// Serial.println();
-	update_wheels(motorVel, it_time.delta_s);
+	update_wheels(motorVels, it_time.delta_s);
 }
 
 void Drivebase::update_followPath(Iteration_time it_time)
@@ -241,9 +249,7 @@ float Drivebase::velocity()
 void Drivebase::update_wheels(mt::Vec2 target_wheelVels, double delta_s)
 {
 	leftWheel.error = update_error(leftWheel.error, wheelsVelocities.left, target_wheelVels.left, delta_s);
-	// Serial.print("error ");
-	// Serial.println(leftWheel.error.error);
-	// rightWheel.error = update_error(rightWheel.error, wheelsVelocities.right, target_wheelVels.right, delta_s);
+	rightWheel.error = update_error(rightWheel.error, wheelsVelocities.right, target_wheelVels.right, delta_s);
 }
 void Drivebase::update_wheels(mt::Vec2 target_wheelVels, mt::Vec2 target_heading, double delta_s)
 {

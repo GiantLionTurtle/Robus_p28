@@ -88,10 +88,9 @@ void Robot::gameLogic(SensorState const& currSensState,  SensorState const& prev
 		dumpObjective.step++;
 	}
 
-	// if(currSensState.block_in_claw) {
-	// 	Serial.println("Start sequence!");
-	// 	cnvr.start_squenceIfDown(it_time);
-	// }
+	if(currSensState.block_in_claw) {
+		cnvr.start_squenceIfDown(it_time);
+	}
 }
 
 } // !p28

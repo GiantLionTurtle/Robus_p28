@@ -31,7 +31,7 @@ constexpr int kCup_closeAngle = 180;
 constexpr int kArm_openAngle = 45; 
 constexpr int kArm_closeAngle = 180; 
 constexpr int kClaw_openAngle = 75; 
-constexpr int kClaw_closeAngle = 40; 
+constexpr int kClaw_closeAngle = 35; 
 
 
 // Physical movement constraints of the robot
@@ -58,13 +58,6 @@ constexpr unsigned int kMaxCheckPointForPath = 20;
 enum class COLOR { RED, GREEN, BLUE, YELLOW, BLACK, WHITE };
 
  
-
-// Mission specific constants
-constexpr int kCupRelease_pathIndex = 3; // After which checkpoint of the maneuver should the cup be dropped?
-
-constexpr int kCupDetectDist = 350; // mm
-constexpr int kKnockCupDelay = 1500; // ms
-
 // Bin motors
 constexpr float kcolor_selected_angle_open = 180; // nombre a determiner
 constexpr float kopen_trap_angle = 70; // a verifier

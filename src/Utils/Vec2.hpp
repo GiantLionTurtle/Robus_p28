@@ -303,6 +303,19 @@ inline void print(Vec2 const& vec, int decimals)
 	Serial.print("]");
 }
 
+template<typename T>
+inline void println(Vec2_any<T> const& vec, int decimals=2)
+{
+	print(vec);
+	Serial.println();
+}
+template<>
+inline void println(Vec2 const& vec, int decimals)
+{
+	print(vec, decimals);
+	Serial.println();
+}
+
 template<typename Tx, typename Tmin, typename Tmax>
 Tx clamp(Tx x, Tmin min_, Tmax max_)
 {

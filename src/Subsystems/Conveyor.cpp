@@ -34,8 +34,6 @@ void Conveyor::start_squenceIfDown(Iteration_time it_time)
 }
 void Conveyor::update(Iteration_time it_time)
 {
-	Serial.print("Seq index: ");
-	Serial.println(sequenceIndex);
 	if (sequenceIndex < Nsteps){
 		if ((it_time.time_ms - startStepTime) >= sequence[sequenceIndex].stepTime) {
 			sequenceIndex++;

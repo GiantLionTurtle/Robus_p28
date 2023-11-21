@@ -14,13 +14,13 @@
 namespace p28 {
 
 static mt::i32Vec2 claw_pos(55, 195);
-static mt::i32Box claw_box{.bottomLeft=mt::i32Vec2(20, 100), .topRight=mt::i32Vec2(70, 200)};
+static mt::i32Box claw_box{.bottomLeft=mt::i32Vec2(20, 180), .topRight=mt::i32Vec2(70, 210)};
 
 void Camera::init()
 {
 	pixy.init();
 	pixy.setLamp(1, 1);
-	pixy.setCameraBrightness(150);
+	pixy.setCameraBrightness(70);
 }
 
 mt::i32Vec2 centroid(Block block)
@@ -54,8 +54,14 @@ Pair<mt::i32Vec2, bool> Camera::blockOffset(int color)
 
 	// either no block of the correct color was found or the claw was not found
 	if(target_centroid != mt::i32Vec2(0)) {
+		// Serial.print("Target centroid: ");
+		// println(target_centroid);
+		bool inside = claw_box.point_inside(target_centroid);
+		// if(inside) {
+		// 	Serial.println("INSIDE");
+		// }
 		mt::i32Vec2 diff = claw_pos - target_centroid;
-		return {{ mt::clamp(diff.x, -100, 100), mt::clamp(diff.y, -100, 100) }, claw_box.point_inside(target_centroid) };
+		return {{ mt::clamp(diff.x, -100, 100), mt::clamp(diff.y, -100, 100) },  inside };
 	}
 	return { { 0 }, false };
 }
