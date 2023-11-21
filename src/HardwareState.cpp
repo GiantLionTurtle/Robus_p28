@@ -4,6 +4,7 @@
 #include "Constants.hpp"
 #include "Robot.hpp"
 
+
 #define CUP_SERVO_ID 0
 #define ARM_SERVO_ID 1
 
@@ -30,6 +31,8 @@ void set_hardwareState (HardwareState hwst)
 	MOTOR_SetSpeed (LEFT, hwst.motors.left);
 	SERVO_SetAngle (0 , hwst.clawAngle);
 	SERVO_SetAngle (1, hwst.armAngle);
+	hwst.conveyor.setSpeed(5);
+	hwst.conveyor.step(hwst.conveyorSteps);
 	//SERVO_SetAngle (2, kopen_trap_angle)       implementation of the servo library needed for more servos 
  
 }
