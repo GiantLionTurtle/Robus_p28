@@ -21,9 +21,9 @@ struct HardwareState {
 	int clawAngle { kClaw_openAngle};
 	int armAngle { kArm_openAngle};
 	int conveyorSteps;
-	int trapAngle { 0 };    // angle for closed trap
+	int trapAngle { kclosed_trap_angle};    // angle for closed trap initial position
 	// angles of the servomotors of the color selected in the bin 
-	int bin_select_angles [3];	
+	int bin_select_angles [3] { kclosed_bin_angle, kclosed_bin_angle, kclosed_bin_angle};	
 	// Function to mix the current state with a target 
 	// hardware state with an exponential moving average
 	// it helps smooth out motor output
