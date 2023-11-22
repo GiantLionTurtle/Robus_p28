@@ -224,6 +224,12 @@ inline bool operator==(Vec2_any<T> const& lhs, Vec2_any<T>  const& rhs)
 {
 	return lhs.x == rhs.x && lhs.y == rhs.y;
 }
+template<typename T>
+inline bool operator!=(Vec2_any<T> const& lhs, Vec2_any<T>  const& rhs)
+{
+	return !(lhs==rhs);
+}
+
 
 template<typename T>
 inline bool epsilon_equal(T const& lhs, T const& rhs, T epsilon)
@@ -295,6 +301,19 @@ inline void print(Vec2 const& vec, int decimals)
 	Serial.print(",  ");
 	Serial.print(vec.y, decimals);
 	Serial.print("]");
+}
+
+template<typename T>
+inline void println(Vec2_any<T> const& vec, int decimals=2)
+{
+	print(vec);
+	Serial.println();
+}
+template<>
+inline void println(Vec2 const& vec, int decimals)
+{
+	print(vec, decimals);
+	Serial.println();
 }
 
 template<typename Tx, typename Tmin, typename Tmax>

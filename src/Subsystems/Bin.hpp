@@ -18,7 +18,7 @@ struct Bin
 
     bool open_trap;
 
-   HardwareState Aggregate_hardwareState (HardwareState hardwareSate);
+   HardwareState aggregate (HardwareState hardwareSate);
 
 };
 

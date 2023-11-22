@@ -63,6 +63,8 @@ struct Robot {
 	Bin bin;
 	Drivebase drvb;
 	Conveyor cnvr;
+	mt::Vec2 headingMemory;
+	mt::Vec2 posMemory;
 
 	int drop_zone;
 
@@ -79,6 +81,7 @@ struct Robot {
 	void gameLogic(SensorState const& currSensState, SensorState const& prevSensState, Iteration_time it_time);
 
 	void set_target_color(int controller_color);
+	void huntLogic(SensorState sensState, Iteration_time it_time);
 
 	
 };

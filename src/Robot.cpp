@@ -43,11 +43,10 @@ void Robot::update(  SensorState prevSensState, SensorState currSensState, Itera
 HardwareState Robot::generate_hardwareState(Iteration_time it_time)
 {
 	HardwareState hrdwState;
-	Conveyor cnvrState;
 
-	//hrdwState = drvb.aggregate(hrdwState);
-	hrdwState = bin.Aggregate_hardwareState(hrdwState);
-	hrdwState = cnvr.agregate(hrdwState);
+	hrdwState = drvb.aggregate(hrdwState);
+	hrdwState = bin.aggregate(hrdwState);
+	hrdwState = cnvr.aggregate(hrdwState);
 	return hrdwState;
 }
 void Robot::set_target_color(int controller_color)
@@ -87,6 +86,36 @@ void Robot::gameLogic(SensorState const& currSensState,  SensorState const& prev
 	if(dumpObjective.step == DoDumpObjective::DoDump && drvb.finish) {
 		// bin.close();
 		dumpObjective.step++;
+	}
+
+	if(currSensState.block_in_claw) {
+		cnvr.start_squenceIfDown(it_time);
+	}
+	
+	if(dumpObjective.step == DoDumpObjective::Done)
+	{
+		huntLogic(currSensState, it_time);
+	}
+}
+void Robot::huntLogic(SensorState sensState, Iteration_time it_time)
+{
+	if(sensState.block_offset!=mt::i32Vec2(0, 0))
+	{
+		headingMemory = drvb.heading;
+		posMemory = drvb.pos;
+		drvb.setDriveMode(Drivebase::followCam);
+		
+	}
+	else if(headingMemory!=mt::Vec2(0, 0))
+	{
+		Paths::Path path;
+		mt::Vec2 backHeading = drvb.pos - posMemory;
+		path.add_checkPoint(Paths::CheckPoint::make_turn (backHeading));
+		path.add_checkPoint(Paths::CheckPoint (posMemory, backHeading, 0.0, true));
+		path.add_checkPoint(Paths::CheckPoint::make_turn (headingMemory));
+		drvb.set_path(Paths::hot_insert(drvb.path, path), it_time);
+		headingMemory = mt::Vec2(0, 0);
+		posMemory = mt::Vec2(0, 0);
 	}
 }
 

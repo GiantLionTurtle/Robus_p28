@@ -55,29 +55,44 @@ void Drivebase::update_followLine(SensorState currentSensState, SensorState prev
 		{
 			if(is_active(line, i))
 			{
-				Serial.print("#");
+				// Serial.print("#");
 				dir+=i-3.5;
 			} else {
-				Serial.print(" ");
+				// Serial.print(" ");
 			}
 		}
-		Serial.print(" => ");
-		Serial.print(dir);
-		Serial.println();
+		// Serial.print(" => ");
+		// Serial.print(dir);
+		// Serial.println();
 		if(line == 0)
 		{
 			finish = true;
 		}
 	//.02 is a magic number for the moment
-	mt::Vec2 motorVel = mt::Vec2(-dir, dir)*.02 + kFollowLineBaseVel;
+	mt::Vec2 motorVel = mt::Vec2(dir, -dir)*.02 + kFollowLineBaseVel;
 	update_wheels(motorVel, it_time.delta_s);
 }
 
 void Drivebase::update_followCam(SensorState currentSensState, SensorState prevSensState, Iteration_time it_time)
 {
-	float motorDelta = static_cast<float>(currentSensState.block_offset.x) / 40.0f;
-	mt::Vec2 motorVel = mt::Vec2(-motorDelta, motorDelta)*.02 + kFollowCamBaseVel;
-	update_wheels(motorVel, it_time.delta_s);
+	// Serial.print("Block offset");
+	// println(currentSensState.block_offset);
+	mt::Vec2 motorVels;
+	if(currentSensState.block_offset == mt::i32Vec2(0.0) && !currentSensState.block_in_claw) {
+		motorVels = 0.0f;
+	} else if(currentSensState.block_offset.y < -5) {
+		motorVels = -kFollowCamBaseVel;
+	} else if(abs(currentSensState.block_offset.x) < 30) {
+		motorVels = kFollowCamBaseVel;
+	} else {
+		float motorDelta = (static_cast<float>(currentSensState.block_offset.x) / 100.0f) * 0.08f;
+		motorVels = mt::Vec2(-motorDelta, motorDelta);
+	}
+
+	// Serial.print("Motorvel ");
+	// print(motorVel, 6);
+	// Serial.println();
+	update_wheels(motorVels, it_time.delta_s);
 }
 
 void Drivebase::update_followPath(Iteration_time it_time)
@@ -129,8 +144,7 @@ void Drivebase::set_path(Paths::Path path_, Iteration_time it_time)
 {
 	path = path_;
 	if(!path.finished()) {
-		finish = false;
-		drvMode = followPath;
+		setDriveMode(Drivemodes::followPath);
 		waitUntil_ms = it_time.time_ms + path.current().delay_before;
 	}
 }

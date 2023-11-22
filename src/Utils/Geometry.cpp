@@ -20,10 +20,7 @@ Line Line::offset(Vec2 const& by) const
 {
 	return Line { .origin=origin+by, .dir=dir};
 }
-bool Box::point_inside(mt::Vec2 pos) const
-{
-	return pos.x > bottomLeft.x && pos.x < topRight.x && pos.y > bottomLeft.y && pos.y < topRight.y;    
-}
+
 
 // Are three points aranged in a ccw fashion?
 bool threePoints_ccw(mt::Vec2 A, mt::Vec2 B, mt::Vec2 C)

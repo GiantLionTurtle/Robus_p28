@@ -8,6 +8,7 @@
 #include "Field.hpp"
 
 #include "Controller.hpp"
+#include "Sensors/Camera.hpp"
 
 using namespace p28;
 
@@ -26,14 +27,13 @@ bool control_step();
 void setup()
 {
 	BoardInit();
-	Serial1.begin(9600);
+	
 	it_time = Iteration_time::first();
+	SensorState::init();
 	delay(1000);
 	
-	SensorState::init();
 
 	Serial.println("Begin!");
-
 
 	sensState = get_sensors();
 
@@ -42,6 +42,8 @@ void setup()
 	set_hardwareState(HardwareState::initial());
 
 	robot = Robot::initial();
+	
+
 	// robot.start_calibration();
 
 	// while(!ROBUS_IsBumper(3)) {}
@@ -60,7 +62,7 @@ void loop()
 	int controller_color = 0;//get_controller_color(Serial1);
 
 	// if(controller_color != -1) {
-	if(ROBUS_IsBumper(3)) {
+	if(ROBUS_IsBumper(RIGHT)) {
 		robot.set_target_color(controller_color);
 		bool break_ = false;
 		while(true && !break_) {
@@ -80,7 +82,11 @@ bool control_step()
 	robot.update(prevSensState, sensState, it_time);
 	hrdwState = hrdwState.mix(robot.generate_hardwareState(it_time));
 
+	// print(sensState);
 
+	// Serial.print("wheel hrwst ");
+	// print(hrdwState.motors);
+	// Serial.println();
 	set_hardwareState(hrdwState);
 
 	prevSensState = sensState;
@@ -92,7 +98,7 @@ bool control_step()
 		bin.set_bin_color(ktest_color);
 	
 	}
-	if(ROBUS_IsBumper(0) || ROBUS_IsBumper(2)) {
+	if(ROBUS_IsBumper(FRONT)) {
 		set_hardwareState(HardwareState());
 		return true;
 	}

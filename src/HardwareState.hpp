@@ -3,6 +3,7 @@
 
 #include "Utils/Vec2.hpp"
 #include "Constants.hpp"
+#include <Stepper.h>
 
 /*
 	How hardware state should work
@@ -20,6 +21,7 @@ struct HardwareState {
 
 	int clawAngle { kClaw_openAngle};
 	int armAngle { kArm_openAngle};
+	Stepper conveyor = Stepper(kConveyor_stepsPerRevolution,37,41,39,43);
 	int conveyorSteps;
 	int trapAngle { kclosed_trap_angle};    // angle for closed trap initial position
 	// angles of the servomotors of the color selected in the bin 
