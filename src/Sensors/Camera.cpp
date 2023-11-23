@@ -13,9 +13,10 @@
 
 namespace p28 {
 	
-static mt::Vec2 claw_pos(54, 172);
+static mt::Vec2 claw_pos(54, 167);
 static mt::Line claw_line { .origin=claw_pos, .dir=mt::Vec2(86, 17)-claw_pos};
-static mt::i32Box claw_box{.bottomLeft=mt::i32Vec2(42, 178), .topRight=mt::i32Vec2(68, 200)};
+// static mt::i32Box claw_box{.bottomLeft=mt::i32Vec2(42, 178), .topRight=mt::i32Vec2(68, 200)};
+static mt::i32Box claw_box{.bottomLeft=mt::i32Vec2(35, 160), .topRight=mt::i32Vec2(75, 210)};
 
 #ifdef ENABLE_CAMERA
 
@@ -30,12 +31,16 @@ mt::i32Vec2 centroid(Block block)
 {
 	return mt::i32Vec2(block.m_x + block.m_width/2, block.m_y + block.m_height/2);
 }
+mt::i32Box box(Block block)
+{
+	return mt::i32Box{.bottomLeft=mt::i32Vec2(block.m_x, block.m_y), .topRight=mt::i32Vec2(block.m_x+block.m_width, block.m_y+block.m_height)};
+}
 Pair<mt::i32Vec2, bool> Camera::blockOffset(int color)
 {
 	// grab blocks!
 	pixy.ccc.getBlocks();
 
-	mt::i32Vec2 target_centroid(0);
+	int target_ind = -1;
 
 	int biggest_block_size = 0;
 	// Serial.print("n blocks: ");
@@ -47,19 +52,24 @@ Pair<mt::i32Vec2, bool> Camera::blockOffset(int color)
 			int block_size = mt::magnitude2(mt::i32Vec2(block.m_width, block.m_height));
 			if(block_size < biggest_block_size)
 				continue;
-			target_centroid = centroid(block);
+			target_ind = i;
 			biggest_block_size = block_size;
 		}
 	}
-	// Serial.print("blocl centroid: ");
-	// print(target_centroid);
-	// Serial.println();
+	Serial.print("blocl ind: ");
+	Serial.print(target_ind);
+	Serial.println();
 
 	// either no block of the correct color was found or the claw was not found
-	if(target_centroid != mt::i32Vec2(0)) {
+	if(target_ind != -1) {
+		mt::i32Vec2 target_centroid = centroid(pixy.ccc.blocks[target_ind]);
+		mt::i32Box target_box = box(pixy.ccc.blocks[target_ind]);
+		
 		Serial.print("Target centroid: ");
 		println(target_centroid);
-		bool inside = claw_box.point_inside(target_centroid);
+		bool inside = claw_box.box_inside(target_box);
+
+
 		if(inside) {
 			Serial.println("INSIDE");
 		}

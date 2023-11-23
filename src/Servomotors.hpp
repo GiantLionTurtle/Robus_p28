@@ -12,6 +12,7 @@ struct ExtraMotor {
 	MegaServo bin_blue;     // bin3 is the servo for blue
 	MegaServo trap;     // servo for the trap
 	Stepper conveyor = Stepper(p28::kConveyor_stepsPerRevolution, 39, 43, 41, 45);
+	int conveyor_steps { 0 };
 
 	void init();
 };

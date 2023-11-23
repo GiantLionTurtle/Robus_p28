@@ -56,7 +56,7 @@ constexpr float kConveyor_speed = 5; //in RPM #define
 // Code constants and constructs
 using time_t = long unsigned int;
 constexpr float kInfinity = 100000;
-constexpr unsigned int kMaxCheckPointForPath = 10;
+constexpr unsigned int kMaxCheckPointForPath = 15;
 enum class COLOR { RED, GREEN, BLUE, YELLOW, BLACK, WHITE };
 
  

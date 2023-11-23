@@ -14,7 +14,7 @@ struct Step{
 	int conveyorSteps;
 	unsigned long stepTime;
 };
-const int Nsteps = 7;
+const int Nsteps = 8;
 const int CimbStepInd = 5; // Step at which the stepper starts, keep this linked
 Step const sequence[Nsteps] = {
 	Step { .clawServo = kClaw_openAngle, .armServo = kArm_upAngle, .conveyorSteps = 0, .stepTime = 200},
@@ -22,8 +22,9 @@ Step const sequence[Nsteps] = {
 	Step { .clawServo = kClaw_closeAngle, .armServo = kArm_downAngle, .conveyorSteps = 0, .stepTime = 600},
 	Step { .clawServo = kClaw_closeAngle, .armServo = kArm_upAngle, .conveyorSteps = 0, .stepTime = 600},
 	Step { .clawServo = kClaw_openAngle, .armServo = kArm_upAngle, .conveyorSteps = 0, .stepTime = 50},
-	Step { .clawServo = kClaw_openAngle, .armServo = kArm_upAngle, .conveyorSteps = kConveyor_stepsUntilUp, .stepTime = 3000}, // #define delay 
-	Step { .clawServo = kClaw_openAngle, .armServo = kArm_upAngle, .conveyorSteps = -kConveyor_stepsUntilUp, .stepTime = 3000} // #define delay
+	Step { .clawServo = kClaw_openAngle, .armServo = kArm_upAngle, .conveyorSteps = 0, .stepTime = 150},
+	Step { .clawServo = kClaw_openAngle, .armServo = kArm_upAngle, .conveyorSteps = kConveyor_stepsUntilUp, .stepTime = 10000}, // #define delay 
+	Step { .clawServo = kClaw_openAngle, .armServo = kArm_upAngle, .conveyorSteps = 0, .stepTime = 10000} // #define delay
 };
 
 void Conveyor::init()
@@ -58,11 +59,11 @@ bool Conveyor::over() const
 		return false;
 	return true;
 }
-bool Conveyor::climbing() const
+bool Conveyor::just_dropped() const
 {
 	// Serial.print("Seq ind ");
 	// Serial.println(sequenceIndex);
-	if(sequenceIndex >= CimbStepInd)
+	if(sequenceIndex == CimbStepInd)
 		return true;
 	return false;
 }

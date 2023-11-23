@@ -28,6 +28,10 @@ struct Box_any {
 	{
 		return pos.x > bottomLeft.x && pos.x < topRight.x && pos.y > bottomLeft.y && pos.y < topRight.y;
 	}
+	bool box_inside(Box_any<T> box) const
+	{
+		return point_inside(box.bottomLeft) && point_inside(box.topRight);
+	}
 };
 using Box = Box_any<float>;
 using i32Box = Box_any<int32_t>;

@@ -18,14 +18,14 @@ void Drivebase::update(SensorState currentSensState, SensorState prevSensState, 
 		return;
 	}
 
-	// if (drvMode == followLine){
+	if (drvMode == followLine){
 		update_followLine(currentSensState, prevSensState, it_time);
-	// }
-	// else if(drvMode == followCam) {
-		// update_followCam(currentSensState, prevSensState, it_time);
-	// } else { // Follow path
-		// update_followPath(it_time);
-	// }
+	}
+	else if(drvMode == followCam) {
+		update_followCam(currentSensState, prevSensState, it_time);
+	} else { // Follow path
+		update_followPath(it_time);
+	}
 }
 void Drivebase::update_kinematics(mt::i32Vec2 prevEncTicks, mt::i32Vec2 currEncTicks, float delta_s)
 {
