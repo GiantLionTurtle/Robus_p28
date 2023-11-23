@@ -21,7 +21,12 @@ struct Vec2_any {
 	union { T x; T left; T value; };
 	union { T y; T right; T target; };
 
-	Vec2_any() = default;
+	Vec2_any()
+		: x(0)
+		, y(0)
+	{
+	
+	}
 	Vec2_any(T v)
 		: x(v)
 		, y(v)

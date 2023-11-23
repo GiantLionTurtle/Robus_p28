@@ -13,20 +13,20 @@
 namespace p28 {
 
 
-Robot Robot::initial()
+void Robot::init()
 {
-	Robot robot;
-	robot.drvb.leftWheel.pid = { 1.4, 35.5555, 0.03333333 };
-	robot.drvb.rightWheel.pid = { 1.4, 35.5555, 0.03333333 };
+	drvb.leftWheel.pid = { 1.4, 35.5555, 0.03333333 };
+	drvb.rightWheel.pid = { 1.4, 35.5555, 0.03333333 };
 	// robot.drvb.concrete.headingPID = { 0.4, 0.18, 0.006 };
-	robot.drvb.headingPID = { 0.3, 0.135, 0.0045 };
+	drvb.headingPID = { 0.3, 0.135, 0.0045 };
 	
-	robot.drvb.pos = Field::kDumps[0];
-	robot.drvb.heading = Field::kDumpHeading[0];
+	drvb.pos = Field::kDumps[0];
+	drvb.heading = Field::kDumpHeading[0];
 
 	//robot.drvb.set_path(Paths::gen_test(), Iteration_time::first());
-	robot.drvb.set_path(Paths::gen_drop(Field::kDumps[0], Field::kDumpHeading[0], 0), Iteration_time::first());
-	return robot;
+	// robot.drvb.set_path(Paths::gen_drop(Field::kDumps[0], Field::kDumpHeading[0], 0), Iteration_time::first());
+	drvb.setDriveMode(Drivebase::followPath);
+	cnvr.init();
 }
 void Robot::start_calibration()
 {
@@ -34,10 +34,17 @@ void Robot::start_calibration()
 	targetColor = kRed;
 	drvb.setDriveMode(Drivebase::followLine);
 }
-void Robot::update(  SensorState prevSensState, SensorState currSensState, Iteration_time it_time)
+void Robot::update(SensorState prevSensState, SensorState currSensState, Iteration_time it_time)
 {
 	gameLogic(currSensState, prevSensState, it_time);
-	drvb.update(currSensState, prevSensState, it_time);
+	// Serial.print("Drivemode ");
+	// Serial.println(drvb.drvMode);
+
+	if(cnvr.over()) {
+		drvb.update(currSensState, prevSensState, it_time);
+	} else {
+		drvb.zero(currSensState, prevSensState, it_time);
+	}
 	cnvr.update(it_time);
 }
 HardwareState Robot::generate_hardwareState(Iteration_time it_time)
@@ -67,7 +74,8 @@ void Robot::gameLogic(SensorState const& currSensState,  SensorState const& prev
 	}
 
 	if(dumpObjective.step == DoDumpObjective::Start) {
-		drvb.set_path(Paths::gen_getToLine(drvb.pos, drvb.heading, internalColor), it_time);
+		Paths::gen_getToLine(drvb.pos, drvb.heading, internalColor, drvb.path);
+		drvb.set_path(it_time);
 		dumpObjective.step++;
 	}
 	if(dumpObjective.step == DoDumpObjective::GetToLine && drvb.finish) {
@@ -77,7 +85,8 @@ void Robot::gameLogic(SensorState const& currSensState,  SensorState const& prev
 	if(dumpObjective.step == DoDumpObjective::GetToDump && drvb.finish) {
 		drvb.pos = Field::kDumps[internalColor];
 		drvb.heading = Field::kDumps[internalColor];
-		drvb.set_path(Paths::gen_drop(drvb.pos, drvb.heading, internalColor), it_time);
+		Paths::gen_drop(drvb.pos, drvb.heading, internalColor, drvb.path);
+		drvb.set_path(it_time);
 		dumpObjective.step++;
 	}
 	// if(dumpObjective.step == DoDumpObjective::DoDump && drvb.move_id() == kDumpPointId) {
@@ -92,28 +101,38 @@ void Robot::gameLogic(SensorState const& currSensState,  SensorState const& prev
 		cnvr.start_squenceIfDown(it_time);
 	}
 	
-	if(dumpObjective.step == DoDumpObjective::Done)
-	{
+	if(dumpObjective.step == DoDumpObjective::Done) {
 		huntLogic(currSensState, it_time);
+	}
+	if(dumpObjective.step == DoDumpObjective::Done && drvb.path.index == drvb.path.size && drvb.drvMode == Drivebase::followPath) {
+		Paths::gen_searchPath(drvb.pos, drvb.heading, drvb.path);
+		drvb.set_path(it_time);
 	}
 }
 void Robot::huntLogic(SensorState sensState, Iteration_time it_time)
 {
-	if(sensState.block_offset!=mt::i32Vec2(0, 0))
-	{
+	if(sensState.block_offset != mt::i32Vec2(0, 0)) {
 		headingMemory = drvb.heading;
 		posMemory = drvb.pos;
 		drvb.setDriveMode(Drivebase::followCam);
+		nFrames_noLegos = 0;
 		
-	}
-	else if(headingMemory!=mt::Vec2(0, 0))
-	{
+	} else if(headingMemory != mt::Vec2(0, 0) && (nFrames_noLegos++) > 16) {
+		// Serial.println("Baack");
 		Paths::Path path;
 		mt::Vec2 backHeading = drvb.pos - posMemory;
+		if(mt::magnitude2(backHeading) < kPathFollower_headingEpsilon2) {
+			backHeading = drvb.heading;
+		}
+		// print(backHeading);
+		// Serial.print(" :: ");
+		// println(posMemory);
 		path.add_checkPoint(Paths::CheckPoint::make_turn (backHeading));
 		path.add_checkPoint(Paths::CheckPoint (posMemory, backHeading, 0.0, true));
 		path.add_checkPoint(Paths::CheckPoint::make_turn (headingMemory));
-		drvb.set_path(Paths::hot_insert(drvb.path, path), it_time);
+		Paths::hot_insert(drvb.path, path);
+		drvb.path = path;
+		drvb.set_path(it_time);
 		headingMemory = mt::Vec2(0, 0);
 		posMemory = mt::Vec2(0, 0);
 	}

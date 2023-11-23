@@ -26,14 +26,13 @@ constexpr float kColorSensorToCenter = 0.047; // distance forward of the color s
 constexpr float kLineSensorToCenter = 0.07; // distance forward of the line sensor (m)
 constexpr int kIRSensor_apartDist = 213; // mm
 constexpr float kIRSensorBack_centerOffset = 84; // mm
-constexpr int kCup_openAngle = 15;
-constexpr int kCup_closeAngle = 180;
-constexpr int kArm_openAngle = 47; 
-constexpr int kArm_closeAngle = 180; 
-constexpr int kClaw_openAngle = 75; 
+constexpr int kArm_restAngle = 47; 
+constexpr int kArm_downAngle = 35;
+constexpr int kArm_upAngle = 180; 
+constexpr int kClaw_openAngle = 83; 
 constexpr int kClaw_closeAngle = 40; 
 constexpr int kConveyor_stepsPerRevolution = 2038;
-constexpr int kConveyor_stepsUntilUp = 4000; // #define
+constexpr int kConveyor_stepsUntilUp = kConveyor_stepsPerRevolution*2.4; 
 
 
 // Physical movement constraints of the robot
@@ -43,7 +42,7 @@ constexpr float kMaxAngularVelocity = 0.8; // rad/s
 constexpr float KMinVel = 0.03;
 constexpr float kEndSegmentVel = 0.08;
 constexpr float kFollowLineBaseVel = 0.1;
-constexpr float kFollowCamBaseVel = 0.1;
+constexpr float kFollowCamBaseVel = 0.08;
 
 
 // Control constants 
@@ -57,7 +56,7 @@ constexpr float kConveyor_speed = 5; //in RPM #define
 // Code constants and constructs
 using time_t = long unsigned int;
 constexpr float kInfinity = 100000;
-constexpr unsigned int kMaxCheckPointForPath = 20;
+constexpr unsigned int kMaxCheckPointForPath = 10;
 enum class COLOR { RED, GREEN, BLUE, YELLOW, BLACK, WHITE };
 
  
@@ -73,7 +72,7 @@ constexpr int kcolor_selected_angle_open = 65; // nombre a determiner
 constexpr int kopen_trap_angle = 70;
 constexpr int kclosed_trap_angle = 0; 
 constexpr int kopen_bin_angle = 65;  // for the 3 bin servos
-constexpr int kclosed_bin_angle = 0;
+constexpr int kclosed_bin_angle = 10;
 
 //Color code for the controller
 constexpr int kRed = 0;

@@ -47,15 +47,17 @@ struct Path {
 	void add_line(float distance, float targVel_ = 0.0, bool backward_ = false, float maxVel_ = kMaxVel, unsigned int delay_before_ = 0, int id_ = -1);
 	void add_turn(float turnAngle_rad);
 	bool finished() const { return index >= size; }
+	void reset() { index = 0; size = 0; }
 };
 
-Path fix(Path path);
-Path hot_insert(Path prevPath, Path insert);
+void fix(Path const& src, Path& dst);
+void hot_insert(Path const& prevPath, Path& insert);
 
-Path gen_getToLine(mt::Vec2 currPos, mt::Vec2 currHeading, int target_color);
-Path gen_drop(mt::Vec2 currPos, mt::Vec2 currHeading, int target_color);
+void gen_getToLine(mt::Vec2 currPos, mt::Vec2 currHeading, int target_color, Path& dst);
+void gen_drop(mt::Vec2 currPos, mt::Vec2 currHeading, int target_color, Path& dst);
 
-Path gen_test();
+void gen_test();
+void gen_searchPath(mt::Vec2 currPos, mt::Vec2 currHeading, Path& dst);
 
 Arc arc_from_targetHeading(mt::Vec2 start, mt::Vec2 end, mt::Vec2 end_heading);
 

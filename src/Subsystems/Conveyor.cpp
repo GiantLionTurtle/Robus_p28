@@ -14,17 +14,21 @@ struct Step{
 	int conveyorSteps;
 	unsigned long stepTime;
 };
-const int Nsteps = 6;
+const int Nsteps = 7;
 Step const sequence[Nsteps] = {
-	Step { .clawServo = kClaw_openAngle, .armServo = kArm_openAngle, .conveyorSteps = 0, .stepTime = 0},
-	Step { .clawServo = kClaw_closeAngle, .armServo = kArm_openAngle, .conveyorSteps = 0, .stepTime = 150},
-	Step { .clawServo = kClaw_closeAngle, .armServo = kArm_closeAngle, .conveyorSteps = 0, .stepTime = 300},
-	Step { .clawServo = kClaw_openAngle, .armServo = kArm_closeAngle, .conveyorSteps = 0, .stepTime = 50},
-	Step { .clawServo = kClaw_openAngle, .armServo = kArm_closeAngle, .conveyorSteps = kConveyor_stepsUntilUp, .stepTime = 50}, // #define delay 
-	Step { .clawServo = kClaw_openAngle, .armServo = kArm_closeAngle, .conveyorSteps = -kConveyor_stepsUntilUp, .stepTime = 50} // #define delay
+	Step { .clawServo = kClaw_openAngle, .armServo = kArm_restAngle, .conveyorSteps = 0, .stepTime = 60},
+	Step { .clawServo = kClaw_openAngle, .armServo = kArm_downAngle, .conveyorSteps = 0, .stepTime = 60},
+	Step { .clawServo = kClaw_closeAngle, .armServo = kArm_downAngle, .conveyorSteps = 0, .stepTime = 600},
+	Step { .clawServo = kClaw_closeAngle, .armServo = kArm_upAngle, .conveyorSteps = 0, .stepTime = 600},
+	Step { .clawServo = kClaw_openAngle, .armServo = kArm_upAngle, .conveyorSteps = 0, .stepTime = 50},
+	Step { .clawServo = kClaw_openAngle, .armServo = kArm_upAngle, .conveyorSteps = kConveyor_stepsUntilUp, .stepTime = 3000}, // #define delay 
+	Step { .clawServo = kClaw_openAngle, .armServo = kArm_upAngle, .conveyorSteps = -kConveyor_stepsUntilUp, .stepTime = 3000} // #define delay
 };
 
-
+void Conveyor::init()
+{
+	sequenceIndex = Nsteps;
+}
 void Conveyor::start_sequence(Iteration_time it_time)
 {
 	startStepTime = it_time.time_ms;
@@ -32,9 +36,8 @@ void Conveyor::start_sequence(Iteration_time it_time)
 }
 void Conveyor::start_squenceIfDown(Iteration_time it_time)
 {
-	if(sequenceIndex < Nsteps)
-		return;
-	start_sequence(it_time);
+	if(over())
+		start_sequence(it_time);
 }
 void Conveyor::update(Iteration_time it_time)
 {
@@ -52,6 +55,12 @@ HardwareState Conveyor::aggregate(HardwareState hrdwState)
 	hrdwState.clawAngle = sequence[sequenceIndex%Nsteps].clawServo;
 	hrdwState.conveyorSteps = sequence[sequenceIndex%Nsteps].conveyorSteps;
 	return hrdwState;
+}
+bool Conveyor::over() const
+{
+	if(sequenceIndex < Nsteps)
+		return false;
+	return true;
 }
 
 }

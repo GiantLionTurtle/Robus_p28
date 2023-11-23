@@ -36,14 +36,13 @@ void setup()
 	Serial.println("Begin!");
 
 	sensState = get_sensors();
-
 	prevSensState = sensState;
 
 	set_hardwareState(HardwareState::initial());
 
-	robot = Robot::initial();
+	robot.init();
 	
-
+	Serial.println("Inited the thingies");
 	// robot.start_calibration();
 
 	// while(!ROBUS_IsBumper(3)) {}
@@ -63,13 +62,17 @@ void loop()
 
 	// if(controller_color != -1) {
 	if(ROBUS_IsBumper(RIGHT)) {
+		// Serial.println("sankdns");
 		robot.set_target_color(controller_color);
+		// Serial.println("alalla");
 		bool break_ = false;
 		while(true && !break_) {
+			// Serial.println("sankrrrrrrdns");
 			break_ = control_step();
 		}
+		Serial.println("boooop");
 	}
-	//Serial.println("out");
+	// Serial.println("out");
 }
 
 bool control_step()
@@ -79,25 +82,25 @@ bool control_step()
 	sensState = get_sensors();
 
 	it_time = it_time.current();
+
 	robot.update(prevSensState, sensState, it_time);
 	hrdwState = hrdwState.mix(robot.generate_hardwareState(it_time));
-
 	// print(sensState);
 
 	// Serial.print("wheel hrwst ");
 	// print(hrdwState.motors);
 	// Serial.println();
+
 	set_hardwareState(hrdwState);
 
 	prevSensState = sensState;
 
-	if(ROBUS_IsBumper(RIGHT)) {
-		// robot.cnvr.start_sequence(it_time);
-		ktest_color ++ % 4;
-		Bin bin;
-		bin.set_bin_color(ktest_color);
+	// if(ROBUS_IsBumper(RIGHT)) {
+	// 	robot.cnvr.start_sequence(it_time);
+	// 	ktest_color++;
+	// 	robot.bin.set_bin_color(ktest_color%4);
 	
-	}
+	// }
 	if(ROBUS_IsBumper(FRONT)) {
 		set_hardwareState(HardwareState());
 		return true;
@@ -111,9 +114,9 @@ bool control_step()
 	// Serial.print("'  ");
 	// Serial.println(sensState.backIR_dist);
 
-
 	unsigned int loop_end = millis();
 	unsigned int loop_duration = loop_end-loop_start;
 	time_to_delay_ms = loop_duration > kControlLoopDelay ? 0 : kControlLoopDelay - (loop_duration);
+
 	return false;
 }

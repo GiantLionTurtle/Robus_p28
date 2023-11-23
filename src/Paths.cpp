@@ -8,36 +8,36 @@ namespace Paths {
 
 Arc arc_from_targetHeading(mt::Vec2 start, mt::Vec2 end, mt::Vec2 end_heading);
 
-Path fix(Path path)
+void fix(Path const& src, Path& dst)
 {
-	if(path.finished())
-		return Path();
-	if(path.checkPoints[0].turn_only)
-		return path;
+	if(src.finished())
+		return;
+	if(src.checkPoints[0].turn_only)
+		return;
 
-	Path newPath;
-	newPath.add_checkPoint(path.checkPoints[0]);
+	dst.reset();
+	dst.add_checkPoint(src.checkPoints[0]);
 
 	int prevPos_ind = 0;
-	for(unsigned int i = 1; i < path.size; ++i) {
-		if(!path.checkPoints[i].turn_only) {
-			Arc arc = arc_from_targetHeading(path.checkPoints[prevPos_ind].targPos, path.checkPoints[i].targPos, path.checkPoints[i].targHeading);
-			if(mt::signed_angle(arc.tengeantStart, path.checkPoints[prevPos_ind].targHeading) > mt::to_radians(10)) {
-				newPath.checkPoints[i-1].targVel = 0.0; // Stop the robot before adjusting the angle
-				newPath.add_checkPoint(CheckPoint::make_turn(arc.tengeantStart));
+	for(unsigned int i = 1; i < src.size; ++i) {
+		if(!src.checkPoints[i].turn_only) {
+			Arc arc = arc_from_targetHeading(src.checkPoints[prevPos_ind].targPos, src.checkPoints[i].targPos, src.checkPoints[i].targHeading);
+			if(mt::signed_angle(arc.tengeantStart, src.checkPoints[prevPos_ind].targHeading) > mt::to_radians(10)) {
+				dst.checkPoints[i-1].targVel = 0.0; // Stop the robot before adjusting the angle
+				dst.add_checkPoint(CheckPoint::make_turn(arc.tengeantStart));
 			}
 			prevPos_ind = i;
 		}
-		newPath.add_checkPoint(path.checkPoints[i]);
+		dst.add_checkPoint(src.checkPoints[i]);
 	}
-	return newPath;
 }
-Path hot_insert(Path prevPath, Path insert)
+void hot_insert(Path const& prevPath, Path& insert)
 {
+	Serial.println("Hot insert start;");
 	for(unsigned int i = prevPath.index; i < prevPath.size; ++i) {
 		insert.add_checkPoint(prevPath.checkPoints[i]);
 	}
-	return insert;
+	Serial.println("Hot insert end;");
 }
 
 Arc arc_from_targetHeading(mt::Vec2 start, mt::Vec2 end, mt::Vec2 end_heading)
@@ -159,43 +159,55 @@ void Path::add_turn(float turnAngle_rad)
 	}
 }
 
-Path gen_test ()
+void gen_test(Path& dst)
 {
-	Path path;
+	dst.reset();
 	Serial.println("Gen test");
-	path.add_checkPoint(CheckPoint(mt::Vec2(0.0, 0.0), mt::Vec2(0.0, 1.0)));
-	path.add_checkPoint(CheckPoint(mt::Vec2(0.0, -1.0), mt::Vec2(0.0, 1.0), 0.0, true));
-	return path;
+	dst.add_checkPoint(CheckPoint(mt::Vec2(0.0, 0.0), mt::Vec2(0.0, 1.0)));
+	dst.add_checkPoint(CheckPoint(mt::Vec2(0.0, -1.0), mt::Vec2(0.0, 1.0), 0.0, true));
 }
-Path gen_getToLine(mt::Vec2 currPos, mt::Vec2 currHeading, int target_color)
+void gen_searchPath(mt::Vec2 currPos, mt::Vec2 currHeading, Path& dst)
+{
+	Serial.println("Gen test");
+	dst.reset();
+	dst.add_checkPoint(CheckPoint(currPos, currHeading));
+	dst.add_line(0.3);
+	dst.add_turn(mt::to_radians(90));
+	dst.add_line(0.3);
+	dst.add_turn(mt::to_radians(90));
+	dst.add_line(0.3);
+	dst.add_turn(mt::to_radians(90));
+	dst.add_line(0.3);
+	dst.add_turn(mt::to_radians(90));
+}
+void gen_getToLine(mt::Vec2 currPos, mt::Vec2 currHeading, int target_color, Path& dst)
 {
 	Serial.print("Gen get to line ");
 	Serial.println(target_color);
-	Path path;
-	path.add_checkPoint(CheckPoint(currPos, currHeading));
+
+	dst.reset();
+	dst.add_checkPoint(CheckPoint(currPos, currHeading));
 
 	int prev_color = target_color == 0 ? kYellow : target_color-1;
 
 	mt::Vec2 midPoint = (Field::kDumps[target_color]+Field::kDumps[prev_color]) / 2;
 	mt::Vec2 perpToLine = mt::cw_perpendicular(Field::kDumps[target_color]-Field::kDumps[prev_color]);
-	path.add_checkPoint(CheckPoint(midPoint, perpToLine));
-	path.add_turn(mt::to_radians(90));
-	return fix(path);
+	dst.add_checkPoint(CheckPoint(midPoint, perpToLine));
+	dst.add_turn(mt::to_radians(90));
+	fix(dst, dst);
 }
-Path gen_drop(mt::Vec2 currPos, mt::Vec2 currHeading, int target_color)
+void gen_drop(mt::Vec2 currPos, mt::Vec2 currHeading, int target_color, Path& dst)
 {
 	Serial.print("Gen drop ");
 	Serial.println(target_color);
 
+	dst.reset();
 	mt::Vec2 toward_center = Field::kDimensions/2.0 - currPos;
-	mt::print(toward_center);
-	Path path;
-	path.add_checkPoint(CheckPoint(currPos, currHeading));
-	path.add_checkPoint(CheckPoint::make_turn(toward_center));
-	  path.add_line(-0.24, 0.0, true);
-	  path.add_checkPoint(CheckPoint(Field::kDimensions/2.0, toward_center, 0.0, false, 0.4, 2000, kDumpPointId));
-
-	return path;
+	// mt::print(toward_center);
+	dst.add_checkPoint(CheckPoint(currPos, currHeading));
+	dst.add_checkPoint(CheckPoint::make_turn(toward_center));
+	dst.add_line(-0.24, 0.0, true);
+	dst.add_checkPoint(CheckPoint(Field::kDimensions/2.0, toward_center, 0.0, false, 0.4, 2000, kDumpPointId));
 }
 
 } // !Paths
