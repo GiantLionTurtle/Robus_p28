@@ -13,9 +13,9 @@
 
 namespace p28 {
 	
-static mt::Vec2 claw_pos(55, 175);
+static mt::Vec2 claw_pos(54, 172);
 static mt::Line claw_line { .origin=claw_pos, .dir=mt::Vec2(86, 17)-claw_pos};
-static mt::i32Box claw_box{.bottomLeft=mt::i32Vec2(40, 175), .topRight=mt::i32Vec2(70, 200)};
+static mt::i32Box claw_box{.bottomLeft=mt::i32Vec2(42, 178), .topRight=mt::i32Vec2(68, 200)};
 
 #ifdef ENABLE_CAMERA
 

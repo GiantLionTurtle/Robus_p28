@@ -8,6 +8,6 @@ void ExtraMotor::init()
 	bin_green.attach(40);
 	bin_blue.attach(42);
 	trap.attach(44);
-	conveyor.setSpeed(15);
+	conveyor.setSpeed(18);
 }
 
