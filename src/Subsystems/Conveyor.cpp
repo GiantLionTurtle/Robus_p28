@@ -20,8 +20,8 @@ Step const sequence[Nsteps] = {
 	Step { .clawServo = kClaw_closeAngle, .armServo = kArm_openAngle, .conveyorSteps = 0, .stepTime = 150},
 	Step { .clawServo = kClaw_closeAngle, .armServo = kArm_closeAngle, .conveyorSteps = 0, .stepTime = 300},
 	Step { .clawServo = kClaw_openAngle, .armServo = kArm_closeAngle, .conveyorSteps = 0, .stepTime = 50},
-	Step { .clawServo = kClaw_openAngle, .armServo = kArm_closeAngle, .conveyorSteps = kConveyor_stepsUntilUp, .stepTime = 50}, // #define delay 
-	Step { .clawServo = kClaw_openAngle, .armServo = kArm_closeAngle, .conveyorSteps = -kConveyor_stepsUntilUp, .stepTime = 50} // #define delay
+	Step { .clawServo = kClaw_openAngle, .armServo = kArm_closeAngle, .conveyorSteps = kConveyor_stepsUntilUp, .stepTime = 100}, // #define delay 
+	Step { .clawServo = kClaw_openAngle, .armServo = kArm_closeAngle, .conveyorSteps = -kConveyor_stepsUntilUp, .stepTime = 11000} // #define delay
 };
 
 

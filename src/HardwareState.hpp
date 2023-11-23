@@ -21,7 +21,7 @@ struct HardwareState {
 
 	int clawAngle { kClaw_openAngle};
 	int armAngle { kArm_openAngle};
-	Stepper conveyor = Stepper(kConveyor_stepsPerRevolution,37,41,39,43);
+	Stepper conveyor = Stepper(kConveyor_stepsPerRevolution,39,43,41,45);
 	int conveyorSteps;
 	int trapAngle { 0 };    // angle for closed trap
 	// angles of the servomotors of the color selected in the bin 
