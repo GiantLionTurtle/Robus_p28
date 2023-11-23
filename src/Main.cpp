@@ -27,7 +27,7 @@ bool control_step();
 void setup()
 {
 	BoardInit();
-	Serial1.begin(9600);
+	//Serial1.begin(9600);
 	it_time = Iteration_time::first();
 	SensorState::init();
 	delay(1000);

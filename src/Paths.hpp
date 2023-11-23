@@ -52,6 +52,7 @@ struct Path {
 
 void fix(Path const& src, Path& dst);
 void hot_insert(Path const& prevPath, Path& insert);
+void deep_copy(Path const& src, Path& dst);
 
 void gen_getToLine(mt::Vec2 currPos, mt::Vec2 currHeading, int target_color, Path& dst);
 void gen_drop(mt::Vec2 currPos, mt::Vec2 currHeading, int target_color, Path& dst);

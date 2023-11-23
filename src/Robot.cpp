@@ -42,7 +42,7 @@ void Robot::update(SensorState prevSensState, SensorState currSensState, Iterati
 	if(/*!cnvr.just_dropped()||*/ cnvr.over()) {
 		// Serial.print("Drivemode ");
 		// Serial.println(drvb.drvMode);
-		// drvb.update(currSensState, prevSensState, it_time);
+		drvb.update(currSensState, prevSensState, it_time);
 	} else {
 		drvb.zero(currSensState, prevSensState, it_time);
 	}
@@ -118,11 +118,11 @@ void Robot::huntLogic(SensorState sensState, Iteration_time it_time)
 {
 	if(sensState.block_offset != mt::i32Vec2(0, 0)){
 		if(drvb.drvMode != Drivebase::followCam) {
-		headingMemory = drvb.heading;
-		posMemory = drvb.pos;
-		drvb.setDriveMode(Drivebase::followCam);
+			headingMemory = drvb.heading;
+			posMemory = drvb.pos;
+			drvb.setDriveMode(Drivebase::followCam);
 		}
-		else{
+		else {
 			nFrames_noLegos = 0;
 		}
 	} else if(drvb.drvMode == Drivebase::followCam && (nFrames_noLegos++) > 16) {
@@ -135,7 +135,7 @@ void Robot::huntLogic(SensorState sensState, Iteration_time it_time)
 		path.add_checkPoint(Paths::CheckPoint (posMemory, backHeading, 0.0, true));
 		path.add_checkPoint(Paths::CheckPoint::make_turn (headingMemory));
 		Paths::hot_insert(drvb.path, path);
-		drvb.path = path;
+		Paths::deep_copy(path, drvb.path);
 		drvb.set_path(it_time);
 		headingMemory = mt::Vec2(0, 0);
 		posMemory = mt::Vec2(0, 0);

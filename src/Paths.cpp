@@ -39,6 +39,14 @@ void hot_insert(Path const& prevPath, Path& insert)
 	}
 	Serial.println("Hot insert end;");
 }
+void deep_copy(Path const& src, Path& dst)
+{
+	dst.size = src.size;
+	dst.index = src.index;
+	for(int i = src.index; i < src.size; ++i) {
+		dst.checkPoints[i] = src.checkPoints[i];
+	}
+}
 
 Arc arc_from_targetHeading(mt::Vec2 start, mt::Vec2 end, mt::Vec2 end_heading)
 {
