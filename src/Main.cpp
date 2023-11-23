@@ -27,7 +27,7 @@ bool control_step();
 void setup()
 {
 	BoardInit();
-	
+	Serial1.begin(9600);
 	it_time = Iteration_time::first();
 	SensorState::init();
 	delay(1000);
@@ -58,9 +58,9 @@ void loop()
 {
 	it_time = it_time.current();
 
-	int controller_color = 0;//get_controller_color(Serial1);
+	int controller_color = 0;//get_controller_color();
 
-	// if(controller_color != -1) {
+	//if(controller_color != -1) {
 	if(ROBUS_IsBumper(RIGHT)) {
 		// Serial.println("sankdns");
 		robot.set_target_color(controller_color);

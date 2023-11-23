@@ -3,7 +3,7 @@
 
 namespace p28 {
 
- int get_controller_color(HardwareSerial Serial1)
+ int get_controller_color()
  {
     char caractere;
     String reponse;
