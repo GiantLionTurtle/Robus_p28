@@ -68,7 +68,7 @@ constexpr int kCupDetectDist = 350; // mm
 constexpr int kKnockCupDelay = 1500; // ms
 
 // Bin motors
-constexpr int kcolor_selected_angle_open = 180; // nombre a determiner
+constexpr int kcolor_selected_angle_open = 65; // nombre a determiner
 constexpr int kopen_trap_angle = 70;
 constexpr int kclosed_trap_angle = 0; 
 constexpr int kopen_bin_angle = 65;  // for the 3 bin servos
