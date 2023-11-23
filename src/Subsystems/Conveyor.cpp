@@ -15,9 +15,10 @@ struct Step{
 	unsigned long stepTime;
 };
 const int Nsteps = 7;
+const int CimbStepInd = 5; // Step at which the stepper starts, keep this linked
 Step const sequence[Nsteps] = {
-	Step { .clawServo = kClaw_openAngle, .armServo = kArm_restAngle, .conveyorSteps = 0, .stepTime = 60},
-	Step { .clawServo = kClaw_openAngle, .armServo = kArm_downAngle, .conveyorSteps = 0, .stepTime = 60},
+	Step { .clawServo = kClaw_openAngle, .armServo = kArm_upAngle, .conveyorSteps = 0, .stepTime = 200},
+	Step { .clawServo = kClaw_openAngle, .armServo = kArm_downAngle, .conveyorSteps = 0, .stepTime = 1000},
 	Step { .clawServo = kClaw_closeAngle, .armServo = kArm_downAngle, .conveyorSteps = 0, .stepTime = 600},
 	Step { .clawServo = kClaw_closeAngle, .armServo = kArm_upAngle, .conveyorSteps = 0, .stepTime = 600},
 	Step { .clawServo = kClaw_openAngle, .armServo = kArm_upAngle, .conveyorSteps = 0, .stepTime = 50},
@@ -33,11 +34,6 @@ void Conveyor::start_sequence(Iteration_time it_time)
 {
 	startStepTime = it_time.time_ms;
 	sequenceIndex = 0; // First index
-}
-void Conveyor::start_squenceIfDown(Iteration_time it_time)
-{
-	if(over())
-		start_sequence(it_time);
 }
 void Conveyor::update(Iteration_time it_time)
 {
@@ -61,6 +57,14 @@ bool Conveyor::over() const
 	if(sequenceIndex < Nsteps)
 		return false;
 	return true;
+}
+bool Conveyor::climbing() const
+{
+	// Serial.print("Seq ind ");
+	// Serial.println(sequenceIndex);
+	if(sequenceIndex >= CimbStepInd)
+		return true;
+	return false;
 }
 
 }
