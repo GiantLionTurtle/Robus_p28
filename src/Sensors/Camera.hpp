@@ -6,11 +6,14 @@
 #include <Utils/Pair.hpp>
 #include <Pixy2.h>
 #include <Pixy2I2C.h>
+#include <CompileFlags.hpp>
 
 namespace p28 {
 
 struct Camera {
+#ifdef ENABLE_CAMERA
 	Pixy2I2C pixy;
+#endif
 
 	void init();
 

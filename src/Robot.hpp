@@ -63,9 +63,10 @@ struct Robot {
 	Bin bin;
 	Drivebase drvb;
 	Conveyor cnvr;
-	mt::Vec2 headingMemory;
-	mt::Vec2 posMemory;
+	mt::Vec2 headingMemory { 0.0 };
+	mt::Vec2 posMemory { 0.0 };
 
+	int nFrames_noLegos { 0 };
 	int drop_zone;
 
 	int targetColor { kRed };

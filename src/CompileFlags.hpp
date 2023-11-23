@@ -11,4 +11,6 @@
 // Uncomment to enable additional prints
 #define DEBUG_MODE
 
+#define ENABLE_CAMERA
+
 #endif

@@ -15,8 +15,8 @@ static Camera camera;
 
 void SensorState::init()
 {
-	init_color_sensor();
-	init_detector();
+	// init_color_sensor();
+	// init_detector();
 	camera.init();
 }
 

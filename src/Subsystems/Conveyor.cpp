@@ -14,14 +14,15 @@ struct Step{
 	int conveyorSteps;
 	unsigned long stepTime;
 };
-const int Nsteps = 6;
+const int Nsteps = 7;
 Step const sequence[Nsteps] = {
-	Step { .clawServo = kClaw_openAngle, .armServo = kArm_openAngle, .conveyorSteps = 0, .stepTime = 0},
-	Step { .clawServo = kClaw_closeAngle, .armServo = kArm_openAngle, .conveyorSteps = 0, .stepTime = 150},
-	Step { .clawServo = kClaw_closeAngle, .armServo = kArm_closeAngle, .conveyorSteps = 0, .stepTime = 300},
-	Step { .clawServo = kClaw_openAngle, .armServo = kArm_closeAngle, .conveyorSteps = 0, .stepTime = 50},
-	Step { .clawServo = kClaw_openAngle, .armServo = kArm_closeAngle, .conveyorSteps = kConveyor_stepsUntilUp, .stepTime = 50}, // #define delay 
-	Step { .clawServo = kClaw_openAngle, .armServo = kArm_closeAngle, .conveyorSteps = -kConveyor_stepsUntilUp, .stepTime = 50} // #define delay
+	Step { .clawServo = kClaw_openAngle, .armServo = kArm_restAngle, .conveyorSteps = 0, .stepTime = 60},
+	Step { .clawServo = kClaw_openAngle, .armServo = kArm_downAngle, .conveyorSteps = 0, .stepTime = 60},
+	Step { .clawServo = kClaw_closeAngle, .armServo = kArm_downAngle, .conveyorSteps = 0, .stepTime = 150},
+	Step { .clawServo = kClaw_closeAngle, .armServo = kArm_upAngle, .conveyorSteps = 0, .stepTime = 300},
+	Step { .clawServo = kClaw_openAngle, .armServo = kArm_upAngle, .conveyorSteps = 0, .stepTime = 50},
+	Step { .clawServo = kClaw_openAngle, .armServo = kArm_upAngle, .conveyorSteps = kConveyor_stepsUntilUp, .stepTime = 3000}, // #define delay 
+	Step { .clawServo = kClaw_openAngle, .armServo = kArm_upAngle, .conveyorSteps = -kConveyor_stepsUntilUp, .stepTime = 3000} // #define delay
 };
 
 

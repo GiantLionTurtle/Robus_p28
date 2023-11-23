@@ -35,8 +35,8 @@ void set_hardwareState (HardwareState hwst)
 	MOTOR_SetSpeed (LEFT, hwst.motors.left);
 	SERVO_SetAngle (0 , hwst.clawAngle);
 	SERVO_SetAngle (1, hwst.armAngle);
-	hwst.conveyor.setSpeed(5);
-	hwst.conveyor.step(hwst.conveyorSteps);
+	// hwst.conveyor.setSpeed(5);
+	// hwst.conveyor.step(hwst.conveyorSteps);
 	extra_motor.trap.write(hwst.trapAngle);
 	extra_motor.bin_red.write(hwst.bin_select_angles [kRed]);
 	extra_motor.bin_green.write(hwst.bin_select_angles [KGreen]);
