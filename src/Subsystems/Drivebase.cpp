@@ -4,6 +4,11 @@
 
 namespace p28 {
 
+void Drivebase::zero(SensorState currentSensState, SensorState prevSensState, Iteration_time it_time)
+{
+	update_kinematics(prevSensState.encoders_ticks, currentSensState.encoders_ticks, it_time.delta_s);
+	update_wheels(mt::Vec2(0.0f), it_time.delta_s);
+}
 void Drivebase::update(SensorState currentSensState, SensorState prevSensState, Iteration_time it_time)
 {
 	update_kinematics(prevSensState.encoders_ticks, currentSensState.encoders_ticks, it_time.delta_s);
@@ -82,7 +87,7 @@ void Drivebase::update_followCam(SensorState currentSensState, SensorState prevS
 		motorVels = 0.0f;
 	} else if(currentSensState.block_offset.y < -2) {
 		motorVels = -kFollowCamBaseVel;
-	} else if(abs(currentSensState.block_offset.x) < 30) {
+	} else if(abs(currentSensState.block_offset.x) < 15) {
 		motorVels = kFollowCamBaseVel;
 	} else {
 		float offset = (static_cast<float>(currentSensState.block_offset.x) / 40.0f);

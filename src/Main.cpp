@@ -40,7 +40,7 @@ void setup()
 
 	set_hardwareState(HardwareState::initial());
 
-	robot = Robot::initial();
+	robot.init();
 	
 	Serial.println("Inited the thingies");
 	// robot.start_calibration();
@@ -95,12 +95,12 @@ bool control_step()
 
 	prevSensState = sensState;
 
-	if(ROBUS_IsBumper(RIGHT)) {
-		robot.cnvr.start_sequence(it_time);
-		ktest_color++;
-		robot.bin.set_bin_color(ktest_color%4);
+	// if(ROBUS_IsBumper(RIGHT)) {
+	// 	robot.cnvr.start_sequence(it_time);
+	// 	ktest_color++;
+	// 	robot.bin.set_bin_color(ktest_color%4);
 	
-	}
+	// }
 	if(ROBUS_IsBumper(FRONT)) {
 		set_hardwareState(HardwareState());
 		return true;

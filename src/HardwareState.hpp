@@ -21,8 +21,8 @@ struct HardwareState {
 
 	int clawAngle { kClaw_openAngle};
 	int armAngle { kArm_restAngle};
-	// Stepper conveyor = Stepper(kConveyor_stepsPerRevolution,37,41,39,43);
-	int conveyorSteps;
+
+	int conveyorSteps { 0 };
 	int trapAngle { kclosed_trap_angle};    // angle for closed trap initial position
 	// angles of the servomotors of the color selected in the bin 
 	int bin_select_angles [3] { kclosed_bin_angle, kclosed_bin_angle, kclosed_bin_angle};	

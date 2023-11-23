@@ -72,7 +72,7 @@ struct Robot {
 	int targetColor { kRed };
 	DoDumpObjective dumpObjective { DoDumpObjective::Done };
 
-	static Robot initial();
+	void init();
 	void start_calibration();
 
 	// Compute the next robot state from delta of the sensors and the game state

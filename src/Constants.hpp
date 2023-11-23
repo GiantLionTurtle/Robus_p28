@@ -32,7 +32,7 @@ constexpr int kArm_upAngle = 180;
 constexpr int kClaw_openAngle = 83; 
 constexpr int kClaw_closeAngle = 40; 
 constexpr int kConveyor_stepsPerRevolution = 2038;
-constexpr int kConveyor_stepsUntilUp = 4000; // #define
+constexpr int kConveyor_stepsUntilUp = kConveyor_stepsPerRevolution*2.4; 
 
 
 // Physical movement constraints of the robot

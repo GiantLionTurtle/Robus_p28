@@ -63,6 +63,7 @@ struct Drivebase {
 
 	Drivemodes drvMode { followPath };
 
+	void zero(SensorState currentSensState, SensorState prevSensState, Iteration_time it_time);
 	void update(SensorState currentSensState, SensorState prevSensState, Iteration_time it_time);
 	void update_followLine(SensorState currentSensState, SensorState prevSensState, Iteration_time it_time);
 	void update_followCam(SensorState currentSensState, SensorState prevSensState, Iteration_time it_time);
