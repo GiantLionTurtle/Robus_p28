@@ -18,6 +18,8 @@ Iteration_time it_time;
 
 HardwareState hrdwState;
 
+int ktest_color = 0;
+
 unsigned int time_to_delay_ms;
 
 bool control_step();
@@ -90,7 +92,11 @@ bool control_step()
 	prevSensState = sensState;
 
 	if(ROBUS_IsBumper(RIGHT)) {
-		robot.cnvr.start_sequence(it_time);
+		// robot.cnvr.start_sequence(it_time);
+		ktest_color ++ % 4;
+		Bin bin;
+		bin.set_bin_color(ktest_color);
+	
 	}
 	if(ROBUS_IsBumper(FRONT)) {
 		set_hardwareState(HardwareState());

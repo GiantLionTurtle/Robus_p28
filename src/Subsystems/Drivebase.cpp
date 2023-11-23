@@ -144,8 +144,7 @@ void Drivebase::set_path(Paths::Path path_, Iteration_time it_time)
 {
 	path = path_;
 	if(!path.finished()) {
-		finish = false;
-		drvMode = followPath;
+		setDriveMode(Drivemodes::followPath);
 		waitUntil_ms = it_time.time_ms + path.current().delay_before;
 	}
 }

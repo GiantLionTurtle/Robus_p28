@@ -5,7 +5,7 @@
 
 namespace p28 {
 
-int Bin::set_bin_color(int bin_selected_color){
+void Bin::set_bin_color(int bin_selected_color){
     nb_of_blocks [bin_selected_color]++;
 }
 

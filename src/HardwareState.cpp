@@ -3,12 +3,15 @@
 #include <LibRobus.h>
 #include "Constants.hpp"
 #include "Robot.hpp"
+#include "Servomotors.hpp"
 
 
 #define CUP_SERVO_ID 0
 #define ARM_SERVO_ID 1
 
 namespace p28 {
+
+static ExtraMotor extra_motor;
 
 HardwareState HardwareState::mix(HardwareState hrdwState) const
 {
@@ -19,6 +22,7 @@ HardwareState HardwareState::mix(HardwareState hrdwState) const
 }
 HardwareState HardwareState::initial()
 {
+	extra_motor.init();
 	HardwareState out;
 	out.motors = { 0.0f, 0.0f };
 
@@ -33,7 +37,10 @@ void set_hardwareState (HardwareState hwst)
 	SERVO_SetAngle (1, hwst.armAngle);
 	hwst.conveyor.setSpeed(5);
 	hwst.conveyor.step(hwst.conveyorSteps);
-	//SERVO_SetAngle (2, kopen_trap_angle)       implementation of the servo library needed for more servos 
+	extra_motor.trap.write(hwst.trapAngle);
+	extra_motor.bin_red.write(hwst.bin_select_angles [kRed]);
+	extra_motor.bin_green.write(hwst.bin_select_angles [KGreen]);
+	extra_motor.bin_blue.write(hwst.bin_select_angles [kBlue]);
  
 }
 
