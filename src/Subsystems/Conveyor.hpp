@@ -11,11 +11,11 @@ struct Conveyor{
 	unsigned long startStepTime = 0.0;
 	
 	void init();
+	bool over() const;
+	bool climbing() const;
 	void start_sequence(Iteration_time it_time);
-	void start_squenceIfDown(Iteration_time it_time);
 	void update(Iteration_time it_time);
 	HardwareState aggregate(HardwareState hrdwState);
-	bool over() const;
 };
 
 }

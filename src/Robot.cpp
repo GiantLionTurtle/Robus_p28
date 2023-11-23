@@ -40,7 +40,7 @@ void Robot::update(SensorState prevSensState, SensorState currSensState, Iterati
 	// Serial.print("Drivemode ");
 	// Serial.println(drvb.drvMode);
 
-	if(cnvr.over()) {
+	if(!cnvr.climbing()) {
 		drvb.update(currSensState, prevSensState, it_time);
 	} else {
 		drvb.zero(currSensState, prevSensState, it_time);
@@ -97,8 +97,8 @@ void Robot::gameLogic(SensorState const& currSensState,  SensorState const& prev
 		dumpObjective.step++;
 	}
 
-	if(currSensState.block_in_claw) {
-		cnvr.start_squenceIfDown(it_time);
+	if(currSensState.block_in_claw && !cnvr.climbing()) {
+		cnvr.start_sequence(it_time);
 	}
 	
 	if(dumpObjective.step == DoDumpObjective::Done) {
