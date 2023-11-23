@@ -20,9 +20,11 @@ bool Bin::is_full(){
 
 HardwareState Bin::aggregate(HardwareState hardwareSate){
     hardwareSate.bin_select_angles [color_selected] = kcolor_selected_angle_open;
-    if(open_trap = true){
+    if(open_trap){
         hardwareSate.trapAngle = kopen_trap_angle;
     }
+    
+
    
     return hardwareSate;
     
