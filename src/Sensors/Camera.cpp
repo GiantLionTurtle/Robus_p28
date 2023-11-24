@@ -35,7 +35,7 @@ mt::i32Box box(Block block)
 {
 	return mt::i32Box{.bottomLeft=mt::i32Vec2(block.m_x, block.m_y), .topRight=mt::i32Vec2(block.m_x+block.m_width, block.m_y+block.m_height)};
 }
-Pair<mt::i32Vec2, bool> Camera::blockOffset(int color)
+Pair<mt::Vec2, bool> Camera::blockOffset(int color)
 {
 	// grab blocks!
 	pixy.ccc.getBlocks();

@@ -32,7 +32,8 @@ constexpr int kArm_upAngle = 180;
 constexpr int kClaw_openAngle = 82; 
 constexpr int kClaw_closeAngle = 40; 
 constexpr int kConveyor_stepsPerRevolution = 2038;
-constexpr int kConveyor_stepsUntilUp = kConveyor_stepsPerRevolution*2.4; 
+// Must be multiple of 3 cause it's a 4 pin stepper
+constexpr int kConveyor_stepsUntilUp = 5100;//kConveyor_stepsPerRevolution*2.4; 
 
 
 // Physical movement constraints of the robot
@@ -47,7 +48,7 @@ constexpr float kFollowCamBaseVel = 0.08;
 
 // Control constants 
 constexpr float kMotorHarwareStateMixFactor = 0.85; // Used for exponential moving average between 2 hardware states
-constexpr unsigned int kControlLoopDelay = 12; // ms
+constexpr unsigned int kControlLoopDelay = 10; // ms
 constexpr float kPathFollower_distEpsilon2 = 0.0001; // square of precision (1cm)
 constexpr float kPathFollower_headingEpsilon2 = 0.00005; // square of precision
 constexpr float kConveyor_speed = 5; //in RPM #define

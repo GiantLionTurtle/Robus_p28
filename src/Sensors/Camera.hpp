@@ -19,7 +19,7 @@ struct Camera {
 
 	// Returns the centroid offset to the claw centroid
 	// of the biggest block of a certain color
-	Pair<mt::i32Vec2, bool> blockOffset(int color);
+	Pair<mt::Vec2, bool> blockOffset(int color);
 
 	int signature_to_color(int sig);
 };

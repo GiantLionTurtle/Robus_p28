@@ -85,25 +85,31 @@ void Drivebase::update_followCam(SensorState currentSensState, SensorState prevS
 	// Serial.print("Block offset");
 	// println(currentSensState.block_offset);
 	mt::Vec2 motorVels;
-	if(currentSensState.block_offset == mt::i32Vec2(0.0) && !currentSensState.block_in_claw) {
+
+	if(mt::magnitude2(currentSensState.block_offset) < 0.8 || currentSensState.block_in_claw) {
 		motorVels = 0.0f;
 	} else {
 		float offset = (static_cast<float>(currentSensState.block_offset.x) / 40.0f);
 		// offset = offset*offset*offset;
 		float motorDelta =  offset * 0.08f;
 		motorVels = mt::Vec2(-motorDelta, motorDelta);
+
+		if(currentSensState.block_offset.y < -7) {
+			motorVels = -kFollowCamBaseVel;
+		} 
+		if(abs(currentSensState.block_offset.x) < 7 || currentSensState.block_offset.y > 30) {
+			motorVels += kFollowCamBaseVel;
+		}
 	}
 
-	if(currentSensState.block_offset.y < -5) {
-		motorVels = -kFollowCamBaseVel;
-	} else if(abs(currentSensState.block_offset.x) < 7) {
-		motorVels += kFollowCamBaseVel;
-	}
 
 
+	
 	// Serial.print("Motorvel ");
-	// print(motorVel, 6);
-	// Serial.println();
+	// mt::print(motorVels, 6);
+	// Serial.print(" :: ");
+	// mt::println(currentSensState.block_offset);
+	
 	update_wheels(motorVels, it_time.delta_s);
 }
 

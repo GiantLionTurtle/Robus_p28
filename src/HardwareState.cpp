@@ -46,7 +46,7 @@ void set_hardwareState (HardwareState hwst)
 	SERVO_SetAngle (0 , hwst.clawAngle);
 	SERVO_SetAngle (1, hwst.armAngle);
 
-	int n_steps = mt::clamp(hwst.conveyorSteps-extra_motor.conveyor_steps, -100, 100);
+	int n_steps = mt::clamp(hwst.conveyorSteps-extra_motor.conveyor_steps, -10, 10);
 	extra_motor.conveyor.step(n_steps);
 	extra_motor.conveyor_steps += n_steps;
 

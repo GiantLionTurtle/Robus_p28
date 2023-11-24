@@ -26,7 +26,7 @@ struct SensorState {
 	char lineDetector; // &&Figureout&& TO BE DEFINED DEPENDING HOW IT WORKS AND ITS RESPONSE
 	// COLOR colorDetector; // assign a color depending on the color detector response
 
-	mt::i32Vec2 block_offset;
+	mt::Vec2 block_offset;
 	bool block_in_claw { false };
 
 	static void init();

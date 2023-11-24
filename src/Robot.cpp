@@ -44,13 +44,13 @@ void Robot::update(SensorState prevSensState, SensorState currSensState, Iterati
 	gameLogic(currSensState, prevSensState, it_time);
 	// Serial.println("upd");
 
-	if(/*!cnvr.just_dropped()||*/ cnvr.over()) {
+	// if(/*!cnvr.just_dropped()||*/ cnvr.over()) {
 		// Serial.print("Drivemode ");
 		// Serial.println(drvb.drvMode);
 		drvb.update(currSensState, prevSensState, it_time);
-	} else {
-		drvb.zero(currSensState, prevSensState, it_time);
-	}
+	// } else {
+		// drvb.zero(currSensState, prevSensState, it_time);
+	// }
 	cnvr.update(it_time);
 }
 HardwareState Robot::generate_hardwareState(Iteration_time it_time)
@@ -121,7 +121,7 @@ void Robot::gameLogic(SensorState const& currSensState,  SensorState const& prev
 }
 void Robot::huntLogic(SensorState sensState, Iteration_time it_time)
 {
-	if(sensState.block_offset != mt::i32Vec2(0, 0)) {
+	if(sensState.block_offset != mt::Vec2(0, 0)) {
 		nFrames_noLegos = 0;
 		if(drvb.drvMode != Drivebase::followCam) {
 			if(headingMemory == mt::Vec2(0.0f)) {
