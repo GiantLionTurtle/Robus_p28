@@ -31,8 +31,18 @@ HardwareState HardwareState::initial()
 
 void set_hardwareState (HardwareState hwst)
 {
-	MOTOR_SetSpeed (RIGHT, hwst.motors.right);      //Sets the motors speed according to the hardware state received
-	MOTOR_SetSpeed (LEFT, hwst.motors.left);
+	if(abs(hwst.motors.left) == 1.0 || abs(hwst.motors.right) == 1.0) {
+		MOTOR_SetSpeed (RIGHT, 0.0);
+		MOTOR_SetSpeed (LEFT, 0.0);
+		Serial.println("motor speeds out of bounds");
+
+	} else {
+		// Serial.print("Set ");
+		// mt::println(hwst.motors);
+		MOTOR_SetSpeed (RIGHT, hwst.motors.right);      //Sets the motors speed according to the hardware state received
+		MOTOR_SetSpeed (LEFT, hwst.motors.left);
+	}
+
 	SERVO_SetAngle (0 , hwst.clawAngle);
 	SERVO_SetAngle (1, hwst.armAngle);
 
@@ -49,12 +59,12 @@ void set_hardwareState (HardwareState hwst)
 
 void print(HardwareState state)
 {
-    Serial.print("motors:");
-    print(state.motors);
-    Serial.print(" | Arm angle:");
-    Serial.print(state.armAngle);
-    Serial.print(" | Cup angle:");
-    Serial.println();
+	Serial.print("motors:");
+	print(state.motors);
+	Serial.print(" | Arm angle:");
+	Serial.print(state.armAngle);
+	Serial.print(" | Cup angle:");
+	Serial.println();
 
 }
 

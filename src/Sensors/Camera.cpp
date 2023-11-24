@@ -16,7 +16,7 @@ namespace p28 {
 static mt::Vec2 claw_pos(54, 167);
 static mt::Line claw_line { .origin=claw_pos, .dir=mt::Vec2(86, 17)-claw_pos};
 // static mt::i32Box claw_box{.bottomLeft=mt::i32Vec2(42, 178), .topRight=mt::i32Vec2(68, 200)};
-static mt::i32Box claw_box{.bottomLeft=mt::i32Vec2(35, 160), .topRight=mt::i32Vec2(75, 210)};
+static mt::i32Box claw_box{.bottomLeft=mt::i32Vec2(35, 165), .topRight=mt::i32Vec2(75, 210)};
 
 #ifdef ENABLE_CAMERA
 
@@ -56,23 +56,23 @@ Pair<mt::i32Vec2, bool> Camera::blockOffset(int color)
 			biggest_block_size = block_size;
 		}
 	}
-	Serial.print("blocl ind: ");
-	Serial.print(target_ind);
-	Serial.println();
+	// Serial.print("blocl ind: ");
+	// Serial.print(target_ind);
+	// Serial.println();
 
 	// either no block of the correct color was found or the claw was not found
 	if(target_ind != -1) {
 		mt::i32Vec2 target_centroid = centroid(pixy.ccc.blocks[target_ind]);
 		mt::i32Box target_box = box(pixy.ccc.blocks[target_ind]);
 		
-		Serial.print("Target centroid: ");
-		println(target_centroid);
+		// Serial.print("Target centroid: ");
+		// println(target_centroid);
 		bool inside = claw_box.box_inside(target_box);
 
 
-		if(inside) {
-			Serial.println("INSIDE");
-		}
+		// if(inside) {
+		// 	Serial.println("INSIDE");
+		// }
 	
 		float diff_x = claw_line.dist_signed(mt::Vec2(target_centroid.x, target_centroid.y));
 		// Serial.print("Diff x ");

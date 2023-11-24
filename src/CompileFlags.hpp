@@ -13,4 +13,6 @@
 
 #define ENABLE_CAMERA
 
+// #define PRINT_LOOP_DURATION_AVG
+
 #endif

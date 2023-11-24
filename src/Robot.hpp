@@ -46,7 +46,7 @@ struct Objective {
 
 };
 
-struct DoDumpObjective {
+struct DumpObjective {
 	enum Steps {
 		Start,
 		GetToLine,
@@ -67,10 +67,14 @@ struct Robot {
 	mt::Vec2 posMemory { 0.0 };
 
 	int nFrames_noLegos { 0 };
+	// Do not reset pos memory & heading memory
+	// if the path is not at least at this index
+	// (it is still trying to get back on path)
+	int backToPath_index { kMaxCheckPointForPath }; 
 	int drop_zone;
 
 	int targetColor { kRed };
-	DoDumpObjective dumpObjective { DoDumpObjective::Done };
+	DumpObjective dumpObjective { DumpObjective::Done };
 
 	void init();
 	void start_calibration();

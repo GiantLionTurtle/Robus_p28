@@ -22,6 +22,13 @@ int ktest_color = 0;
 
 unsigned int time_to_delay_ms;
 
+#ifdef PRINT_LOOP_DURATION_AVG
+int loop_it = 0;
+unsigned int loop_av;
+
+#endif
+
+
 bool control_step();
 
 void setup()
@@ -49,7 +56,7 @@ void setup()
 
 	// it_time = it_time.current();
 	// bool break_ = false;
-	// while(robot.dumpObjective.step != DoDumpObjective::Done && !break_) {
+	// while(robot.dumpObjective.step != DumpObjective::Done && !break_) {
 	// 	break_ = control_step();
 	// }
 }
@@ -74,6 +81,7 @@ void loop()
 	}
 	// Serial.println("out");
 }
+
 
 bool control_step()
 {
@@ -118,5 +126,15 @@ bool control_step()
 	unsigned int loop_duration = loop_end-loop_start;
 	time_to_delay_ms = loop_duration > kControlLoopDelay ? 0 : kControlLoopDelay - (loop_duration);
 
+#ifdef PRINT_LOOP_DURATION_AVG
+	loop_av += loop_duration;
+	loop_it++;
+
+	if(loop_it % 100 == 0) {
+		Serial.print("Loop average ");
+		Serial.println(loop_av / 100);
+		loop_av = 0;
+	}
+#endif
 	return false;
 }

@@ -47,7 +47,7 @@ constexpr float kFollowCamBaseVel = 0.08;
 
 // Control constants 
 constexpr float kMotorHarwareStateMixFactor = 0.85; // Used for exponential moving average between 2 hardware states
-constexpr unsigned int kControlLoopDelay = 50; // ms
+constexpr unsigned int kControlLoopDelay = 12; // ms
 constexpr float kPathFollower_distEpsilon2 = 0.0001; // square of precision (1cm)
 constexpr float kPathFollower_headingEpsilon2 = 0.00005; // square of precision
 constexpr float kConveyor_speed = 5; //in RPM #define
@@ -56,16 +56,9 @@ constexpr float kConveyor_speed = 5; //in RPM #define
 // Code constants and constructs
 using time_t = long unsigned int;
 constexpr float kInfinity = 100000;
-constexpr unsigned int kMaxCheckPointForPath = 15;
+constexpr unsigned int kMaxCheckPointForPath = 20;
 enum class COLOR { RED, GREEN, BLUE, YELLOW, BLACK, WHITE };
 
- 
-
-// Mission specific constants
-constexpr int kCupRelease_pathIndex = 3; // After which checkpoint of the maneuver should the cup be dropped?
-
-constexpr int kCupDetectDist = 350; // mm
-constexpr int kKnockCupDelay = 1500; // ms
 
 // Bin motors
 constexpr int kcolor_selected_angle_open = 65; // nombre a determiner

@@ -176,8 +176,11 @@ void gen_test(Path& dst)
 }
 void gen_searchPath(mt::Vec2 currPos, mt::Vec2 currHeading, Path& dst)
 {
-	Serial.println("Gen test");
+	Serial.println("Gen search");
 	dst.reset();
+
+	// dst.add_checkPoint(CheckPoint(mt::Vec2(0.0, 0.5), mt::Vec2(0.0, 1.0)));
+
 	dst.add_checkPoint(CheckPoint(currPos, currHeading));
 	dst.add_line(0.3);
 	dst.add_turn(mt::to_radians(90));
