@@ -58,23 +58,14 @@ void Drivebase::update_followLine(SensorState currentSensState, SensorState prev
 {
 	char line = currentSensState.lineDetector;
 	float dir = 0;
-	for(int i = 0; i < 8; i++)
-		{
-			if(is_active(line, i))
-			{
-				// Serial.print("#");
-				dir+=i-3.5;
-			} else {
-				// Serial.print(" ");
-			}
+	for(int i = 0; i < 8; i++) {
+		if(is_active(line, i)) {
+			dir+=i-3.5;
 		}
-		// Serial.print(" => ");
-		// Serial.print(dir);
-		// Serial.println();
-		if(line == 0)
-		{
-			finish = true;
-		}
+	}
+	if(line == 0) {
+		finish = true;
+	}
 	//.02 is a magic number for the moment
 	mt::Vec2 motorVel = mt::Vec2(dir, -dir)*.02 + kFollowLineBaseVel;
 	update_wheels(motorVel, it_time.delta_s);
@@ -82,49 +73,36 @@ void Drivebase::update_followLine(SensorState currentSensState, SensorState prev
 
 void Drivebase::update_followCam(SensorState currentSensState, SensorState prevSensState, Iteration_time it_time)
 {
-	// Serial.print("Block offset");
-	// println(currentSensState.block_offset);
 	mt::Vec2 motorVels;
+	mt::Vec2 offset = currentSensState.block_offset;
 
-	if(mt::magnitude2(currentSensState.block_offset) < 0.8 || currentSensState.block_in_claw) {
+	if(mt::magnitude2(offset) < Tracking::kAlignedEnough_magPx2 || currentSensState.block_in_claw) {
 		motorVels = 0.0f;
 	} else {
-		float offset = (static_cast<float>(currentSensState.block_offset.x) / 40.0f);
-		// offset = offset*offset*offset;
-		float motorDelta =  offset * 0.08f;
+		float motorDelta = offset.x * kFollowCamBaseVel / Tracking::kClampOffset;
 		motorVels = mt::Vec2(-motorDelta, motorDelta);
 
-		if(currentSensState.block_offset.y < -7) {
+		if(currentSensState.block_offset.y < Tracking::kBackOff_px) {
 			motorVels = -kFollowCamBaseVel;
 		} 
-		if(abs(currentSensState.block_offset.x) < 7 || currentSensState.block_offset.y > 30) {
+		if(abs(currentSensState.block_offset.x) < Tracking::kFarEngoughToGoForth_px || currentSensState.block_offset.y > 30) {
+			// += to make it so that we do not move if the block is aligned but very close to the robot
+			// essentialy nullifying the previous if
 			motorVels += kFollowCamBaseVel;
 		}
 	}
 
-
-
-	
-	// Serial.print("Motorvel ");
-	// mt::print(motorVels, 6);
-	// Serial.print(" :: ");
-	// mt::println(currentSensState.block_offset);
-	
 	update_wheels(motorVels, it_time.delta_s);
 }
 
 void Drivebase::update_followPath(Iteration_time it_time)
 {
-	// Serial.print("Follow path ");
-	// Serial.print(path.index);
-	// Serial.print("/");
-	// Serial.println(path.size);
-	if(path.finished())
-	{
+	if(path.finished()) {
 		Serial.println("Fiiinhished");
 		finish=true;
 		return;
 	}
+	
 	Paths::CheckPoint checkPoint = path.current();
 
 	// Go to next checkpoint in path if the current checkpoint is done
@@ -174,15 +152,6 @@ void Drivebase::update_follow_arc(Paths::CheckPoint follow, Iteration_time it_ti
 	// 1. Find the arc that takes us from our current position to
 	// the target position with a target heading
 	Paths::Arc arc = Paths::arc_from_targetHeading(pos, follow.targPos, follow.targHeading);
-	
-	// Serial.print("Follow arc ");
-	// mt::print(pos);
-	// Serial.print(" :: ");
-	// mt::print(heading);
-	// Serial.print(" => ");
-	// mt::print(follow.targPos);
-	// Serial.print(" :: ");
-	// mt::println(follow.targHeading);
 
 	mt::Vec2 speed_correction = correct_heading();
 	if(follow.backward) { 
@@ -209,17 +178,10 @@ void Drivebase::update_follow_arc(Paths::CheckPoint follow, Iteration_time it_ti
 		// 3. Find the motor speeds needed to follow said arc, assuming
 		motor_speeds = arc_to_motorVels(arc, angular_vel);
 	} else {
-		// Serial.print("Direct ");
-		// Serial.println(targVel);
 		motor_speeds = { targVel, targVel };
 	}
-	// Serial.print("Motor speeds: ");
-	// println(motor_speeds);
-	// print(motor_speeds);
+
 	motor_speeds += speed_correction;
-	// Serial.print(" | ");
-	// print(motor_speeds);
-	// Serial.println();
 	if(follow.backward) {
 		update_wheels(-motor_speeds, arc.tengeantStart, it_time.delta_s);
 	} else {
@@ -228,19 +190,9 @@ void Drivebase::update_follow_arc(Paths::CheckPoint follow, Iteration_time it_ti
 }
 void Drivebase::update_turn(Paths::CheckPoint follow, Iteration_time it_time)
 {
-	// Serial.print("Follow turn ");
-	// mt::print(heading);
-	// Serial.print(" => ");
-	// mt::println(follow.targHeading);
-
 	float err = abs(headingError.error);
-	float targVel = velocity_for_point(abs(wheelsVelocities.left), 0.0, 0.08, err*kRobotWidth, kAccel, it_time.delta_s);
+	float targVel = velocity_for_point(abs(wheelsVelocities.left), 0.0, kTurnSpeed, err*kRobotWidth, kAccel, it_time.delta_s);
 
-	// if(err > PI/2) {
-	// 	motor_speed = 0.3;
-	// } else if(err > PI/4) {
-	// 	motor_speed = 0.1;
-	// }
 	if(headingError.error < 0) {
 		targVel = -targVel;
 	}
@@ -287,8 +239,6 @@ float Drivebase::velocity()
 
 void Drivebase::update_wheels(mt::Vec2 target_wheelVels, double delta_s)
 {
-	// Serial.print("Targ left: ");
-	// Serial.println(target_wheelVels.left);
 	leftWheel.error = update_error(leftWheel.error, wheelsVelocities.left, target_wheelVels.left, delta_s);
 	rightWheel.error = update_error(rightWheel.error, wheelsVelocities.right, target_wheelVels.right, delta_s);
 }
@@ -297,7 +247,6 @@ void Drivebase::update_wheels(mt::Vec2 target_wheelVels, mt::Vec2 target_heading
 	update_wheels(target_wheelVels, delta_s);
 
 	float angle_error = mt::clamp(mt::signed_angle(heading, target_heading), -PI/2, PI/2);
-
 	headingError = update_error(headingError, angle_error, 0.0, delta_s);
 }
 
@@ -310,21 +259,6 @@ HardwareState Drivebase::aggregate(HardwareState hrdwState)
 // Gives a velocity that tries to follow a trapezoidal acceleration patern
 float velocity_for_point(float current_vel, float target_vel, float max_vel, float target_dist, float accel, float delta_s)
 {
-	// Serial.print("Params ");
-	// Serial.print(current_vel);
-	// Serial.print(" :: ");
-	// Serial.print(target_vel);
-	// Serial.print(" :: ");
-	// Serial.print(max_vel);
-	// Serial.print(" :: ");
-	// Serial.print(target_dist);
-	// Serial.print(" :: ");
-	// Serial.print(accel);
-	// Serial.print(" :: ");
-	// Serial.println(delta_s);
-
-
-
 	// See fig.1
 	float decel = accel-0.01; // Slightly gentler decel
 

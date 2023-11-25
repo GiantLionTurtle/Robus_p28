@@ -15,8 +15,8 @@ struct Line {
 	Vec2 line_intersection(Line const& l2) const;
 	Vec2 closest_point(Vec2 const& pt) const;
 	Line offset(Vec2 const& by) const;
-	float dist(mt::Vec2 const& pos);
-	float dist_signed(mt::Vec2 const& pos);
+	float dist(mt::Vec2 const& pos) const;
+	float dist_signed(mt::Vec2 const& pos) const;
 };
 
 template<typename T>

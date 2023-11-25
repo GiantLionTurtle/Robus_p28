@@ -10,13 +10,7 @@
 #define BLUE_SIGNATURE 3
 #define YELLOW_SIGNATURE 2
 
-
 namespace p28 {
-	
-static mt::Vec2 claw_pos(54, 167);
-static mt::Line claw_line { .origin=claw_pos, .dir=mt::Vec2(86, 17)-claw_pos};
-// static mt::i32Box claw_box{.bottomLeft=mt::i32Vec2(42, 178), .topRight=mt::i32Vec2(68, 200)};
-static mt::i32Box claw_box{.bottomLeft=mt::i32Vec2(35, 165), .topRight=mt::i32Vec2(75, 210)};
 
 #ifdef ENABLE_CAMERA
 
@@ -24,7 +18,7 @@ void Camera::init()
 {
 	pixy.init();
 	pixy.setLamp(1, 1);
-	pixy.setCameraBrightness(138);
+	pixy.setCameraBrightness(Tracking::kCameraBrightness);
 }
 
 mt::i32Vec2 centroid(Block block)
@@ -37,17 +31,16 @@ mt::i32Box box(Block block)
 }
 Pair<mt::Vec2, bool> Camera::blockOffset(int color)
 {
+	using namespace Tracking;
+
 	// grab blocks!
 	pixy.ccc.getBlocks();
 
 	int target_ind = -1;
-
 	int biggest_block_size = 0;
-	// Serial.print("n blocks: ");
-	// Serial.println(pixy.ccc.numBlocks);
 	for(int i = 0; i < pixy.ccc.numBlocks; ++i) {
 		auto block = pixy.ccc.blocks[i];
-		// block.print();
+
 		if(signature_to_color(block.m_signature) == color) {
 			int block_size = mt::magnitude2(mt::i32Vec2(block.m_width, block.m_height));
 			if(block_size < biggest_block_size)
@@ -56,28 +49,16 @@ Pair<mt::Vec2, bool> Camera::blockOffset(int color)
 			biggest_block_size = block_size;
 		}
 	}
-	// Serial.print("blocl ind: ");
-	// Serial.print(target_ind);
-	// Serial.println();
 
 	// either no block of the correct color was found or the claw was not found
 	if(target_ind != -1) {
 		mt::i32Vec2 target_centroid = centroid(pixy.ccc.blocks[target_ind]);
 		mt::i32Box target_box = box(pixy.ccc.blocks[target_ind]);
 		
-		// Serial.print("Target centroid: ");
-		// println(target_centroid);
-		bool inside = claw_box.box_inside(target_box);
-
-
-		// if(inside) {
-		// 	Serial.println("INSIDE");
-		// }
-	
-		float diff_x = claw_line.dist_signed(mt::Vec2(target_centroid.x, target_centroid.y));
-		// Serial.print("Diff x ");
-		// Serial.println(diff_x);
-		return {{ mt::clamp(diff_x, -50, 50), mt::clamp(claw_pos.y-target_centroid.y, -50, 50) },  inside };
+		bool inside = kClawBox.box_inside(target_box);	
+		float diff_x = kClawLine.dist_signed(mt::Vec2(target_centroid.x, target_centroid.y));
+		return {{ 	mt::clamp(diff_x, -kClampOffset, kClampOffset), 
+					mt::clamp(kClawPos.y-target_centroid.y, -kClampOffset, kClampOffset) },  inside };
 	}
 	return { { 0 }, false };
 }

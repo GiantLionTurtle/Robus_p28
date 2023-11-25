@@ -3,6 +3,7 @@
 #define P28_CONSTANTS_HPP_
 
 #include "CompileFlags.hpp"
+#include <Utils/Geometry.hpp>
 
 #include <Arduino.h>
 
@@ -44,7 +45,7 @@ constexpr float KMinVel = 0.03;
 constexpr float kEndSegmentVel = 0.08;
 constexpr float kFollowLineBaseVel = 0.1;
 constexpr float kFollowCamBaseVel = 0.08;
-
+constexpr float kTurnSpeed = 0.08;
 
 // Control constants 
 constexpr float kMotorHarwareStateMixFactor = 0.85; // Used for exponential moving average between 2 hardware states
@@ -53,13 +54,11 @@ constexpr float kPathFollower_distEpsilon2 = 0.0001; // square of precision (1cm
 constexpr float kPathFollower_headingEpsilon2 = 0.00005; // square of precision
 constexpr float kConveyor_speed = 5; //in RPM #define
 
-
 // Code constants and constructs
 using time_t = long unsigned int;
 constexpr float kInfinity = 100000;
 constexpr unsigned int kMaxCheckPointForPath = 20;
 enum class COLOR { RED, GREEN, BLUE, YELLOW, BLACK, WHITE };
-
 
 // Bin motors
 constexpr int kcolor_selected_angle_open = 65; // nombre a determiner
@@ -76,6 +75,23 @@ constexpr int kYellow = 3;
 constexpr int KAll = 4;
 
 constexpr int kDumpPointId = 57;
+
+namespace Tracking {
+
+constexpr float kAlignedEnough_magPx2 = 0.8;
+constexpr int kBackOff_px = -7;
+constexpr int kFarEngoughToGoForth_px = 30;
+constexpr int kAlgignedEnoughToGoForth_px = 7;
+constexpr float kClampOffset = 50.f;
+
+constexpr unsigned char kCameraBrightness = 138;
+
+const mt::Vec2 kClawPos(54, 167);
+const mt::Line kClawLine { .origin=kClawPos, .dir=mt::Vec2(86, 17)-kClawPos};
+const mt::i32Box kClawBox{.bottomLeft=mt::i32Vec2(35, 165), .topRight=mt::i32Vec2(75, 210)};
+
+} // !Tracking
+
 
 } // !p28
 

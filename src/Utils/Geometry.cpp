@@ -27,7 +27,7 @@ Line Line::offset(Vec2 const& by) const
 {
 	return Line { .origin=origin+by, .dir=dir};
 }
-float Line::dist(mt::Vec2 const& pos)
+float Line::dist(mt::Vec2 const& pos) const
 {
 	// https://www.omnicalculator.com/math/triangle-height
 	double a, b, c; // the side lengths of the triangle;
@@ -40,9 +40,8 @@ float Line::dist(mt::Vec2 const& pos)
 	double h = 0.5 * sqrt((a + b + c) * (-a + b + c) * (a - b + c) * (a + b - c)) / b;
 	
 	return h;
-
 }
-float Line::dist_signed(mt::Vec2 const& pos)
+float Line::dist_signed(mt::Vec2 const& pos) const
 {
 	mt::Vec2 ptA = origin;
 	mt::Vec2 ptB = origin+dir;

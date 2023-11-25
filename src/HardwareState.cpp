@@ -3,7 +3,7 @@
 #include <LibRobus.h>
 #include "Constants.hpp"
 #include "Robot.hpp"
-#include "Servomotors.hpp"
+#include "ExtraMotors.hpp"
 
 
 #define CUP_SERVO_ID 0
@@ -11,7 +11,7 @@
 
 namespace p28 {
 
-static ExtraMotor extra_motor;
+static ExtraMotors extra_motors;
 
 HardwareState HardwareState::mix(HardwareState hrdwState) const
 {
@@ -22,7 +22,7 @@ HardwareState HardwareState::mix(HardwareState hrdwState) const
 }
 HardwareState HardwareState::initial()
 {
-	extra_motor.init();
+	extra_motors.init();
 	HardwareState out;
 	out.motors = { 0.0f, 0.0f };
 	
@@ -46,14 +46,14 @@ void set_hardwareState (HardwareState hwst)
 	SERVO_SetAngle (0 , hwst.clawAngle);
 	SERVO_SetAngle (1, hwst.armAngle);
 
-	int n_steps = mt::clamp(hwst.conveyorSteps-extra_motor.conveyor_steps, -10, 10);
-	extra_motor.conveyor.step(n_steps);
-	extra_motor.conveyor_steps += n_steps;
+	int n_steps = mt::clamp(hwst.conveyorSteps-extra_motors.conveyor_steps, -10, 10);
+	extra_motors.conveyor.step(n_steps);
+	extra_motors.conveyor_steps += n_steps;
 
-	extra_motor.trap.write(hwst.trapAngle);
-	extra_motor.bin_red.write(hwst.bin_select_angles [kRed]);
-	extra_motor.bin_green.write(hwst.bin_select_angles [KGreen]);
-	extra_motor.bin_blue.write(hwst.bin_select_angles [kBlue]);
+	extra_motors.trap.write(hwst.trapAngle);
+	extra_motors.bin_red.write(hwst.bin_select_angles [kRed]);
+	extra_motors.bin_green.write(hwst.bin_select_angles [KGreen]);
+	extra_motors.bin_blue.write(hwst.bin_select_angles [kBlue]);
  
 }
 
