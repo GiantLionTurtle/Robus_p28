@@ -13,28 +13,17 @@ namespace p28 {
         caractere = Serial1.read();
         reponse += (String)(caractere);
     }
-    if(reponse == "R")
-    {
+    if(reponse == "R") {
         color_selected = kRed;
-    }
-    else if(reponse == "G")
-    {
+    } else if(reponse == "G") {
         color_selected = KGreen;
-    }
-    else if(reponse == "B")
-    {
+    } else if(reponse == "B") {
        color_selected = kBlue;
-    }
-    else if(reponse == "Y")
-    {
+    } else if(reponse == "Y") {
        color_selected = kYellow;
-    }
-    else if(reponse == "A")
-    {
-        color_selected = KAll;
-    }
-    else 
-    {
+    } else if(reponse == "A") {
+        color_selected = kAllColors;
+    } else {
         color_selected = -1;
     }
     return color_selected;

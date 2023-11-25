@@ -75,7 +75,7 @@ void Robot::gameLogic(SensorState const& currSensState,  SensorState const& prev
 	}
 
 	int internalColor = targetColor;
-	if(internalColor == KAll) {
+	if(internalColor == kAllColors) {
 		internalColor = kRed;
 	}
 

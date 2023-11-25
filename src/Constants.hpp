@@ -72,7 +72,7 @@ constexpr int kRed = 0;
 constexpr int KGreen = 1;
 constexpr int kBlue = 2;
 constexpr int kYellow = 3;
-constexpr int KAll = 4;
+constexpr int kAllColors = 4;
 
 constexpr int kDumpPointId = 57;
 

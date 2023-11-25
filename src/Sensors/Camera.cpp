@@ -41,7 +41,7 @@ Pair<mt::Vec2, bool> Camera::blockOffset(int color)
 	for(int i = 0; i < pixy.ccc.numBlocks; ++i) {
 		auto block = pixy.ccc.blocks[i];
 
-		if(signature_to_color(block.m_signature) == color) {
+		if(signature_to_color(block.m_signature) == color || color == kAllColors) {
 			int block_size = mt::magnitude2(mt::i32Vec2(block.m_width, block.m_height));
 			if(block_size < biggest_block_size)
 				continue;
