@@ -36,13 +36,13 @@ namespace p28 {
                 break;
             case KGreen:
                 r = 0;
-                g = 50;
-                b = 0;
+                g = 0;
+                b = 50;
                 break;
             case kBlue:
                 r = 0;
-                g = 0;
-                b = 50;
+                g = 50;
+                b = 0;
                 break;
             case kYellow:
                 r = 50;
