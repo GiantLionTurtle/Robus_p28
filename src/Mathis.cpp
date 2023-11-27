@@ -20,7 +20,7 @@
     SERVO_Disable(1);
     
    float distance;
-   while (true){
+   while (true){ 
     int retour = ROBUS_ReadIR(0);
     //Serial.println(retour);
     distance = ((-.0242*retour)+23.646);

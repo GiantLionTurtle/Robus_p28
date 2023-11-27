@@ -9,6 +9,7 @@
 
 #include "Controller.hpp"
 #include "Sensors/Camera.hpp"
+#include "LED.hpp"
 
 using namespace p28;
 
@@ -71,6 +72,7 @@ void loop()
 	if(ROBUS_IsBumper(RIGHT)) {
 		// Serial.println("sankdns");
 		robot.set_target_color(controller_color);
+		OpenLED(controller_color);
 		// Serial.println("alalla");
 		bool break_ = false;
 		while(true && !break_) {
