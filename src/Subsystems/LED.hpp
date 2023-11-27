@@ -5,7 +5,9 @@
 #include "Controller.hpp"
 
 namespace p28{
-    void OpenLED (int controller_color);
+    void innitStrip();
+    void LEDOn(int r, int g, int b);
+    void OpenLED (int color);
 }
 
 #endif

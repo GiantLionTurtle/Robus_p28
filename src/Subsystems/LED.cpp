@@ -1,28 +1,64 @@
 #include "Controller.hpp"
+#include <Adafruit_NeoPixel.h> 
+
+#define LED_PIN 10 
+
+#define LED_COUNT 11 
+
+#define TOTAL_LED_COUNT 14 
+
+
+static Adafruit_NeoPixel strip(TOTAL_LED_COUNT, LED_PIN, NEO_GRB + NEO_KHZ800); 
+
 
 namespace p28 {
-    void OpenLED(int controller_color){
-        int color;
-        color = get_controller_color();
+    void innitStrip(){
+        strip.begin();
+        strip.show();
+    }
+
+    void LEDOn(int r, int g, int b){
+        for(int i=0; i < TOTAL_LED_COUNT; i++){
+            strip.setPixelColor(i, strip.Color(r, g, b));
+            strip.show();
+            Serial.println(i);
+        }
+    }
+
+    void OpenLED(int color){
+        int r, g, b;
         switch(color)
         {
-            case 0:
-                Serial.println("Red");
+            case kRed:
+                r = 50;
+                g = 0;
+                b = 0;
                 break;
-            case 1:
-                Serial.println("Green");
+            case KGreen:
+                r = 0;
+                g = 50;
+                b = 0;
                 break;
-            case 2:
-                Serial.println("Blue");
+            case kBlue:
+                r = 0;
+                g = 0;
+                b = 50;
                 break;
-            case 3:
-                Serial.println("Yellow");
+            case kYellow:
+                r = 50;
+                g = 0;
+                b = 50;
                 break;
-            case 4:
-                Serial.println("All");
+            case kAllColors:
+                r = 100;
+                g = 100;
+                b = 100;
                 break;
             default:
-                Serial.println("Nothing");
+                r = 100;
+                g = 100;
+                b = 100;
         }
+        LEDOn(r, g, b);
     }
 }
