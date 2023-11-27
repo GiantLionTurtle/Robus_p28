@@ -33,7 +33,7 @@ struct SensorState {
 };
 
 SensorState get_sensors(int targetColor);
-void print (SensorState state);
+void print(SensorState state);
 } // !p28
 
 

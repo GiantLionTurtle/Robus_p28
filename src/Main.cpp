@@ -9,7 +9,7 @@
 
 #include "Controller.hpp"
 #include "Sensors/Camera.hpp"
-#include "LED.hpp"
+#include "Subsystems/LED.hpp"
 
 using namespace p28;
 
@@ -46,7 +46,7 @@ void setup()
 	prevSensState = sensState;
 	
 
-	set_hardwareState(HardwareState::initial());
+	apply_hardwareState(HardwareState::initial(), it_time);
 
 	robot.init();
 	
@@ -101,7 +101,8 @@ bool control_step()
 	// print(hrdwState.motors);
 	// Serial.println();
 
-	set_hardwareState(hrdwState);
+	hrdwState.motors = { -0.2, -0.2 };
+	apply_hardwareState(hrdwState, it_time);
 
 	prevSensState = sensState;
 
@@ -112,7 +113,7 @@ bool control_step()
 	
 	// }
 	if(ROBUS_IsBumper(FRONT)) {
-		set_hardwareState(HardwareState());
+		apply_hardwareState(HardwareState(), it_time);
 		return true;
 	}
 	// print(robot.drvb.pos);
