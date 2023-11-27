@@ -43,7 +43,7 @@ void print(SensorState state)
 	Serial.println();
 }
 
-SensorState get_sensors()
+SensorState get_sensors(int targetColor)
 {
 	SensorState newSensorState;
 
@@ -54,7 +54,7 @@ SensorState get_sensors()
 	newSensorState.lineDetector = get_ir_line();
 	newSensorState.bumpersState = { ROBUS_IsBumper(LEFT), ROBUS_IsBumper(RIGHT) };
 
-	tie(newSensorState.block_offset, newSensorState.block_in_claw) = camera.blockOffset(kRed);
+	tie(newSensorState.block_offset, newSensorState.block_in_claw) = camera.blockOffset(targetColor);
 
 	// Encoders must be placed last to minimize unacounted for delays
 	newSensorState.encoders_ticks = { ENCODER_Read(LEFT), ENCODER_Read(RIGHT) };

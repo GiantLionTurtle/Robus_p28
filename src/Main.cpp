@@ -19,7 +19,6 @@ Iteration_time it_time;
 HardwareState hrdwState;
 
 int ktest_color = 0;
-
 unsigned int time_to_delay_ms;
 
 #ifdef PRINT_LOOP_DURATION_AVG
@@ -42,8 +41,9 @@ void setup()
 
 	Serial.println("Begin!");
 
-	sensState = get_sensors();
+	sensState = get_sensors(-1);
 	prevSensState = sensState;
+	
 
 	set_hardwareState(HardwareState::initial());
 
@@ -65,7 +65,7 @@ void loop()
 {
 	it_time = it_time.current();
 
-	int controller_color = 0;//get_controller_color();
+	int controller_color = get_controller_color();
 
 	//if(controller_color != -1) {
 	if(ROBUS_IsBumper(RIGHT)) {
@@ -87,7 +87,7 @@ bool control_step()
 {
 	delay(time_to_delay_ms);
 	unsigned int loop_start = millis();
-	sensState = get_sensors();
+	sensState = get_sensors(robot.targetColor);
 
 	it_time = it_time.current();
 
