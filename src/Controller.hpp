@@ -6,5 +6,4 @@
 namespace p28 {
 
  int get_controller_color();
-
 }
