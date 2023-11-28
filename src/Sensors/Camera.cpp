@@ -35,12 +35,15 @@ void Camera::blockOffset(int targcolor, mt::Vec2& offset, bool& in_claw, int& co
 	// grab blocks!
 	pixy.ccc.getBlocks();
 
+
+	color = targcolor;
 	int target_ind = -1;
 	int32_t biggest_block_size = 0;
-	int target_color = targcolor;
 	for(int i = 0; i < pixy.ccc.numBlocks; ++i) {
 		auto block = pixy.ccc.blocks[i];
 		int block_color = signature_to_color(block.m_signature);
+		// Serial.print("Block ");
+		// Serial.println(block_color);
 		if(block_color != targcolor && targcolor != kAllColors)
 			continue;
 
@@ -66,12 +69,14 @@ void Camera::blockOffset(int targcolor, mt::Vec2& offset, bool& in_claw, int& co
 		mt::i32Vec2 target_centroid = centroid(pixy.ccc.blocks[target_ind]);
 		mt::i32Box target_box = box(pixy.ccc.blocks[target_ind]);
 		
-		bool inside = kClawBox.box_inside(target_box);	
+		in_claw = kClawBox.box_inside(target_box);	
 		float diff_x = kClawLine.dist_signed(mt::Vec2(target_centroid.x, target_centroid.y));
-		return {{ 	mt::clamp(diff_x, -kClampOffset, kClampOffset), 
-					mt::clamp(kClawPos.y-target_centroid.y, -kClampOffset, kClampOffset) },  inside };
+		offset = { 	mt::clamp(diff_x, -kClampOffset, kClampOffset), 
+					mt::clamp(kClawPos.y-target_centroid.y, -kClampOffset, kClampOffset) };
+	} else {
+		offset = { 0.0 };
+		in_claw = false;
 	}
-	return { { 0 }, false };
 }
 #else 
 void Camera::init()
