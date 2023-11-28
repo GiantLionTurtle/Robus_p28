@@ -29,19 +29,27 @@ HardwareState HardwareState::initial()
 	return out;
 }
 
-void set_hardwareState (HardwareState hwst)
+void apply_hardwareState(HardwareState hwst, Iteration_time it_time)
 {
+	bool upd_buzzer = false;
 	if(abs(hwst.motors.left) == 1.0 || abs(hwst.motors.right) == 1.0) {
 		MOTOR_SetSpeed (RIGHT, 0.0);
 		MOTOR_SetSpeed (LEFT, 0.0);
 		Serial.println("motor speeds out of bounds");
-
+		upd_buzzer = true;
 	} else {
-		// Serial.print("Set ");
-		// mt::println(hwst.motors);
 		MOTOR_SetSpeed (RIGHT, hwst.motors.right);      //Sets the motors speed according to the hardware state received
 		MOTOR_SetSpeed (LEFT, hwst.motors.left);
+		upd_buzzer = hwst.motors.left < 0.0 && hwst.motors.right < 0.0;
 	}
+
+#ifdef ENABLE_BUZZER
+	if((it_time.time_ms/500) % 2 == 0 && upd_buzzer) {
+		AX_BuzzerON(200);
+	} else {
+		AX_BuzzerOFF();
+	}
+#endif
 
 	SERVO_SetAngle (0 , hwst.clawAngle);
 	SERVO_SetAngle (1, hwst.armAngle);

@@ -15,4 +15,6 @@
 
 // #define PRINT_LOOP_DURATION_AVG
 
+// #define ENABLE_BUZZER
+
 #endif

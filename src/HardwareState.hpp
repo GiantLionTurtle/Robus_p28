@@ -3,7 +3,7 @@
 
 #include "Utils/Vec2.hpp"
 #include "Constants.hpp"
-#include <Stepper.h>
+#include "Iteration_time.hpp"
 
 /*
 	How hardware state should work
@@ -36,7 +36,7 @@ struct HardwareState {
 
 };
 
-void set_hardwareState(struct HardwareState hwst);
+void apply_hardwareState(HardwareState hwst, Iteration_time it_time);
 
 void print (HardwareState state);
 
