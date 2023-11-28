@@ -50,9 +50,10 @@ struct DumpObjective {
 	enum Steps {
 		Start = 0,
 		GetToLine = 1,
-		GetToDump = 2,
-		DoDump = 3,
-		Done = 4
+		AlignToLine = 2,
+		GetToDump = 3,
+		DoDump = 4,
+		Done = 5
 	};
 	int step;
 };
@@ -74,8 +75,9 @@ struct Robot {
 	int drop_zone;
 	int foundBlockColor { -1 };
 	time_t trapReleaseTimer { 0 };
+	time_t alignToLineTimer { 0 };
 	bool inHunt { false };
-	bool waitInstruct {true};
+	bool waitInstruct {false};
 
 	int nBlocksInCycle { 0 };
 

@@ -12,7 +12,7 @@ const float Foot = 0.3048;
 
 const mt::Vec2 kDimensions { 2.0, 2.0 };
 
-const float kDumpBorderOffset = 0.15;
+const float kDumpBorderOffset = 0.21;
 
 const mt::Vec2 kDumps[4] {
 	{ kDumpBorderOffset, kDumpBorderOffset }, // Red

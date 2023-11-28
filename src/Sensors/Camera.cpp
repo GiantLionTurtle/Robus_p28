@@ -44,11 +44,11 @@ void Camera::blockOffset(int targcolor, mt::Vec2& offset, bool& in_claw, int& co
 		int block_color = signature_to_color(block.m_signature);
 		// Serial.print("Block ");
 		// Serial.println(block_color);
-		if(block_color != targcolor && targcolor != kAllColors)
+		if(block_color == -1 || (block_color != targcolor && targcolor != kAllColors))
 			continue;
 
 		// Block size with advantage for closer blocks
-		int32_t block_size = mt::magnitude2(mt::i32Vec2(block.m_width, block.m_height)) * (kCamYView-block.m_y)/10;
+		int32_t block_size = mt::magnitude2(mt::i32Vec2(block.m_width, block.m_height))/10 * (kCamYView-block.m_y)/10 * (block.m_age/10+1);
 		// Serial.print("Blocksize ");
 		// mt::print(mt::i32Vec2(block.m_width, block.m_height));
 		// Serial.print(",  ");

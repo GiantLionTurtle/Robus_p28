@@ -65,8 +65,11 @@ void Drivebase::update_followLine(SensorState currentSensState, SensorState prev
 	}
 	if(line == 0) {
 		finish = true;
+		Serial.println("Finish line!!");
+	} else {
+		finish = false;
 	}
-	//.02 is a magic number for the moment
+
 	mt::Vec2 motorVel = mt::Vec2(dir, -dir)*kFollowLineCorrectCoeff + kFollowLineBaseVel;
 	update_wheels(motorVel, it_time.delta_s);
 }
@@ -191,7 +194,8 @@ void Drivebase::update_follow_arc(Paths::CheckPoint follow, Iteration_time it_ti
 void Drivebase::update_turn(Paths::CheckPoint follow, Iteration_time it_time)
 {
 	float err = abs(headingError.error);
-	float targVel = velocity_for_point(abs(wheelsVelocities.left), 0.0, kTurnSpeed, err*kRobotWidth, kAccel, it_time.delta_s);
+	float targVel = velocity_for_point((abs(wheelsVelocities.left) + abs(wheelsVelocities.right))/2, 0.0, 
+			kTurnSpeed, err*kRobotWidth, kAccel, it_time.delta_s);
 
 	if(headingError.error < 0) {
 		targVel = -targVel;
@@ -231,7 +235,7 @@ float Motor::hardware_output() const
 float Drivebase::velocity()
 {
 	if(trajectory_radius == kInfinity) {
-		return abs(wheelsVelocities.left); // Going in a perfect straigth line, both weels go at the drivebase velocity
+		return abs(wheelsVelocities.left + wheelsVelocities.right) / 2.0f; // Going in a perfect straigth line, both weels go at the drivebase velocity
 	} else {
 		return abs(angular_velocity * trajectory_radius);
 	}
@@ -270,22 +274,16 @@ float velocity_for_point(float current_vel, float target_vel, float max_vel, flo
 									vel_diff * (time_to_target_vel) / 2; // Zone B
 
 	if(target_dist >= dist_to_target_vel) {
-		float new_speed = current_vel + accel * delta_s;
-		// Serial.print("Accel ");
-		// Serial.println(new_speed);
-		return min(new_speed, max_vel);
+		return min(current_vel + accel * delta_s, max_vel);
 	} else {
-		float new_speed = current_vel + accel * delta_s;
-		// Serial.print("Decel ");
-		// Serial.println(new_speed);
 		return max(current_vel - decel * delta_s, target_vel);
 	}
 }
 
 // Public functions
-float ticks_to_dist(int32_t ticks)
+float ticks_to_dist(int32_t ticks, float rad)
 {
-	return static_cast<float>(ticks) / kTicksPerRotation * TWO_PI * kWheelRadius;
+	return static_cast<float>(ticks) / kTicksPerRotation * TWO_PI * rad;
 }
 mt::Vec2 ticks_to_dist(mt::i32Vec2 Ticks)
 {

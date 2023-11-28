@@ -92,7 +92,7 @@ private:
 };
 
 // Conversion for encoders to distance (meters)
-float ticks_to_dist(int32_t ticks);
+float ticks_to_dist(int32_t ticks, float rad = kWheelRadius);
 mt::Vec2 ticks_to_dist(mt::i32Vec2 bothTicks);
 // Conversion distance (meters) to encoder ticks
 int32_t dist_to_ticks(float dist);

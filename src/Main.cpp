@@ -62,7 +62,6 @@ void loop()
 
 	int controller_color = get_controller_color();
 	if(controller_color != -1) {
-		robot.waitInstruct = false;
 	// if(ROBUS_IsBumper(RIGHT)) {
 		robot.set_target_color(controller_color);
 		robot.start_search();
@@ -88,7 +87,6 @@ void calibration_sequence()
 	while(robot.dumpObjective.step != DumpObjective::Done && !break_) {
 		break_ = control_step();
 	}
-	robot.waitInstruct = true;
 	Serial.println("Done calibration sequence");
 }
 
@@ -113,12 +111,6 @@ bool control_step()
 	// }
 	prevSensState = sensState;
 
-	if(ROBUS_IsBumper(FRONT)) {
-		apply_hardwareState(HardwareState(), it_time);
-		return true;
-	}
-
-	return robot.waitInstruct;
 	// print(robot.drvb.pos);
 	//  Serial.print(" | ");
 	//  print(robot.drvb.heading, 4);
@@ -142,5 +134,8 @@ bool control_step()
 		loop_av = 0;
 	}
 #endif
-	return false;
+	if(ROBUS_IsBumper(FRONT) || robot.waitInstruct) {
+		apply_hardwareState(HardwareState(), it_time);
+		return true;
+	}
 }

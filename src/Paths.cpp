@@ -202,11 +202,11 @@ void gen_getToLine(mt::Vec2 currPos, mt::Vec2 currHeading, int target_color, Pat
 	int prev_color = target_color == 0 ? kYellow : target_color-1;
 
 	mt::Vec2 midPoint = (Field::kDumps[target_color]+Field::kDumps[prev_color]) / 2;
-	mt::Vec2 perpToLine = mt::cw_perpendicular(Field::kDumps[target_color]-Field::kDumps[prev_color]);
-	dst.add_checkPoint(CheckPoint(midPoint, perpToLine));
-	dst.add_turn(mt::to_radians(90));
-	//fix(dst, dst);
-}
+	dst.add_checkPoint(CheckPoint::make_turn(midPoint-currPos));
+	// dst.add_checkPoint(CheckPoint(midPoint, perpToLine));
+	// dst.add_turn(mt::to_radians(90));
+	dst.add_line(2.0, 0.0, false, 0.16);
+ }
 void gen_drop(mt::Vec2 currPos, mt::Vec2 currHeading, int target_color, Path& dst)
 {
 	Serial.print("Gen drop ");
@@ -240,7 +240,9 @@ void gen_realSearchPath(mt::Vec2 currPos, mt::Vec2 currHeading, Path& dst)
 	dst.reset();
 
 	dst.add_checkPoint(CheckPoint(currPos, currHeading));
-	
+	// dst.add_line(1.1, 0.0f, false, 0.2f);
+	// return;
+
 	if (currHeading.x * currHeading.y > 1){ // green and yellow dump location
 		dst.add_line(0.42, 0.0f, false, 0.2f);
 		dst.add_turn(mt::to_radians(45));

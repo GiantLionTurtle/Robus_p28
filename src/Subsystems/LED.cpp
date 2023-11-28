@@ -15,7 +15,7 @@ namespace p28 {
     void innitStrip(){
         strip.begin();
         for(int i = LED_COUNT; i < TOTAL_LED_COUNT; i++){
-            strip.setPixelColor(i, strip.Color(255, 255, 255));
+            strip.setPixelColor(i, strip.Color(50, 50, 40));
             strip.show();
         }
     }
@@ -52,9 +52,9 @@ namespace p28 {
                 b = 50;
                 break;
             case kAllColors:
-                r = 100;
-                g = 100;
-                b = 100;
+                r = 0;
+                g = 0;
+                b = 0;
                 break;
             default:
                 r = 100;

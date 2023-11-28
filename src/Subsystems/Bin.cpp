@@ -16,6 +16,7 @@ void Bin::add_block()
 void Bin::release()
 {
     open_trap = true;
+    Serial.println("Release!! trap!");
     for(int i = 0; i < 4; ++i) {
         nb_of_blocks[i] = 0;
     }
@@ -40,7 +41,7 @@ HardwareState Bin::aggregate(HardwareState hardwareSate)
     if(color_selected < 3) {
         hardwareSate.bin_select_angles [color_selected] = kcolor_selected_angle_open;
     }
-    if(open_trap){
+    if(open_trap) {
         hardwareSate.trapAngle = kopen_trap_angle;
     }
    

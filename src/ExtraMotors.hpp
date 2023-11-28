@@ -6,6 +6,8 @@
 #include <Stepper.h>
 #include "Constants.hpp"
 
+namespace p28 {
+
 struct ExtraMotors {
 	MegaServo bin_red;     // bin1 is the servo for red
 	MegaServo bin_green;     // bin2 is the servo for green
@@ -16,6 +18,8 @@ struct ExtraMotors {
 
 	void init();
 };
+
+} // !p28
 
 
 #endif

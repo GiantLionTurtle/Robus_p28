@@ -37,7 +37,8 @@ void Robot::start_calibration()
 	dumpObjective.step = DumpObjective::GetToDump;
 	set_target_color(kRed);
 	drvb.setDriveMode(Drivebase::followLine);
-	nBlocksInCycle = 5;
+	// nBlocksInCycle = 5;
+	waitInstruct = false;
 }
 void Robot::start_search()
 {
@@ -45,6 +46,7 @@ void Robot::start_search()
 	Paths::gen_realSearchPath(drvb.pos, drvb.heading, drvb.path);
 	drvb.set_path(Iteration_time::first());
 	inHunt = true;
+	waitInstruct = false;
 }
 void Robot::update(SensorState prevSensState, SensorState currSensState, Iteration_time it_time)
 {
@@ -95,6 +97,7 @@ void Robot::gameLogic(SensorState const& currSensState,  SensorState const& prev
 			// Serial.print(" :: ");
 			// Serial.println(prevSensState.block_color);
 			bin.set_bin_color(currSensState.block_color);
+			bin.close(); // Should not be needed?
 		}
 	}
 	
@@ -109,10 +112,15 @@ void Robot::gameLogic(SensorState const& currSensState,  SensorState const& prev
 	// }
 
 }
+
 void Robot::dumpObjective_helper(SensorState const& currSensState, Iteration_time it_time)
 {
 	// Serial.print("Dump obj start ");
-	// Serial.println(dumpObjective.step);
+	// Serial.print(dumpObjective.step);
+	// Serial.print(" :: ");
+	// Serial.print(drvb.drvMode);
+	// Serial.print(" :: ");
+	// Serial.println(drvb.finish);
 	if(drvb.drvMode == Drivebase::followPath && drvb.finish && dumpObjective.step == DumpObjective::Done)
 	{
 		dumpObjective.step = DumpObjective::Start;
@@ -124,9 +132,26 @@ void Robot::dumpObjective_helper(SensorState const& currSensState, Iteration_tim
 		drvb.set_path(it_time);
 		dumpObjective.step++;
 	}
-	if(dumpObjective.step == DumpObjective::GetToLine && (drvb.finish || currSensState.lineDetector > 0)) {
-		drvb.setDriveMode(Drivebase::followLine);
+	if(dumpObjective.step == DumpObjective::GetToLine && (drvb.drvMode == Drivebase::followPath && (drvb.finish || total(currSensState.lineDetector)>4))) {
+		drvb.path.reset();
+		drvb.path.add_checkPoint(Paths::CheckPoint(drvb.pos, drvb.heading));
+		drvb.path.add_line(kLineSensorToCenter);
+		drvb.path.add_turn(mt::to_radians(30));
+		drvb.path.add_turn(mt::to_radians(60));
+		drvb.set_path(it_time);
+		Serial.println("Done get to line!");
 		dumpObjective.step++;
+		alignToLineTimer = it_time.time_ms;
+	}
+	if(dumpObjective.step == DumpObjective::AlignToLine && (drvb.finish 
+			|| (total(currSensState.lineDetector) > 4 && drvb.path.index > 2 && alignToLineTimer+500 < it_time.time_ms))) {
+		Serial.print("Done align! ");
+		Serial.print(total(currSensState.lineDetector));
+		Serial.print(" :: ");
+		Serial.println(drvb.path.index);
+		dumpObjective.step++;
+		drvb.setDriveMode(Drivebase::followLine);
+		alignToLineTimer = 0;
 	}
 	if(dumpObjective.step == DumpObjective::GetToDump && drvb.finish) {
 		drvb.pos = Field::kDumps[drop_zone];

@@ -35,7 +35,7 @@ constexpr int kClaw_openAngle = 82;
 constexpr int kClaw_closeAngle = 40; 
 constexpr int kConveyor_stepsPerRevolution = 2038;
 // Must be multiple of 3 cause it's a 4 pin stepper
-constexpr int kConveyor_stepsUntilUp = 5100;//kConveyor_stepsPerRevolution*2.4; 
+constexpr int kConveyor_stepsUntilUp = 5051;//kConveyor_stepsPerRevolution*2.4; 
 
 
 // Physical movement constraints of the robot
@@ -44,10 +44,11 @@ constexpr float kAccel = 0.2; // m/s^2
 constexpr float kMaxAngularVelocity = 0.8; // rad/s
 constexpr float KMinVel = 0.03;
 constexpr float kEndSegmentVel = 0.08;
-constexpr float kFollowLineBaseVel = 0.1;
+constexpr float kFollowLineBaseVel = 0.08;
+constexpr float kFollowLineCorrectCoeff = 0.01;
 constexpr float kFollowCamBaseVel = 0.08;
 constexpr float kFollowCamVelCoef = 0.002;
-constexpr float kFollowLineCorrectCoeff = 0.015;
+
 constexpr float kTurnSpeed = 0.08;
 
 // Control constants 
@@ -61,7 +62,7 @@ constexpr float kConveyor_speed = 5; //in RPM #define
 // Bin constants
 constexpr int kcolor_selected_angle_open = 65; // nombre a determiner
 constexpr int kopen_trap_angle = 0;
-constexpr int kclosed_trap_angle = 70; 
+constexpr int kclosed_trap_angle = 85; 
 constexpr int kopen_bin_angle = 65;  // for the 3 bin servos
 constexpr int kclosed_bin_angle = 20;
 constexpr int kBinCapacity = 5;
