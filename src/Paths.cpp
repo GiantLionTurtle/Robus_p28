@@ -237,36 +237,36 @@ void gen_realSearchPath(mt::Vec2 currPos, mt::Vec2 currHeading, Path& dst)
 	if (currHeading.x * currHeading.y > 1){ // green and yellow dump location
 		dst.add_line(0.3);
 		dst.add_turn(mt::to_radians(45));
+		dst.add_line(1);
+		dst.add_turn(mt::to_radians(-90));
+		dst.add_line(0.4);
+		dst.add_turn(mt::to_radians(-90));
+		dst.add_line(1.2);
+		dst.add_turn(mt::to_radians(90));
+		dst.add_line(0.4);
+		dst.add_turn(mt::to_radians(90));
 		dst.add_line(1.2);
 		dst.add_turn(mt::to_radians(-90));
 		dst.add_line(0.4);
 		dst.add_turn(mt::to_radians(-90));
-		dst.add_line(1.4);
-		dst.add_turn(mt::to_radians(90));
-		dst.add_line(0.4);
-		dst.add_turn(mt::to_radians(90));
-		dst.add_line(1.4);
-		dst.add_turn(mt::to_radians(-90));
-		dst.add_line(0.4);
-		dst.add_turn(mt::to_radians(-90));
-		dst.add_line(1.4);
+		dst.add_line(1.2);
 	}
 	else{ // red and blue location
 		dst.add_line(0.3);
 		dst.add_turn(mt::to_radians(-45));
+		dst.add_line(1.);
+		dst.add_turn(mt::to_radians(90));
+		dst.add_line(0.4);
+		dst.add_turn(mt::to_radians(90));
+		dst.add_line(1.2);
+		dst.add_turn(mt::to_radians(-90));
+		dst.add_line(0.4);
+		dst.add_turn(mt::to_radians(-90));
 		dst.add_line(1.2);
 		dst.add_turn(mt::to_radians(90));
 		dst.add_line(0.4);
 		dst.add_turn(mt::to_radians(90));
-		dst.add_line(1.4);
-		dst.add_turn(mt::to_radians(-90));
-		dst.add_line(0.4);
-		dst.add_turn(mt::to_radians(-90));
-		dst.add_line(1.4);
-		dst.add_turn(mt::to_radians(90));
-		dst.add_line(0.4);
-		dst.add_turn(mt::to_radians(90));
-		dst.add_line(1.4);
+		dst.add_line(1.2);
 	}
 }
 

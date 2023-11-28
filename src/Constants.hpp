@@ -14,19 +14,20 @@
 namespace p28 {
 
 // Physical dimensions of the robot 
-#ifdef AQUAMAN
 constexpr float kRobotWidth = 0.192;              // m
-#else
-constexpr float kRobotWidth = 0.1850;              // m (distance between the motor wheels)
-#endif
 constexpr float kRobotWidth_2 = kRobotWidth/2;  // m
 constexpr float kWheelRadius = 0.0382;           // m
 constexpr int kTicksPerRotation = 3200;
 constexpr float kCircumference = PI * kRobotWidth;
-constexpr float kColorSensorToCenter = 0.047; // distance forward of the color sensor (m)
 constexpr float kLineSensorToCenter = 0.07; // distance forward of the line sensor (m)
-constexpr int kIRSensor_apartDist = 213; // mm
-constexpr float kIRSensorBack_centerOffset = 84; // mm
+
+// Code constants and constructs
+using time_t = long unsigned int;
+constexpr float kInfinity = 100000;
+constexpr unsigned int kMaxCheckPointForPath = 20;
+enum class COLOR { RED, GREEN, BLUE, YELLOW, BLACK, WHITE };
+
+
 constexpr int kArm_restAngle = 47; 
 constexpr int kArm_downAngle = 30;
 constexpr int kArm_upAngle = 180; 
@@ -34,7 +35,7 @@ constexpr int kClaw_openAngle = 82;
 constexpr int kClaw_closeAngle = 40; 
 constexpr int kConveyor_stepsPerRevolution = 2038;
 // Must be multiple of 3 cause it's a 4 pin stepper
-constexpr int kConveyor_stepsUntilUp = 5190;//kConveyor_stepsPerRevolution*2.4; 
+constexpr int kConveyor_stepsUntilUp = 5100;//kConveyor_stepsPerRevolution*2.4; 
 
 
 // Physical movement constraints of the robot
@@ -45,7 +46,8 @@ constexpr float KMinVel = 0.03;
 constexpr float kEndSegmentVel = 0.08;
 constexpr float kFollowLineBaseVel = 0.1;
 constexpr float kFollowCamBaseVel = 0.08;
-constexpr float kFollowCamVelCoef = 0.4;
+constexpr float kFollowCamVelCoef = 0.002;
+constexpr float kFollowLineCorrectCoeff = 0.015;
 constexpr float kTurnSpeed = 0.08;
 
 // Control constants 
@@ -55,18 +57,14 @@ constexpr float kPathFollower_distEpsilon2 = 0.0001; // square of precision (1cm
 constexpr float kPathFollower_headingEpsilon2 = 0.00005; // square of precision
 constexpr float kConveyor_speed = 5; //in RPM #define
 
-// Code constants and constructs
-using time_t = long unsigned int;
-constexpr float kInfinity = 100000;
-constexpr unsigned int kMaxCheckPointForPath = 20;
-enum class COLOR { RED, GREEN, BLUE, YELLOW, BLACK, WHITE };
 
-// Bin motors
+// Bin constants
 constexpr int kcolor_selected_angle_open = 65; // nombre a determiner
 constexpr int kopen_trap_angle = 0;
 constexpr int kclosed_trap_angle = 70; 
 constexpr int kopen_bin_angle = 65;  // for the 3 bin servos
-constexpr int kclosed_bin_angle = 10;
+constexpr int kclosed_bin_angle = 20;
+constexpr int kBinCapacity = 5;
 
 //Color code for the controller
 constexpr int kRed = 0;
@@ -75,7 +73,6 @@ constexpr int kBlue = 2;
 constexpr int kYellow = 3;
 constexpr int kAllColors = 4;
 
-constexpr int kDumpPointId = 57;
 
 namespace Tracking {
 

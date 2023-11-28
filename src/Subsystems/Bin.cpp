@@ -16,6 +16,9 @@ void Bin::add_block()
 void Bin::release()
 {
     open_trap = true;
+    for(int i = 0; i < 4; ++i) {
+        nb_of_blocks[i] = 0;
+    }
 }
 void Bin::close()
 {
@@ -24,8 +27,8 @@ void Bin::close()
 }
 bool Bin::is_full()
 {
-    for(int i = 0; i < 3; i++){
-        if(nb_of_blocks [i] > 5){
+    for(int i = 0; i < 4; i++){
+        if(nb_of_blocks [i] > kBinCapacity){
             return true;
         }
     }

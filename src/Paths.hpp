@@ -58,6 +58,7 @@ void gen_getToLine(mt::Vec2 currPos, mt::Vec2 currHeading, int target_color, Pat
 void gen_drop(mt::Vec2 currPos, mt::Vec2 currHeading, int target_color, Path& dst);
 
 void gen_test();
+void gen_realSearchPath(mt::Vec2 currPos, mt::Vec2 currHeading, Path& dst);
 void gen_searchPath(mt::Vec2 currPos, mt::Vec2 currHeading, Path& dst);
 
 Arc arc_from_targetHeading(mt::Vec2 start, mt::Vec2 end, mt::Vec2 end_heading);

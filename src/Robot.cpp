@@ -25,10 +25,9 @@ void Robot::init()
 
 	//robot.drvb.set_path(Paths::gen_test(), Iteration_time::first());
 	// robot.drvb.set_path(Paths::gen_drop(Field::kDumps[0], Field::kDumpHeading[0], 0), Iteration_time::first());
-	drvb.pos = { 0.0 };
-	drvb.heading = { 0.0, 1.0 };
-	Paths::gen_searchPath(drvb.pos, drvb.heading, drvb.path);
-	drvb.set_path(Iteration_time::first());
+	// drvb.pos = { 0.0 };
+	// drvb.heading = { 0.0, 1.0 };
+	// drvb.set_path(Iteration_time::first());
 	dumpObjective.step = DumpObjective::Done;
 
 	cnvr.init();
@@ -38,6 +37,14 @@ void Robot::start_calibration()
 	dumpObjective.step = DumpObjective::GetToDump;
 	set_target_color(kRed);
 	drvb.setDriveMode(Drivebase::followLine);
+	nBlocksInCycle = 5;
+}
+void Robot::start_search()
+{
+	dumpObjective.step = DumpObjective::Done;
+	Paths::gen_realSearchPath(drvb.pos, drvb.heading, drvb.path);
+	drvb.set_path(Iteration_time::first());
+	inHunt = true;
 }
 void Robot::update(SensorState prevSensState, SensorState currSensState, Iteration_time it_time)
 {
@@ -75,7 +82,7 @@ void Robot::set_target_color(int controller_color)
 
 void Robot::gameLogic(SensorState const& currSensState,  SensorState const& prevSensState, Iteration_time it_time)
 {
-	dumpObjective_helper(it_time);
+	dumpObjective_helper(currSensState, it_time);
 	if(currSensState.block_in_claw && (cnvr.just_dropped() || cnvr.over())) {
 		cnvr.start_sequence(it_time);
 
@@ -92,20 +99,25 @@ void Robot::gameLogic(SensorState const& currSensState,  SensorState const& prev
 		huntLogic(currSensState, it_time);
 	}
 	if(drvb.drvMode == Drivebase::followPath && drvb.finish && dumpObjective.step == DumpObjective::Done) {
-		if(nBlocksInCycle == 0) {
+		if(nBlocksInCycle == 0 && inHunt) {
 			dumpObjective.step = DumpObjective::Start;
-		} else {	
-			Paths::gen_searchPath(drvb.pos, drvb.heading, drvb.path);
-			drvb.set_path(it_time);
-			nBlocksInCycle = 0;
-		}
+		} 
 	}
+	//else {
+	// 		Paths::gen_searchPath(drvb.pos, drvb.heading, drvb.path);
+	// 		drvb.set_path(it_time);
+	// 		nBlocksInCycle = 0;
+	// 	}
+	// }
 
 }
-void Robot::dumpObjective_helper(Iteration_time it_time)
+void Robot::dumpObjective_helper(SensorState const& currSensState, Iteration_time it_time)
 {
+	// Serial.print("Dump obj start ");
+	// Serial.println(dumpObjective.step);
 	if(bin.is_full() && dumpObjective.step == DumpObjective::Done) {
 		dumpObjective.step = DumpObjective::Start;
+		// Serial.println("Staaaaaart");
 	}
 
 	if(dumpObjective.step == DumpObjective::Start) {
@@ -113,7 +125,7 @@ void Robot::dumpObjective_helper(Iteration_time it_time)
 		drvb.set_path(it_time);
 		dumpObjective.step++;
 	}
-	if(dumpObjective.step == DumpObjective::GetToLine && drvb.finish) {
+	if(dumpObjective.step == DumpObjective::GetToLine && (drvb.finish || currSensState.lineDetector > 0)) {
 		drvb.setDriveMode(Drivebase::followLine);
 		dumpObjective.step++;
 	}
@@ -126,7 +138,7 @@ void Robot::dumpObjective_helper(Iteration_time it_time)
 		dumpObjective.step++;
 	}
 	if(dumpObjective.step == DumpObjective::DoDump && drvb.finish) {
-		Serial.print("Finish dump! ");
+		// Serial.println("Finish dump! ");
 
 		if(trapReleaseTimer == 0) {
 			bin.release();
@@ -137,10 +149,8 @@ void Robot::dumpObjective_helper(Iteration_time it_time)
 			trapReleaseTimer = 0;
 		}
 	}
-
-	if(dumpObjective.step == DumpObjective::Done && trapReleaseTimer+2000 < it_time.time_ms) {
-	}
-
+	// Serial.print("Dump obj ");
+	// Serial.println(dumpObjective.step);
 }
 void Robot::huntLogic(SensorState sensState, Iteration_time it_time)
 {

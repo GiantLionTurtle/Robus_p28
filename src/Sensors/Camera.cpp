@@ -28,7 +28,7 @@ mt::i32Box box(Block block)
 {
 	return mt::i32Box{.bottomLeft=mt::i32Vec2(block.m_x, block.m_y), .topRight=mt::i32Vec2(block.m_x+block.m_width, block.m_y+block.m_height)};
 }
-Pair<mt::Vec2, bool> Camera::blockOffset(int color)
+void Camera::blockOffset(int targcolor, mt::Vec2& offset, bool& in_claw, int& color)
 {
 	using namespace Tracking;
 
@@ -37,11 +37,11 @@ Pair<mt::Vec2, bool> Camera::blockOffset(int color)
 
 	int target_ind = -1;
 	int32_t biggest_block_size = 0;
-	int target_color = color;
+	int target_color = targcolor;
 	for(int i = 0; i < pixy.ccc.numBlocks; ++i) {
 		auto block = pixy.ccc.blocks[i];
 		int block_color = signature_to_color(block.m_signature);
-		if(block_color != color && color != kAllColors)
+		if(block_color != targcolor && targcolor != kAllColors)
 			continue;
 
 		// Block size with advantage for closer blocks
@@ -56,8 +56,8 @@ Pair<mt::Vec2, bool> Camera::blockOffset(int color)
 			continue;
 		target_ind = i;
 		biggest_block_size = block_size;
-		if(color == kAllColors) {
-			target_color = block_color;
+		if(targcolor == kAllColors) {
+			color = block_color;
 		}
 	}
 

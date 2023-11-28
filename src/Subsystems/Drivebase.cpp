@@ -67,7 +67,7 @@ void Drivebase::update_followLine(SensorState currentSensState, SensorState prev
 		finish = true;
 	}
 	//.02 is a magic number for the moment
-	mt::Vec2 motorVel = mt::Vec2(dir, -dir)*.02 + kFollowLineBaseVel;
+	mt::Vec2 motorVel = mt::Vec2(dir, -dir)*kFollowLineCorrectCoeff + kFollowLineBaseVel;
 	update_wheels(motorVel, it_time.delta_s);
 }
 
@@ -79,7 +79,7 @@ void Drivebase::update_followCam(SensorState currentSensState, SensorState prevS
 	if(mt::magnitude2(offset) < Tracking::kAlignedEnough_magPx2 || currentSensState.block_in_claw) {
 		motorVels = 0.0f;
 	} else {
-		float motorDelta = offset.x * 0.002; // kFollowCamVelCoef / offset.y;
+		float motorDelta = offset.x * kFollowCamVelCoef;
 		motorVels = mt::Vec2(-motorDelta, motorDelta);
 
 		if(currentSensState.block_offset.y < Tracking::kBackOff_px) {

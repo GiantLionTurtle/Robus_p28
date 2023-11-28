@@ -19,12 +19,8 @@ namespace p28 {
 struct SensorState {
 	mt::i32Vec2 encoders_ticks; //number of ticks of right & left encoders:vector (left = 0,right = 1)
 	mt::boolVec2 bumpersState; // State of the right and left bumper (left,right)
-	// float frontIR_dist;
-	// float backIR_dist;
 
-	// bool proximityDetector; // value of 1 or 0
 	char lineDetector; // &&Figureout&& TO BE DEFINED DEPENDING HOW IT WORKS AND ITS RESPONSE
-	// COLOR colorDetector; // assign a color depending on the color detector response
 
 	mt::Vec2 block_offset;
 	int block_color;

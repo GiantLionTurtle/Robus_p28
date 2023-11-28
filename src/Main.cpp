@@ -64,6 +64,7 @@ void loop()
 	if(controller_color != -1) {
 	// if(ROBUS_IsBumper(RIGHT)) {
 		robot.set_target_color(controller_color);
+		robot.start_search();
 		OpenLED(controller_color);
 		bool break_ = false;
 		while(true && !break_) {

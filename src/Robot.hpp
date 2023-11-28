@@ -48,11 +48,11 @@ struct Objective {
 
 struct DumpObjective {
 	enum Steps {
-		Start,
-		GetToLine,
-		GetToDump,
-		DoDump,
-		Done
+		Start = 0,
+		GetToLine = 1,
+		GetToDump = 2,
+		DoDump = 3,
+		Done = 4
 	};
 	int step;
 };
@@ -73,6 +73,7 @@ struct Robot {
 	int backToPath_index { kMaxCheckPointForPath }; 
 	int drop_zone;
 	time_t trapReleaseTimer { 0 };
+	bool inHunt { false };
 
 	int nBlocksInCycle { 0 };
 
@@ -81,6 +82,7 @@ struct Robot {
 
 	void init();
 	void start_calibration();
+	void start_search();
 
 	// Compute the next robot state from delta of the sensors and the game state
 	void update(SensorState prevSensState, SensorState currSensState, Iteration_time it_time);
@@ -91,7 +93,7 @@ struct Robot {
 	void set_target_color(int controller_color);
 	void huntLogic(SensorState sensState, Iteration_time it_time);
 
-	void dumpObjective_helper(Iteration_time it_time);
+	void dumpObjective_helper(SensorState const& currSensState, Iteration_time it_time);
 };
 
 

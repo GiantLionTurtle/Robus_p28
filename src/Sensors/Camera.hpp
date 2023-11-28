@@ -20,7 +20,7 @@ struct Camera {
 	// Returns the centroid offset to the alignement line of the claw
 	// + if the whole block is within the claw bounding box
 	// of the biggest block of a certain color
-	Pair<mt::Vec2, bool> blockOffset(int color);
+	void blockOffset(int targcolor, mt::Vec2& offset, bool& in_claw, int& color);
 
 	// Converts tracking signature to internal color code
 	int signature_to_color(int sig);
