@@ -221,6 +221,50 @@ void gen_drop(mt::Vec2 currPos, mt::Vec2 currHeading, int target_color, Path& ds
 	dst.add_checkPoint(CheckPoint(Field::kDimensions/2.0, toward_center, 0.0, false, 0.4, 2000, kDumpPointId));
 }
 
+
+void gen_realSearchPath(mt::Vec2 currPos, mt::Vec2 currHeading, Path& dst)
+{
+	Serial.println("Gen search");
+	dst.reset();
+
+	dst.add_checkPoint(CheckPoint(currPos, currHeading));
+	
+	if (currHeading.x * currHeading.y > 1){ // green and yellow dump location
+		dst.add_line(0.3);
+		dst.add_turn(mt::to_radians(45));
+		dst.add_line(1.2);
+		dst.add_turn(mt::to_radians(-90));
+		dst.add_line(0.4);
+		dst.add_turn(mt::to_radians(-90));
+		dst.add_line(1.4);
+		dst.add_turn(mt::to_radians(90));
+		dst.add_line(0.4);
+		dst.add_turn(mt::to_radians(90));
+		dst.add_line(1.4);
+		dst.add_turn(mt::to_radians(-90));
+		dst.add_line(0.4);
+		dst.add_turn(mt::to_radians(-90));
+		dst.add_line(1.4);
+	}
+	else{ // red and blue location
+		dst.add_line(0.3);
+		dst.add_turn(mt::to_radians(-45));
+		dst.add_line(1.2);
+		dst.add_turn(mt::to_radians(90));
+		dst.add_line(0.4);
+		dst.add_turn(mt::to_radians(90));
+		dst.add_line(1.4);
+		dst.add_turn(mt::to_radians(-90));
+		dst.add_line(0.4);
+		dst.add_turn(mt::to_radians(-90));
+		dst.add_line(1.4);
+		dst.add_turn(mt::to_radians(90));
+		dst.add_line(0.4);
+		dst.add_turn(mt::to_radians(90));
+		dst.add_line(1.4);
+	}
+}
+
 } // !Paths
 
 } // !p28
