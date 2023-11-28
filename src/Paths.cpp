@@ -205,7 +205,7 @@ void gen_getToLine(mt::Vec2 currPos, mt::Vec2 currHeading, int target_color, Pat
 	mt::Vec2 perpToLine = mt::cw_perpendicular(Field::kDumps[target_color]-Field::kDumps[prev_color]);
 	dst.add_checkPoint(CheckPoint(midPoint, perpToLine));
 	dst.add_turn(mt::to_radians(90));
-	fix(dst, dst);
+	//fix(dst, dst);
 }
 void gen_drop(mt::Vec2 currPos, mt::Vec2 currHeading, int target_color, Path& dst)
 {
@@ -242,38 +242,38 @@ void gen_realSearchPath(mt::Vec2 currPos, mt::Vec2 currHeading, Path& dst)
 	dst.add_checkPoint(CheckPoint(currPos, currHeading));
 	
 	if (currHeading.x * currHeading.y > 1){ // green and yellow dump location
-		dst.add_line(0.21, 0.0f, false, 0.2f);
+		dst.add_line(0.42, 0.0f, false, 0.2f);
 		dst.add_turn(mt::to_radians(45));
-		dst.add_line(1.4, 0.0f, false, 0.2f);
+		dst.add_line(1.1, 0.0f, false, 0.2f);
 		dst.add_turn(mt::to_radians(-90));
 		dst.add_line(0.4, 0.0f, false, 0.2f);
 		dst.add_turn(mt::to_radians(-90));
-		dst.add_line(1.4, 0.0f, false, 0.2f);
+		dst.add_line(1.1, 0.0f, false, 0.2f);
 		dst.add_turn(mt::to_radians(90));
 		dst.add_line(0.4, 0.0f, false, 0.2f);
 		dst.add_turn(mt::to_radians(90));
-		dst.add_line(1.4, 0.0f, false, 0.2f);
+		dst.add_line(1.1, 0.0f, false, 0.2f);
 		dst.add_turn(mt::to_radians(-90));
 		dst.add_line(0.4, 0.0f, false, 0.2f);
 		dst.add_turn(mt::to_radians(-90));
-		dst.add_line(1.4, 0.0f, false, 0.2f);
+		dst.add_line(1.1, 0.0f, false, 0.2f);
 	}
 	else{ // red and blue location
-		dst.add_line(0.21, 0.0f, false, 0.2f);
+		dst.add_line(0.42, 0.0f, false, 0.2f);
 		dst.add_turn(mt::to_radians(-45));
-		dst.add_line(1.4, 0.0f, false, 0.2f);
+		dst.add_line(1.1, 0.0f, false, 0.2f);
 		dst.add_turn(mt::to_radians(90));
 		dst.add_line(0.4, 0.0f, false, 0.2f);
 		dst.add_turn(mt::to_radians(90));
-		dst.add_line(1.4, 0.0f, false, 0.2f);
+		dst.add_line(1.1, 0.0f, false, 0.2f);
 		dst.add_turn(mt::to_radians(-90));
 		dst.add_line(0.4, 0.0f, false, 0.2f);
 		dst.add_turn(mt::to_radians(-90));
-		dst.add_line(1.4, 0.0f, false, 0.2f);
+		dst.add_line(1.1, 0.0f, false, 0.2f);
 		dst.add_turn(mt::to_radians(90));
 		dst.add_line(0.4, 0.0f, false, 0.2f);
 		dst.add_turn(mt::to_radians(90));
-		dst.add_line(1.4, 0.0f, false, 0.2f);
+		dst.add_line(1.1, 0.0f, false, 0.2f);
 	}
 }
 

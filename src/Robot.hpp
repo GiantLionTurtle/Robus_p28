@@ -74,6 +74,7 @@ struct Robot {
 	int drop_zone;
 	time_t trapReleaseTimer { 0 };
 	bool inHunt { false };
+	bool waitInstruct {true};
 
 	int nBlocksInCycle { 0 };
 

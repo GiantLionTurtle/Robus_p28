@@ -14,7 +14,7 @@
 namespace p28 {
 
 // Physical dimensions of the robot 
-constexpr float kRobotWidth = 0.192;              // m
+constexpr float kRobotWidth = 0.19;              // m
 constexpr float kRobotWidth_2 = kRobotWidth/2;  // m
 constexpr float kWheelRadius = 0.0382;           // m
 constexpr int kTicksPerRotation = 3200;
