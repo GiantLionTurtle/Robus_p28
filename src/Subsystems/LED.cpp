@@ -14,14 +14,16 @@ static Adafruit_NeoPixel strip(TOTAL_LED_COUNT, LED_PIN, NEO_GRB + NEO_KHZ800);
 namespace p28 {
     void innitStrip(){
         strip.begin();
-        strip.show();
+        for(int i = LED_COUNT; i < TOTAL_LED_COUNT; i++){
+            strip.setPixelColor(i, strip.Color(255, 255, 255));
+            strip.show();
+        }
     }
 
     void LEDOn(int r, int g, int b){
-        for(int i=0; i < TOTAL_LED_COUNT; i++){
+        for(int i = 0; i < LED_COUNT; i++){
             strip.setPixelColor(i, strip.Color(r, g, b));
             strip.show();
-            Serial.println(i);
         }
     }
 

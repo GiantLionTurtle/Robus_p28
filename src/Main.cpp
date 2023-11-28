@@ -19,7 +19,6 @@ Iteration_time it_time;
 
 HardwareState hrdwState;
 
-int ktest_color = kBlue;
 unsigned int time_to_delay_ms;
 
 #ifdef PRINT_LOOP_DURATION_AVG
@@ -34,7 +33,7 @@ bool control_step();
 void setup()
 {
 	BoardInit();
-	//Serial1.begin(9600);
+	Serial1.begin(9600);
 	it_time = Iteration_time::first();
 	SensorState::init();
 	delay(1000);
@@ -68,21 +67,16 @@ void loop()
 	it_time = it_time.current();
 
 	int controller_color = get_controller_color();
-
-	//if(controller_color != -1) {
-	if(ROBUS_IsBumper(RIGHT)) {
-		// Serial.println("sankdns");
+	if(controller_color != -1) {
+	// if(ROBUS_IsBumper(RIGHT)) {
 		robot.set_target_color(controller_color);
-		OpenLED(ktest_color);
-		// Serial.println("alalla");
+		OpenLED(controller_color);
 		bool break_ = false;
 		while(true && !break_) {
-			// Serial.println("sankrrrrrrdns");
 			break_ = control_step();
 		}
-		Serial.println("boooop");
 	}
-	// Serial.println("out");
+	delay(10);
 }
 
 
@@ -102,17 +96,10 @@ bool control_step()
 	// print(hrdwState.motors);
 	// Serial.println();
 
-	hrdwState.motors = { -0.2, -0.2 };
 	apply_hardwareState(hrdwState, it_time);
 
 	prevSensState = sensState;
 
-	// if(ROBUS_IsBumper(RIGHT)) {
-	// 	robot.cnvr.start_sequence(it_time);
-	// 	ktest_color++;
-	// 	robot.bin.set_bin_color(ktest_color%4);
-	
-	// }
 	if(ROBUS_IsBumper(FRONT)) {
 		apply_hardwareState(HardwareState(), it_time);
 		return true;
