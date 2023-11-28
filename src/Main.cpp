@@ -29,6 +29,7 @@ unsigned int loop_av;
 
 
 bool control_step();
+void calibration_sequence();
 
 void setup()
 {
@@ -51,15 +52,8 @@ void setup()
 	robot.init();
 	
 	Serial.println("Inited the thingies");
-	// robot.start_calibration();
 
-	// while(!ROBUS_IsBumper(3)) {}
-
-	// it_time = it_time.current();
-	// bool break_ = false;
-	// while(robot.dumpObjective.step != DumpObjective::Done && !break_) {
-	// 	break_ = control_step();
-	// }
+	calibration_sequence();
 }
 
 void loop()
@@ -79,6 +73,21 @@ void loop()
 	delay(10);
 }
 
+void calibration_sequence()
+{
+	Serial.println("Waiting for calibration sequence");
+	robot.start_calibration();
+
+	while(!ROBUS_IsBumper(RIGHT)) { delay(10); }
+
+	Serial.println("Start calibration sequence");
+	it_time = it_time.current();
+	bool break_ = false;
+	while(robot.dumpObjective.step != DumpObjective::Done && !break_) {
+		break_ = control_step();
+	}
+	Serial.println("Done calibration sequence");
+}
 
 bool control_step()
 {

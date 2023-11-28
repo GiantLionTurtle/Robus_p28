@@ -72,6 +72,9 @@ struct Robot {
 	// (it is still trying to get back on path)
 	int backToPath_index { kMaxCheckPointForPath }; 
 	int drop_zone;
+	time_t trapReleaseTimer { 0 };
+
+	int nBlocksInCycle { 0 };
 
 	int targetColor { kRed };
 	DumpObjective dumpObjective { DumpObjective::Done };
@@ -88,7 +91,7 @@ struct Robot {
 	void set_target_color(int controller_color);
 	void huntLogic(SensorState sensState, Iteration_time it_time);
 
-	
+	void dumpObjective_helper(Iteration_time it_time);
 };
 
 

@@ -36,7 +36,7 @@ void Robot::init()
 void Robot::start_calibration()
 {
 	dumpObjective.step = DumpObjective::GetToDump;
-	targetColor = kRed;
+	set_target_color(kRed);
 	drvb.setDriveMode(Drivebase::followLine);
 }
 void Robot::update(SensorState prevSensState, SensorState currSensState, Iteration_time it_time)
@@ -66,21 +66,50 @@ void Robot::set_target_color(int controller_color)
 {
 	targetColor = controller_color;
 	bin.set_bin_color(targetColor);
+	drop_zone = targetColor;
+	if(drop_zone == kAllColors) {
+		drop_zone = kRed;
+	}
+
 }
 
 void Robot::gameLogic(SensorState const& currSensState,  SensorState const& prevSensState, Iteration_time it_time)
+{
+	dumpObjective_helper(it_time);
+	if(currSensState.block_in_claw && (cnvr.just_dropped() || cnvr.over())) {
+		cnvr.start_sequence(it_time);
+
+		if(cnvr.over()) {
+			bin.add_block();
+			nBlocksInCycle++;
+			if(targetColor == kAllColors) {
+				bin.set_bin_color(currSensState.block_color);
+			}
+		}
+	}
+	
+	if(dumpObjective.step == DumpObjective::Done) {
+		huntLogic(currSensState, it_time);
+	}
+	if(drvb.drvMode == Drivebase::followPath && drvb.finish && dumpObjective.step == DumpObjective::Done) {
+		if(nBlocksInCycle == 0) {
+			dumpObjective.step = DumpObjective::Start;
+		} else {	
+			Paths::gen_searchPath(drvb.pos, drvb.heading, drvb.path);
+			drvb.set_path(it_time);
+			nBlocksInCycle = 0;
+		}
+	}
+
+}
+void Robot::dumpObjective_helper(Iteration_time it_time)
 {
 	if(bin.is_full() && dumpObjective.step == DumpObjective::Done) {
 		dumpObjective.step = DumpObjective::Start;
 	}
 
-	int internalColor = targetColor;
-	if(internalColor == kAllColors) {
-		internalColor = kRed;
-	}
-
 	if(dumpObjective.step == DumpObjective::Start) {
-		Paths::gen_getToLine(drvb.pos, drvb.heading, internalColor, drvb.path);
+		Paths::gen_getToLine(drvb.pos, drvb.heading, drop_zone, drvb.path);
 		drvb.set_path(it_time);
 		dumpObjective.step++;
 	}
@@ -89,35 +118,29 @@ void Robot::gameLogic(SensorState const& currSensState,  SensorState const& prev
 		dumpObjective.step++;
 	}
 	if(dumpObjective.step == DumpObjective::GetToDump && drvb.finish) {
-		drvb.pos = Field::kDumps[internalColor];
-		drvb.heading = Field::kDumps[internalColor];
-		Paths::gen_drop(drvb.pos, drvb.heading, internalColor, drvb.path);
+		drvb.pos = Field::kDumps[drop_zone];
+		drvb.heading = Field::kDumpHeading[drop_zone];
+		Paths::gen_drop(drvb.pos, drvb.heading, drop_zone, drvb.path);
+		
 		drvb.set_path(it_time);
 		dumpObjective.step++;
 	}
-	// if(dumpObjective.step == DumpObjective::DoDump && drvb.move_id() == kDumpPointId) {
-	// 	bin.release();
-	// }
 	if(dumpObjective.step == DumpObjective::DoDump && drvb.finish) {
-		// bin.close();
-		dumpObjective.step++;
+		Serial.print("Finish dump! ");
+
+		if(trapReleaseTimer == 0) {
+			bin.release();
+			trapReleaseTimer = it_time.time_ms;
+		} else if((trapReleaseTimer+2000) < it_time.time_ms) {
+			bin.close();
+			dumpObjective.step++;
+			trapReleaseTimer = 0;
+		}
 	}
 
-	// Serial.print("mee:: ");
-	// Serial.print(currSensState.block_in_claw);
-	// Serial.print(" :: ");
-	// Serial.println(cnvr.just_dropped());
-	if(currSensState.block_in_claw && (cnvr.just_dropped() || cnvr.over())) {
-		cnvr.start_sequence(it_time);
+	if(dumpObjective.step == DumpObjective::Done && trapReleaseTimer+2000 < it_time.time_ms) {
 	}
-	
-	if(dumpObjective.step == DumpObjective::Done) {
-		huntLogic(currSensState, it_time);
-	}
-	if(dumpObjective.step == DumpObjective::Done && drvb.path.index == drvb.path.size && drvb.drvMode == Drivebase::followPath) {
-		Paths::gen_searchPath(drvb.pos, drvb.heading, drvb.path);
-		drvb.set_path(it_time);
-	}
+
 }
 void Robot::huntLogic(SensorState sensState, Iteration_time it_time)
 {

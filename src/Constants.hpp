@@ -15,12 +15,12 @@ namespace p28 {
 
 // Physical dimensions of the robot 
 #ifdef AQUAMAN
-constexpr float kRobotWidth = 0.19;              // m
+constexpr float kRobotWidth = 0.192;              // m
 #else
 constexpr float kRobotWidth = 0.1850;              // m (distance between the motor wheels)
 #endif
 constexpr float kRobotWidth_2 = kRobotWidth/2;  // m
-constexpr float kWheelRadius = 0.0383;           // m
+constexpr float kWheelRadius = 0.0382;           // m
 constexpr int kTicksPerRotation = 3200;
 constexpr float kCircumference = PI * kRobotWidth;
 constexpr float kColorSensorToCenter = 0.047; // distance forward of the color sensor (m)
@@ -34,7 +34,7 @@ constexpr int kClaw_openAngle = 82;
 constexpr int kClaw_closeAngle = 40; 
 constexpr int kConveyor_stepsPerRevolution = 2038;
 // Must be multiple of 3 cause it's a 4 pin stepper
-constexpr int kConveyor_stepsUntilUp = 5100;//kConveyor_stepsPerRevolution*2.4; 
+constexpr int kConveyor_stepsUntilUp = 5190;//kConveyor_stepsPerRevolution*2.4; 
 
 
 // Physical movement constraints of the robot
@@ -45,6 +45,7 @@ constexpr float KMinVel = 0.03;
 constexpr float kEndSegmentVel = 0.08;
 constexpr float kFollowLineBaseVel = 0.1;
 constexpr float kFollowCamBaseVel = 0.08;
+constexpr float kFollowCamVelCoef = 0.4;
 constexpr float kTurnSpeed = 0.08;
 
 // Control constants 
@@ -62,8 +63,8 @@ enum class COLOR { RED, GREEN, BLUE, YELLOW, BLACK, WHITE };
 
 // Bin motors
 constexpr int kcolor_selected_angle_open = 65; // nombre a determiner
-constexpr int kopen_trap_angle = 70;
-constexpr int kclosed_trap_angle = 0; 
+constexpr int kopen_trap_angle = 0;
+constexpr int kclosed_trap_angle = 70; 
 constexpr int kopen_bin_angle = 65;  // for the 3 bin servos
 constexpr int kclosed_bin_angle = 10;
 
@@ -84,11 +85,12 @@ constexpr int kFarEngoughToGoForth_px = 30;
 constexpr int kAlgignedEnoughToGoForth_px = 7;
 constexpr float kClampOffset = 50.f;
 
-constexpr unsigned char kCameraBrightness = 138;
+constexpr unsigned char kCameraBrightness = 0;
 
 const mt::Vec2 kClawPos(54, 167);
 const mt::Line kClawLine { .origin=kClawPos, .dir=mt::Vec2(86, 17)-kClawPos};
 const mt::i32Box kClawBox{.bottomLeft=mt::i32Vec2(35, 165), .topRight=mt::i32Vec2(75, 210)};
+const int kCamYView = 220;
 
 } // !Tracking
 

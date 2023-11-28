@@ -27,6 +27,7 @@ struct SensorState {
 	// COLOR colorDetector; // assign a color depending on the color detector response
 
 	mt::Vec2 block_offset;
+	int block_color;
 	bool block_in_claw { false };
 
 	static void init();

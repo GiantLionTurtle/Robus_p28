@@ -214,11 +214,16 @@ void gen_drop(mt::Vec2 currPos, mt::Vec2 currHeading, int target_color, Path& ds
 
 	dst.reset();
 	mt::Vec2 toward_center = Field::kDimensions/2.0 - currPos;
-	// mt::print(toward_center);
+	// mt::print(currHeading);
+	// Serial.print(" :: ");
+	// mt::print(currPos);
+	// Serial.print(" :: ");
+	// mt::println(toward_center);
 	dst.add_checkPoint(CheckPoint(currPos, currHeading));
 	dst.add_checkPoint(CheckPoint::make_turn(toward_center));
-	dst.add_line(-0.24, 0.0, true);
-	dst.add_checkPoint(CheckPoint(Field::kDimensions/2.0, toward_center, 0.0, false, 0.4, 2000, kDumpPointId));
+	// dst.add_line(-0.24, 0.0, true);
+	// dst.add_line(0.24);
+	// dst.add_checkPoint(CheckPoint(Field::kDimensions/2.0, toward_center, 0.0, false, 0.4, 2000, kDumpPointId));
 }
 
 } // !Paths

@@ -75,17 +75,17 @@ void Drivebase::update_followCam(SensorState currentSensState, SensorState prevS
 {
 	mt::Vec2 motorVels;
 	mt::Vec2 offset = currentSensState.block_offset;
-
+	
 	if(mt::magnitude2(offset) < Tracking::kAlignedEnough_magPx2 || currentSensState.block_in_claw) {
 		motorVels = 0.0f;
 	} else {
-		float motorDelta = offset.x * kFollowCamBaseVel / Tracking::kClampOffset;
+		float motorDelta = offset.x * 0.002; // kFollowCamVelCoef / offset.y;
 		motorVels = mt::Vec2(-motorDelta, motorDelta);
 
 		if(currentSensState.block_offset.y < Tracking::kBackOff_px) {
-			motorVels = -kFollowCamBaseVel;
+			motorVels -= kFollowCamBaseVel;
 		} 
-		if(abs(currentSensState.block_offset.x) < Tracking::kFarEngoughToGoForth_px || currentSensState.block_offset.y > 30) {
+		if(abs(currentSensState.block_offset.x) < Tracking::kAlgignedEnoughToGoForth_px || currentSensState.block_offset.y > Tracking::kFarEngoughToGoForth_px) {
 			// += to make it so that we do not move if the block is aligned but very close to the robot
 			// essentialy nullifying the previous if
 			motorVels += kFollowCamBaseVel;

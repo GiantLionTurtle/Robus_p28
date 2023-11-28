@@ -4,11 +4,10 @@
 #include <Constants.hpp>
 #include <Utils/Geometry.hpp>
 
-#define CLAW_SIGNATURE 5
 #define RED_SIGNATURE 1
-#define GREEN_SIGNATURE 4
+#define GREEN_SIGNATURE 2
 #define BLUE_SIGNATURE 3
-#define YELLOW_SIGNATURE 2
+#define YELLOW_SIGNATURE 4
 
 namespace p28 {
 
@@ -37,16 +36,28 @@ Pair<mt::Vec2, bool> Camera::blockOffset(int color)
 	pixy.ccc.getBlocks();
 
 	int target_ind = -1;
-	int biggest_block_size = 0;
+	int32_t biggest_block_size = 0;
+	int target_color = color;
 	for(int i = 0; i < pixy.ccc.numBlocks; ++i) {
 		auto block = pixy.ccc.blocks[i];
+		int block_color = signature_to_color(block.m_signature);
+		if(block_color != color && color != kAllColors)
+			continue;
 
-		if(signature_to_color(block.m_signature) == color || color == kAllColors) {
-			int block_size = mt::magnitude2(mt::i32Vec2(block.m_width, block.m_height));
-			if(block_size < biggest_block_size)
-				continue;
-			target_ind = i;
-			biggest_block_size = block_size;
+		// Block size with advantage for closer blocks
+		int32_t block_size = mt::magnitude2(mt::i32Vec2(block.m_width, block.m_height)) * (kCamYView-block.m_y)/10;
+		// Serial.print("Blocksize ");
+		// mt::print(mt::i32Vec2(block.m_width, block.m_height));
+		// Serial.print(",  ");
+		// Serial.print(block.m_y);
+		// Serial.print(",  ");
+		// Serial.println(block_size);
+		if(block_size < biggest_block_size)
+			continue;
+		target_ind = i;
+		biggest_block_size = block_size;
+		if(color == kAllColors) {
+			target_color = block_color;
 		}
 	}
 
