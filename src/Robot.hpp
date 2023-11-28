@@ -72,6 +72,7 @@ struct Robot {
 	// (it is still trying to get back on path)
 	int backToPath_index { kMaxCheckPointForPath }; 
 	int drop_zone;
+	int foundBlockColor { -1 };
 	time_t trapReleaseTimer { 0 };
 	bool inHunt { false };
 	bool waitInstruct {true};

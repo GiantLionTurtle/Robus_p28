@@ -108,8 +108,9 @@ bool control_step()
 	// print(hrdwState.motors);
 	// Serial.println();
 
+	// if(ROBUS_IsBumper(RIGHT)) {
 	apply_hardwareState(hrdwState, it_time);
-
+	// }
 	prevSensState = sensState;
 
 	if(ROBUS_IsBumper(FRONT)) {

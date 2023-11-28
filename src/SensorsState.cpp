@@ -42,7 +42,7 @@ SensorState get_sensors(int targetColor)
 	newSensorState.bumpersState = { ROBUS_IsBumper(LEFT), ROBUS_IsBumper(RIGHT) };
 
 	camera.blockOffset(targetColor, newSensorState.block_offset, newSensorState.block_in_claw, newSensorState.block_color);
-
+	
 	// Encoders must be placed last to minimize unacounted for delays
 	newSensorState.encoders_ticks = { ENCODER_Read(LEFT), ENCODER_Read(RIGHT) };
 	return newSensorState;

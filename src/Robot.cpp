@@ -84,14 +84,17 @@ void Robot::gameLogic(SensorState const& currSensState,  SensorState const& prev
 {
 	dumpObjective_helper(currSensState, it_time);
 	if(currSensState.block_in_claw && (cnvr.just_dropped() || cnvr.over())) {
+		
 		cnvr.start_sequence(it_time);
 
-		if(cnvr.over()) {
-			bin.add_block();
-			nBlocksInCycle++;
-			if(targetColor == kAllColors) {
-				bin.set_bin_color(currSensState.block_color);
-			}
+		bin.add_block();
+		nBlocksInCycle++;
+		if(targetColor == kAllColors) {
+			// Serial.print("Found block color ");
+			// Serial.print(currSensState.block_color);
+			// Serial.print(" :: ");
+			// Serial.println(prevSensState.block_color);
+			bin.set_bin_color(currSensState.block_color);
 		}
 	}
 	
