@@ -260,18 +260,24 @@ HardwareState Drivebase::aggregate(HardwareState hrdwState)
 float velocity_for_point(float current_vel, float target_vel, float max_vel, float target_dist, float accel, float delta_s)
 {
 	// See fig.1
-	float decel = accel-0.01; // Slightly gentler decel
+	float decel = accel / 2;
 
 	float vel_diff = abs(target_vel - current_vel);
 	float time_to_target_vel = vel_diff / decel;
 
 	// Distance to reach the targe velocity if we were to accel/decel right now
-	float dist_to_target_vel = min(target_vel, current_vel) * time_to_target_vel + // Zone A
+	float dist_to_target_vel = max(target_vel, current_vel) * time_to_target_vel + // Zone A
 									vel_diff * (time_to_target_vel) / 2; // Zone B
 
 	if(target_dist >= dist_to_target_vel) {
-		return min(current_vel + accel * delta_s, max_vel);
+		float new_speed = current_vel + accel * delta_s;
+		// Serial.print("Accel ");
+		// Serial.println(new_speed);
+		return min(new_speed, max_vel);
 	} else {
+		float new_speed = current_vel + accel * delta_s;
+		// Serial.print("Decel ");
+		// Serial.println(new_speed);
 		return max(current_vel - decel * delta_s, target_vel);
 	}
 }

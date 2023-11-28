@@ -14,7 +14,7 @@
 namespace p28 {
 
 // Physical dimensions of the robot 
-constexpr float kRobotWidth = 0.192;              // m
+constexpr float kRobotWidth = 0.19;              // m
 constexpr float kRobotWidth_2 = kRobotWidth/2;  // m
 constexpr float kWheelRadius = 0.0382;           // m
 constexpr int kTicksPerRotation = 3200;
@@ -40,7 +40,7 @@ constexpr int kConveyor_stepsUntilUp = 5100;//kConveyor_stepsPerRevolution*2.4;
 
 // Physical movement constraints of the robot
 constexpr float kMaxVel = 0.4;                  // m / s
-constexpr float kAccel = 0.4; // m/s^2
+constexpr float kAccel = 0.2; // m/s^2
 constexpr float kMaxAngularVelocity = 0.8; // rad/s
 constexpr float KMinVel = 0.03;
 constexpr float kEndSegmentVel = 0.08;

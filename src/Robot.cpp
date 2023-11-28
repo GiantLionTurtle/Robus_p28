@@ -101,11 +101,6 @@ void Robot::gameLogic(SensorState const& currSensState,  SensorState const& prev
 	if(dumpObjective.step == DumpObjective::Done) {
 		huntLogic(currSensState, it_time);
 	}
-	if(drvb.drvMode == Drivebase::followPath && drvb.finish && dumpObjective.step == DumpObjective::Done) {
-		if(nBlocksInCycle == 0 && inHunt) {
-			dumpObjective.step = DumpObjective::Start;
-		} 
-	}
 	//else {
 	// 		Paths::gen_searchPath(drvb.pos, drvb.heading, drvb.path);
 	// 		drvb.set_path(it_time);
@@ -118,7 +113,10 @@ void Robot::dumpObjective_helper(SensorState const& currSensState, Iteration_tim
 {
 	// Serial.print("Dump obj start ");
 	// Serial.println(dumpObjective.step);
-	if(bin.is_full() && dumpObjective.step == DumpObjective::Done) {
+	if((bin.is_full() && dumpObjective.step == DumpObjective::Done )
+	||((drvb.drvMode == Drivebase::followPath && drvb.finish && dumpObjective.step == DumpObjective::Done) 
+	&&(drvb.drvMode == Drivebase::followPath && drvb.finish && dumpObjective.step == DumpObjective::Done)))
+	{
 		dumpObjective.step = DumpObjective::Start;
 		// Serial.println("Staaaaaart");
 	}
@@ -150,6 +148,8 @@ void Robot::dumpObjective_helper(SensorState const& currSensState, Iteration_tim
 			bin.close();
 			dumpObjective.step++;
 			trapReleaseTimer = 0;
+			Paths::gen_reset(drvb.pos, drvb.heading, drvb.path);
+			drvb.set_path(it_time);
 		}
 	}
 	// Serial.print("Dump obj ");
