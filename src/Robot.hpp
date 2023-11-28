@@ -75,6 +75,7 @@ struct Robot {
 	int foundBlockColor { -1 };
 	time_t trapReleaseTimer { 0 };
 	bool inHunt { false };
+	bool waitInstruct {true};
 
 	int nBlocksInCycle { 0 };
 
