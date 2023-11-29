@@ -214,11 +214,7 @@ void Robot::huntLogic(SensorState sensState, Iteration_time it_time)
 		if(mt::magnitude2(back_heading) < kPathFollower_headingEpsilon2) {
 			back_heading = drvb.heading;
 		}
-		if(mt::magnitude2(heading) < kPathFollower_headingEpsilon2) {
-			heading = drvb.heading;
-		}
 		path.add_checkPoint(Paths::CheckPoint::make_turn(back_heading));
-
 		path.add_checkPoint(Paths::CheckPoint(position, back_heading, 0.0, backward));
 		path.add_checkPoint(Paths::CheckPoint::make_turn(heading));
 \
