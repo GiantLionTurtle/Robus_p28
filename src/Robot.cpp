@@ -202,12 +202,12 @@ void Robot::huntLogic(SensorState sensState, Iteration_time it_time)
 
 			position = drvb.path.current().targPos;
 			back_heading = position - drvb.pos;
-			heading = drvb.path.current().targHeading - back_heading;
+			heading = drvb.path.current().targHeading;
 			backward = false;
 		} else {
 			position = posMemory;
 			back_heading = drvb.pos - position;
-			heading = headingMemory - back_heading;
+			heading = headingMemory;
 			backward = true;
 		}
 
