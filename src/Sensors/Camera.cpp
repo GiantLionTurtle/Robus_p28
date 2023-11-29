@@ -61,9 +61,9 @@ void Camera::blockOffset(int targcolor, mt::Vec2& offset, bool& in_claw, int& co
 
 		// Block size with advantage for closer blocks
 		int32_t block_size = mt::magnitude2(mt::i32Vec2(block.m_width, block.m_height))/4 * 
-							(kCamViewport.y-block.m_y)/10 * 
-							(kCamViewport.x-block.m_x)/10 * 
-							(block.m_age/10+1);
+							(kCamViewport.y-block.m_y)/10;// * 
+							// (kCamViewport.x-block.m_x)/10 * 
+							// (block.m_age/10+1);
 		// Serial.print("Blocksize ");
 		// mt::print(mt::i32Vec2(block.m_width, block.m_height));
 		// Serial.print(block.m_x);
@@ -71,7 +71,7 @@ void Camera::blockOffset(int targcolor, mt::Vec2& offset, bool& in_claw, int& co
 		// Serial.println(block.m_y);
 		// Serial.print(",  ");
 		// Serial.println(block_size);
-		if(block_size < biggest_block_size)
+		if(block_size < biggest_block_size || block.m_y < 70 || block.m_x < 20 || block.m_x > 270)
 			continue;
 		target_ind = i;
 		biggest_block_size = block_size;

@@ -5,5 +5,8 @@
  
 namespace p28 {
 
- int get_controller_color();
+int get_controller_color();
+
+void clear_controller();
+
 }

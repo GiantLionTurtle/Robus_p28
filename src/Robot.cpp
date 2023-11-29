@@ -132,7 +132,7 @@ void Robot::dumpObjective_helper(SensorState const& currSensState, Iteration_tim
 		drvb.set_path(it_time);
 		dumpObjective.step++;
 	}
-	if(dumpObjective.step == DumpObjective::GetToLine && (drvb.drvMode == Drivebase::followPath && (drvb.finish || total(currSensState.lineDetector)>4))) {
+	if(dumpObjective.step == DumpObjective::GetToLine && (drvb.drvMode == Drivebase::followPath && (drvb.finish || total(currSensState.lineDetector)>2))) {
 		drvb.path.reset();
 		drvb.path.add_checkPoint(Paths::CheckPoint(drvb.pos, drvb.heading));
 		drvb.path.add_line(kLineSensorToCenter);
@@ -143,8 +143,8 @@ void Robot::dumpObjective_helper(SensorState const& currSensState, Iteration_tim
 		dumpObjective.step++;
 		alignToLineTimer = it_time.time_ms;
 	}
-	if(dumpObjective.step == DumpObjective::AlignToLine && (drvb.finish 
-			|| (total(currSensState.lineDetector) > 4 && drvb.path.index > 2 && alignToLineTimer+500 < it_time.time_ms))) {
+	if(dumpObjective.step == DumpObjective::AlignToLine && ((drvb.finish 
+			|| currSensState.lineDetector) && drvb.path.index > 2 && alignToLineTimer+500 < it_time.time_ms)) {
 		Serial.print("Done align! ");
 		Serial.print(total(currSensState.lineDetector));
 		Serial.print(" :: ");
@@ -213,6 +213,9 @@ void Robot::huntLogic(SensorState sensState, Iteration_time it_time)
 
 		if(mt::magnitude2(back_heading) < kPathFollower_headingEpsilon2) {
 			back_heading = drvb.heading;
+		}
+		if(mt::magnitude2(heading) < kPathFollower_headingEpsilon2) {
+			heading = drvb.heading;
 		}
 		path.add_checkPoint(Paths::CheckPoint::make_turn(back_heading));
 		path.add_checkPoint(Paths::CheckPoint(position, back_heading, 0.0, backward));

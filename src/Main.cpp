@@ -42,7 +42,11 @@ void setup()
 
 	Serial.println("Begin!");
 
-	sensState = get_sensors(sensState, -1);
+	// while(1) {
+		sensState = get_sensors(sensState, kRed);
+		// print(sensState);
+		// delay(100);
+	// }
 	prevSensState = sensState;
 	
 	innitStrip();
@@ -71,6 +75,9 @@ void loop()
 			break_ = control_step();
 		}
 	}
+
+	clear_controller();
+
 	delay(10);
 }
 

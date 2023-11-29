@@ -45,7 +45,7 @@ constexpr float kMaxAngularVelocity = 0.8; // rad/s
 constexpr float KMinVel = 0.03;
 constexpr float kEndSegmentVel = 0.08;
 constexpr float kFollowLineBaseVel = 0.08;
-constexpr float kFollowLineCorrectCoeff = 0.01;
+constexpr float kFollowLineCorrectCoeff = 0.012;
 constexpr float kFollowCamBaseVel = 0.08;
 constexpr float kFollowCamVelCoef = 0.002;
 

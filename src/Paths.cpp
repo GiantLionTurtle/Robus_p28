@@ -252,15 +252,15 @@ void gen_realSearchPath(mt::Vec2 currPos, mt::Vec2 currHeading, Path& dst)
 		dst.add_turn(mt::to_radians(45));
 		dst.add_line(1.1, 0.0f, 0.2f);
 		dst.add_turn(mt::to_radians(-90));
-		dst.add_line(0.4, 0.0f, 0.2f);
+		dst.add_line(0.35, 0.0f, 0.2f);
 		dst.add_turn(mt::to_radians(-90));
 		dst.add_line(1.1, 0.0f, 0.2f);
 		dst.add_turn(mt::to_radians(90));
-		dst.add_line(0.4, 0.0f, 0.2f);
+		dst.add_line(0.35, 0.0f, 0.2f);
 		dst.add_turn(mt::to_radians(90));
 		dst.add_line(1.1, 0.0f, 0.2f);
 		dst.add_turn(mt::to_radians(-90));
-		dst.add_line(0.4, 0.0f, 0.2f);
+		dst.add_line(0.35, 0.0f, 0.2f);
 		dst.add_turn(mt::to_radians(-90));
 		dst.add_line(1.1, 0.0f, 0.2f);
 	}
@@ -269,15 +269,15 @@ void gen_realSearchPath(mt::Vec2 currPos, mt::Vec2 currHeading, Path& dst)
 		dst.add_turn(mt::to_radians(-45));
 		dst.add_line(1.1, 0.0f, 0.2f);
 		dst.add_turn(mt::to_radians(90));
-		dst.add_line(0.4, 0.0f, 0.2f);
+		dst.add_line(0.35, 0.0f, 0.2f);
 		dst.add_turn(mt::to_radians(90));
 		dst.add_line(1.1, 0.0f, 0.2f);
 		dst.add_turn(mt::to_radians(-90));
-		dst.add_line(0.4, 0.0f, 0.2f);
+		dst.add_line(0.35, 0.0f, 0.2f);
 		dst.add_turn(mt::to_radians(-90));
 		dst.add_line(1.1, 0.0f, 0.2f);
 		dst.add_turn(mt::to_radians(90));
-		dst.add_line(0.4, 0.0f, 0.2f);
+		dst.add_line(0.35, 0.0f, 0.2f);
 		dst.add_turn(mt::to_radians(90));
 		dst.add_line(1.1, 0.0f, 0.2f);
 	}

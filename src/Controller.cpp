@@ -34,5 +34,11 @@ int get_controller_color()
 
     return color_selected;
 }
+void clear_controller()
+{
+    while(Serial1.available()) {
+        Serial1.read();
+    }
+}
 
 } // !p28

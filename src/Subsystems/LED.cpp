@@ -15,7 +15,7 @@ namespace p28 {
     void innitStrip(){
         strip.begin();
         for(int i = LED_COUNT; i < TOTAL_LED_COUNT; i++){
-            strip.setPixelColor(i, strip.Color(50, 50, 40));
+            strip.setPixelColor(i, strip.Color(0, 0, 0));
             strip.show();
         }
     }
