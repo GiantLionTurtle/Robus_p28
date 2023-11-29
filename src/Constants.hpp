@@ -88,7 +88,7 @@ constexpr unsigned char kCameraBrightness = 0;
 const mt::Vec2 kClawPos(54, 167);
 const mt::Line kClawLine { .origin=kClawPos, .dir=mt::Vec2(86, 17)-kClawPos};
 const mt::i32Box kClawBox{.bottomLeft=mt::i32Vec2(35, 165), .topRight=mt::i32Vec2(75, 210)};
-const int kCamYView = 220;
+const mt::i32Vec2 kCamViewport{ 400, 220 };
 
 } // !Tracking
 

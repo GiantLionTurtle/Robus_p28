@@ -75,9 +75,14 @@ void print(HardwareState state)
 	print(state.motors);
 	Serial.print(" | Arm angle:");
 	Serial.print(state.armAngle);
-	Serial.print(" | Cup angle:");
-	Serial.println();
-
+	Serial.print(" | Indexer:[");
+	Serial.print(state.bin_select_angles[0]);
+	Serial.print(",  ");
+	Serial.print(state.bin_select_angles[1]);
+	Serial.print(",  ");
+	Serial.print(state.bin_select_angles[2]);
+	Serial.print("] | Conveyer: ");
+	Serial.println(state.conveyorSteps);
 }
 
 } // !p28

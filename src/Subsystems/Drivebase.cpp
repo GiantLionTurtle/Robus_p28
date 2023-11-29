@@ -154,12 +154,17 @@ void Drivebase::update_follow_arc(Paths::CheckPoint follow, Iteration_time it_ti
 {
 	// 1. Find the arc that takes us from our current position to
 	// the target position with a target heading
+
+	if(follow.backward) {
+		follow.targHeading = -follow.targHeading;
+	}
+
 	Paths::Arc arc = Paths::arc_from_targetHeading(pos, follow.targPos, follow.targHeading);
 
 	mt::Vec2 speed_correction = correct_heading();
 	if(follow.backward) { 
 		arc.radius = -arc.radius;
-		// arc.tengeantStart = -arc.tengeantStart;
+		arc.tengeantStart = -arc.tengeantStart;
 		speed_correction = -speed_correction;
 	}
 
@@ -169,7 +174,6 @@ void Drivebase::update_follow_arc(Paths::CheckPoint follow, Iteration_time it_ti
 	// 	update_turn(Paths::CheckPoint::make_turn(arc.tengeantStart), it_time);
 	// 	return;
 	// }
-
 	float targVel = velocity_for_point(velocity(), follow.targVel, follow.maxVel, arc.length, kAccel, it_time.delta_s);
 
 	mt::Vec2 motor_speeds;
@@ -186,10 +190,10 @@ void Drivebase::update_follow_arc(Paths::CheckPoint follow, Iteration_time it_ti
 
 	motor_speeds += speed_correction;
 	if(follow.backward) {
-		update_wheels(-motor_speeds, arc.tengeantStart, it_time.delta_s);
-	} else {
-		update_wheels(motor_speeds, arc.tengeantStart, it_time.delta_s);
+		motor_speeds = -motor_speeds;
 	}
+	// mt::println(motor_speeds);
+	update_wheels(motor_speeds, arc.tengeantStart, it_time.delta_s);
 }
 void Drivebase::update_turn(Paths::CheckPoint follow, Iteration_time it_time)
 {

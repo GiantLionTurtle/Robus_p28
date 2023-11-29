@@ -27,13 +27,12 @@ struct CheckPoint {
 	unsigned int delay_before { 0 };
 	bool turn_only { false };
 	bool backward { false };
-    int id { -1 }; // Usefull to do tasks at a specific point of a path
 
 	CheckPoint() = default;
 	CheckPoint(mt::Vec2 targPos_, mt::Vec2 targHeading_, 
-					float targVel_ = 0.0, bool backward_ = false, float maxVel_ = kMaxVel, unsigned int delay_before_ = 0, int id_ = -1);
+					float targVel_ = 0.0, bool backward_ = false, float maxVel_ = kMaxVel, unsigned int delay_before_ = 0);
 
-	static CheckPoint make_turn(mt::Vec2 targHeading_, unsigned int delay_before = 0, int id_ = -1);
+	static CheckPoint make_turn(mt::Vec2 targHeading_, unsigned int delay_before = 0, mt::Vec2 targPos_ = {0.0});
 };
 
 struct Path {
@@ -44,7 +43,7 @@ struct Path {
 
 	CheckPoint& current() { return checkPoints[index]; }
 	void add_checkPoint(CheckPoint checkpoint);
-	void add_line(float distance, float targVel_ = 0.0, bool backward_ = false, float maxVel_ = kMaxVel, unsigned int delay_before_ = 0, int id_ = -1);
+	void add_line(float distance, float targVel_ = 0.0, float maxVel_ = kMaxVel, unsigned int delay_before_ = 0);
 	void add_turn(float turnAngle_rad);
 	bool finished() const { return index >= size; }
 	void reset() { index = 0; size = 0; }

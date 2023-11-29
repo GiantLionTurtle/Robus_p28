@@ -43,7 +43,7 @@ void deep_copy(Path const& src, Path& dst)
 {
 	dst.size = src.size;
 	dst.index = src.index;
-	for(int i = src.index; i < src.size; ++i) {
+	for(unsigned int i = src.index; i < src.size; ++i) {
 		dst.checkPoints[i] = src.checkPoints[i];
 	}
 }
@@ -103,24 +103,23 @@ void Arc::print() const
 
 CheckPoint::CheckPoint(mt::Vec2 targPos_, mt::Vec2 targHeading_,
 								float targVel_, bool backward_, 
-								float maxVel_, unsigned int delay_before_, int id_)
+								float maxVel_, unsigned int delay_before_)
 	: targPos(targPos_)
 	, targHeading(mt::normalize(targHeading_))
 	, targVel(targVel_)
 	, maxVel(maxVel_)
 	, delay_before(delay_before_)
 	, backward(backward_)
-	, id(id_)
 {
 	
 }
-CheckPoint CheckPoint::make_turn(mt::Vec2 targHeading_, unsigned int delay_before, int id_)
+CheckPoint CheckPoint::make_turn(mt::Vec2 targHeading_, unsigned int delay_before, mt::Vec2 targPos_)
 {	
 	CheckPoint out;
 	out.targHeading = mt::normalize(targHeading_);
 	out.turn_only = true;
 	out.delay_before = 0;
-	out.id = id_;
+	out.targPos = targPos_;
 	return out;
 }
 void Path::add_checkPoint(CheckPoint checkPoint)
@@ -133,7 +132,7 @@ void Path::add_checkPoint(CheckPoint checkPoint)
 	size++;
 }
 
-void Path::add_line(float distance, float targVel_, bool backward_, float maxVel_, unsigned int delay_before_, int id_)
+void Path::add_line(float distance, float targVel_, float maxVel_, unsigned int delay_before_)
 {
 	if(size<=0){
 		Serial.println("No suitable previous checkpoint to generate line");
@@ -151,7 +150,7 @@ void Path::add_line(float distance, float targVel_, bool backward_, float maxVel
 			return;
 		}
 		CheckPoint lineCheckPoint (last_pos + checkPoints[size-1].targHeading*distance, checkPoints[size-1].targHeading, 
-						targVel_, backward_, maxVel_, delay_before_, id_);
+						targVel_, distance  < 0.0, maxVel_, delay_before_);
 		add_checkPoint(lineCheckPoint);
 	}
 }
@@ -162,7 +161,14 @@ void Path::add_turn(float turnAngle_rad)
 		Serial.println("No suitable previous checkpoint to generate turn");
 	}else 
 	{
-		CheckPoint turnCheckPoint = CheckPoint::make_turn(mt::rotate(checkPoints[size-1].targHeading, turnAngle_rad));
+		mt::Vec2 last_pos(kInfinity, kInfinity);
+		for(int i = size-1; i >= 0; --i) {
+			if(!checkPoints[i].turn_only) {
+				last_pos = checkPoints[i].targPos;
+				break;
+			}		
+		}
+		CheckPoint turnCheckPoint = CheckPoint::make_turn(mt::rotate(checkPoints[size-1].targHeading, turnAngle_rad), 0, last_pos);
 		add_checkPoint(turnCheckPoint);
 	}
 }
@@ -205,7 +211,7 @@ void gen_getToLine(mt::Vec2 currPos, mt::Vec2 currHeading, int target_color, Pat
 	dst.add_checkPoint(CheckPoint::make_turn(midPoint-currPos));
 	// dst.add_checkPoint(CheckPoint(midPoint, perpToLine));
 	// dst.add_turn(mt::to_radians(90));
-	dst.add_line(2.0, 0.0, false, 0.16);
+	dst.add_line(2.0, 0.0, 0.16);
  }
 void gen_drop(mt::Vec2 currPos, mt::Vec2 currHeading, int target_color, Path& dst)
 {
@@ -220,7 +226,7 @@ void gen_drop(mt::Vec2 currPos, mt::Vec2 currHeading, int target_color, Path& ds
 	// Serial.print(" :: ");
 	// mt::println(toward_center);
 	dst.add_checkPoint(CheckPoint(currPos, currHeading));
-	dst.add_checkPoint(CheckPoint::make_turn(toward_center));
+	dst.add_checkPoint(CheckPoint::make_turn(-toward_center));
 	// dst.add_line(-0.24, 0.0, true);
 	// dst.add_line(0.24);
 	// dst.add_checkPoint(CheckPoint(Field::kDimensions/2.0, toward_center, 0.0, false, 0.4, 2000, kDumpPointId));
@@ -229,7 +235,7 @@ void gen_reset(mt::Vec2 currPos, mt::Vec2 currHeading, Path& dst)
 {
 	Serial.println("Gen reset");
 	dst.reset();
-	dst.add_line(0.21, 0.0f, false, 0.2f);
+	dst.add_line(0.21, 0.0f, 0.2f);
 	
 }
 
@@ -240,42 +246,43 @@ void gen_realSearchPath(mt::Vec2 currPos, mt::Vec2 currHeading, Path& dst)
 	dst.reset();
 
 	dst.add_checkPoint(CheckPoint(currPos, currHeading));
-	// dst.add_line(1.1, 0.0f, false, 0.2f);
-	// return;
+	dst.add_line(-0.4, 0.0f, 0.2f);
+
+	return;
 
 	if (currHeading.x * currHeading.y > 1){ // green and yellow dump location
-		dst.add_line(0.42, 0.0f, false, 0.2f);
+		dst.add_line(0.42, 0.0f, 0.2f);
 		dst.add_turn(mt::to_radians(45));
-		dst.add_line(1.1, 0.0f, false, 0.2f);
+		dst.add_line(1.1, 0.0f, 0.2f);
 		dst.add_turn(mt::to_radians(-90));
-		dst.add_line(0.4, 0.0f, false, 0.2f);
+		dst.add_line(0.4, 0.0f, 0.2f);
 		dst.add_turn(mt::to_radians(-90));
-		dst.add_line(1.1, 0.0f, false, 0.2f);
+		dst.add_line(1.1, 0.0f, 0.2f);
 		dst.add_turn(mt::to_radians(90));
-		dst.add_line(0.4, 0.0f, false, 0.2f);
+		dst.add_line(0.4, 0.0f, 0.2f);
 		dst.add_turn(mt::to_radians(90));
-		dst.add_line(1.1, 0.0f, false, 0.2f);
+		dst.add_line(1.1, 0.0f, 0.2f);
 		dst.add_turn(mt::to_radians(-90));
-		dst.add_line(0.4, 0.0f, false, 0.2f);
+		dst.add_line(0.4, 0.0f, 0.2f);
 		dst.add_turn(mt::to_radians(-90));
-		dst.add_line(1.1, 0.0f, false, 0.2f);
+		dst.add_line(1.1, 0.0f, 0.2f);
 	}
 	else{ // red and blue location
-		dst.add_line(0.42, 0.0f, false, 0.2f);
+		dst.add_line(0.42, 0.0f, 0.2f);
 		dst.add_turn(mt::to_radians(-45));
-		dst.add_line(1.1, 0.0f, false, 0.2f);
+		dst.add_line(1.1, 0.0f, 0.2f);
 		dst.add_turn(mt::to_radians(90));
-		dst.add_line(0.4, 0.0f, false, 0.2f);
+		dst.add_line(0.4, 0.0f, 0.2f);
 		dst.add_turn(mt::to_radians(90));
-		dst.add_line(1.1, 0.0f, false, 0.2f);
+		dst.add_line(1.1, 0.0f, 0.2f);
 		dst.add_turn(mt::to_radians(-90));
-		dst.add_line(0.4, 0.0f, false, 0.2f);
+		dst.add_line(0.4, 0.0f, 0.2f);
 		dst.add_turn(mt::to_radians(-90));
-		dst.add_line(1.1, 0.0f, false, 0.2f);
+		dst.add_line(1.1, 0.0f, 0.2f);
 		dst.add_turn(mt::to_radians(90));
-		dst.add_line(0.4, 0.0f, false, 0.2f);
+		dst.add_line(0.4, 0.0f, 0.2f);
 		dst.add_turn(mt::to_radians(90));
-		dst.add_line(1.1, 0.0f, false, 0.2f);
+		dst.add_line(1.1, 0.0f, 0.2f);
 	}
 }
 

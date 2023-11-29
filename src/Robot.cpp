@@ -123,7 +123,7 @@ void Robot::dumpObjective_helper(SensorState const& currSensState, Iteration_tim
 	// Serial.println(drvb.finish);
 	if(drvb.drvMode == Drivebase::followPath && drvb.finish && dumpObjective.step == DumpObjective::Done)
 	{
-		dumpObjective.step = DumpObjective::Start;
+		// dumpObjective.step = DumpObjective::Start;
 		// Serial.println("Staaaaaart");
 	}
 
@@ -179,9 +179,9 @@ void Robot::dumpObjective_helper(SensorState const& currSensState, Iteration_tim
 }
 void Robot::huntLogic(SensorState sensState, Iteration_time it_time)
 {
-	if(sensState.block_offset != mt::Vec2(0, 0)) {
+	if(sensState.block_color != -1) {
 		nFrames_noLegos = 0;
-		if(drvb.drvMode != Drivebase::followCam) {
+		if(drvb.drvMode == Drivebase::followPath) {
 			if(headingMemory == mt::Vec2(0.0f)) {
 				headingMemory = drvb.heading;
 				posMemory = drvb.pos;
@@ -192,15 +192,26 @@ void Robot::huntLogic(SensorState sensState, Iteration_time it_time)
 		}
 	} else if(drvb.drvMode == Drivebase::followCam && (nFrames_noLegos++) > 16) {
 		Paths::Path path;
-		mt::Vec2 backHeading = drvb.pos - posMemory;
-		if(mt::magnitude2(backHeading) < kPathFollower_headingEpsilon2) {
-			backHeading = drvb.heading;
+		
+		bool backward;
+		mt::Vec2 heading;
+
+		if(!drvb.path.finished() && mt::distance2(drvb.pos, posMemory) > mt::distance2(drvb.pos, drvb.path.current().targPos)) {
+			heading = drvb.path.current().targPos - drvb.pos;
+			backward = false;
+		} else {
+			 heading = drvb.pos - posMemory;
+			 backward = true;
 		}
-		path.add_checkPoint(Paths::CheckPoint::make_turn (backHeading));
-		// Serial.print("back heading ");
-		// mt::println(backHeading);
-		path.add_checkPoint(Paths::CheckPoint (posMemory, backHeading, 0.0, true));
-		path.add_checkPoint(Paths::CheckPoint::make_turn (headingMemory));
+
+		if(mt::magnitude2(heading) < kPathFollower_headingEpsilon2) {
+			heading = drvb.heading;
+		}
+		path.add_checkPoint(Paths::CheckPoint::make_turn(heading));
+
+		path.add_checkPoint(Paths::CheckPoint(posMemory, heading, 0.0, backward));
+		path.add_checkPoint(Paths::CheckPoint::make_turn(headingMemory));
+\
 
 		Paths::hot_insert(drvb.path, path);
 		Paths::deep_copy(path, drvb.path);

@@ -138,4 +138,5 @@ bool control_step()
 		apply_hardwareState(HardwareState(), it_time);
 		return true;
 	}
+	return false;
 }
