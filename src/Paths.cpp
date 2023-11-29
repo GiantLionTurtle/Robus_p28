@@ -226,7 +226,7 @@ void gen_drop(mt::Vec2 currPos, mt::Vec2 currHeading, int target_color, Path& ds
 	// Serial.print(" :: ");
 	// mt::println(toward_center);
 	dst.add_checkPoint(CheckPoint(currPos, currHeading));
-	dst.add_checkPoint(CheckPoint::make_turn(-toward_center));
+	dst.add_checkPoint(CheckPoint::make_turn(toward_center));
 	// dst.add_line(-0.24, 0.0, true);
 	// dst.add_line(0.24);
 	// dst.add_checkPoint(CheckPoint(Field::kDimensions/2.0, toward_center, 0.0, false, 0.4, 2000, kDumpPointId));
@@ -246,9 +246,6 @@ void gen_realSearchPath(mt::Vec2 currPos, mt::Vec2 currHeading, Path& dst)
 	dst.reset();
 
 	dst.add_checkPoint(CheckPoint(currPos, currHeading));
-	dst.add_line(-0.4, 0.0f, 0.2f);
-
-	return;
 
 	if (currHeading.x * currHeading.y > 1){ // green and yellow dump location
 		dst.add_line(0.42, 0.0f, 0.2f);

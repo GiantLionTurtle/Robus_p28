@@ -194,23 +194,33 @@ void Robot::huntLogic(SensorState sensState, Iteration_time it_time)
 		Paths::Path path;
 		
 		bool backward;
+		mt::Vec2 back_heading;
 		mt::Vec2 heading;
+		mt::Vec2 position;
 
 		if(!drvb.path.finished() && mt::distance2(drvb.pos, posMemory) > mt::distance2(drvb.pos, drvb.path.current().targPos)) {
-			heading = drvb.path.current().targPos - drvb.pos;
+
+			heading = drvb.path.current().targHeading;
+			position = drvb.path.current().targPos;
+			back_heading = position - drvb.pos;
 			backward = false;
 		} else {
-			 heading = drvb.pos - posMemory;
-			 backward = true;
+			heading = headingMemory;
+			position = posMemory;
+			back_heading = drvb.pos - position;
+			backward = true;
 		}
 
+		if(mt::magnitude2(back_heading) < kPathFollower_headingEpsilon2) {
+			back_heading = drvb.heading;
+		}
 		if(mt::magnitude2(heading) < kPathFollower_headingEpsilon2) {
 			heading = drvb.heading;
 		}
-		path.add_checkPoint(Paths::CheckPoint::make_turn(heading));
+		path.add_checkPoint(Paths::CheckPoint::make_turn(back_heading));
 
-		path.add_checkPoint(Paths::CheckPoint(posMemory, heading, 0.0, backward));
-		path.add_checkPoint(Paths::CheckPoint::make_turn(headingMemory));
+		path.add_checkPoint(Paths::CheckPoint(position, back_heading, 0.0, backward));
+		path.add_checkPoint(Paths::CheckPoint::make_turn(heading));
 \
 
 		Paths::hot_insert(drvb.path, path);
