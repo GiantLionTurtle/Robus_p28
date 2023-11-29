@@ -200,14 +200,14 @@ void Robot::huntLogic(SensorState sensState, Iteration_time it_time)
 
 		if(!drvb.path.finished() && mt::distance2(drvb.pos, posMemory) > mt::distance2(drvb.pos, drvb.path.current().targPos)) {
 
-			heading = drvb.path.current().targHeading;
 			position = drvb.path.current().targPos;
 			back_heading = position - drvb.pos;
+			heading = drvb.path.current().targHeading - back_heading;
 			backward = false;
 		} else {
-			heading = headingMemory;
 			position = posMemory;
 			back_heading = drvb.pos - position;
+			heading = headingMemory - back_heading;
 			backward = true;
 		}
 
