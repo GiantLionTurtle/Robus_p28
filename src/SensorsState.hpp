@@ -22,14 +22,14 @@ struct SensorState {
 
 	char lineDetector; // &&Figureout&& TO BE DEFINED DEPENDING HOW IT WORKS AND ITS RESPONSE
 
-	mt::Vec2 block_offset;
-	int block_color;
+	mt::Vec2 block_offset { 0.0 };
+	int block_color { -1 };
 	bool block_in_claw { false };
 
 	static void init();
 };
 
-SensorState get_sensors(int targetColor);
+SensorState get_sensors(SensorState prevSensState, int targetColor);
 void print(SensorState state);
 } // !p28
 

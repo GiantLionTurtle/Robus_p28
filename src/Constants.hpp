@@ -53,7 +53,7 @@ constexpr float kTurnSpeed = 0.08;
 
 // Control constants 
 constexpr float kMotorHarwareStateMixFactor = 0.85; // Used for exponential moving average between 2 hardware states
-constexpr unsigned int kControlLoopDelay = 10; // ms
+constexpr unsigned int kControlLoopDelay = 1; // ms
 constexpr float kPathFollower_distEpsilon2 = 0.0001; // square of precision (1cm)
 constexpr float kPathFollower_headingEpsilon2 = 0.00005; // square of precision
 constexpr float kConveyor_speed = 5; //in RPM #define

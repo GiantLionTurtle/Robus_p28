@@ -42,7 +42,7 @@ void setup()
 
 	Serial.println("Begin!");
 
-	sensState = get_sensors(-1);
+	sensState = get_sensors(sensState, -1);
 	prevSensState = sensState;
 	
 	innitStrip();
@@ -94,7 +94,8 @@ bool control_step()
 {
 	delay(time_to_delay_ms);
 	unsigned int loop_start = millis();
-	sensState = get_sensors(robot.targetColor);
+	sensState = get_sensors(sensState, robot.targetColor);
+
 
 	it_time = it_time.current();
 
@@ -108,6 +109,7 @@ bool control_step()
 
 	// if(ROBUS_IsBumper(RIGHT)) {
 	apply_hardwareState(hrdwState, it_time);
+
 	// }
 	prevSensState = sensState;
 

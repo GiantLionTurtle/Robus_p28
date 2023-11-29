@@ -56,10 +56,11 @@ void Robot::update(SensorState prevSensState, SensorState currSensState, Iterati
 	// if(/*!cnvr.just_dropped()||*/ cnvr.over()) {
 		// Serial.print("Drivemode ");
 		// Serial.println(drvb.drvMode);
+	if(!cnvr.in_clawMove()) {
 		drvb.update(currSensState, prevSensState, it_time);
-	// } else {
-		// drvb.zero(currSensState, prevSensState, it_time);
-	// }
+	} else {
+		drvb.zero(currSensState, prevSensState, it_time);
+	}
 	cnvr.update(it_time);
 }
 HardwareState Robot::generate_hardwareState(Iteration_time it_time)
@@ -79,7 +80,6 @@ void Robot::set_target_color(int controller_color)
 	if(drop_zone == kAllColors) {
 		drop_zone = kRed;
 	}
-
 }
 
 void Robot::gameLogic(SensorState const& currSensState,  SensorState const& prevSensState, Iteration_time it_time)
@@ -123,7 +123,7 @@ void Robot::dumpObjective_helper(SensorState const& currSensState, Iteration_tim
 	// Serial.println(drvb.finish);
 	if(drvb.drvMode == Drivebase::followPath && drvb.finish && dumpObjective.step == DumpObjective::Done)
 	{
-		// dumpObjective.step = DumpObjective::Start;
+		dumpObjective.step = DumpObjective::Start;
 		// Serial.println("Staaaaaart");
 	}
 
@@ -190,7 +190,7 @@ void Robot::huntLogic(SensorState sensState, Iteration_time it_time)
 			}
 			drvb.setDriveMode(Drivebase::followCam);
 		}
-	} else if(drvb.drvMode == Drivebase::followCam && (nFrames_noLegos++) > 16) {
+	} else if(drvb.drvMode == Drivebase::followCam && (nFrames_noLegos++) > 32) {
 		Paths::Path path;
 		
 		bool backward;

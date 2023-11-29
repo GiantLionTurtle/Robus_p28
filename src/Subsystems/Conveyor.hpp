@@ -13,6 +13,7 @@ struct Conveyor{
 	void init();
 	bool over() const;
 	bool just_dropped() const;
+	bool in_clawMove() const;
 	void start_sequence(Iteration_time it_time);
 	void update(Iteration_time it_time);
 	HardwareState aggregate(HardwareState hrdwState);

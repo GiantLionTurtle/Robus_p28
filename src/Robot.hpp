@@ -77,6 +77,7 @@ struct Robot {
 	time_t trapReleaseTimer { 0 };
 	time_t alignToLineTimer { 0 };
 	bool inHunt { false };
+	// bool blockAlignedConveyorUp { false };
 	bool waitInstruct {false};
 
 	int nBlocksInCycle { 0 };

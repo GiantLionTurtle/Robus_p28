@@ -23,8 +23,8 @@ Step const sequence[Nsteps] = {
 	Step { .clawServo = kClaw_closeAngle, .armServo = kArm_upAngle, .conveyorSteps = 0, .stepTime = 600},
 	Step { .clawServo = kClaw_openAngle, .armServo = kArm_upAngle, .conveyorSteps = 0, .stepTime = 50},
 	Step { .clawServo = kClaw_openAngle, .armServo = kArm_upAngle, .conveyorSteps = 0, .stepTime = 150},
-	Step { .clawServo = kClaw_openAngle, .armServo = kArm_upAngle, .conveyorSteps = kConveyor_stepsUntilUp, .stepTime = 16000}, // #define delay 
-	Step { .clawServo = kClaw_openAngle, .armServo = kArm_upAngle, .conveyorSteps = 0, .stepTime = 15000} // #define delay
+	Step { .clawServo = kClaw_openAngle, .armServo = kArm_upAngle, .conveyorSteps = kConveyor_stepsUntilUp, .stepTime = 11000}, // #define delay 
+	Step { .clawServo = kClaw_openAngle, .armServo = kArm_upAngle, .conveyorSteps = 0, .stepTime = 10000} // #define delay
 };
 
 void Conveyor::init()
@@ -66,6 +66,10 @@ bool Conveyor::just_dropped() const
 	if(sequenceIndex == CimbStepInd)
 		return true;
 	return false;
+}
+bool Conveyor::in_clawMove() const
+{
+	return sequenceIndex < CimbStepInd;
 }
 
 }
