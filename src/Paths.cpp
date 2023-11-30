@@ -33,7 +33,10 @@ void fix(Path const& src, Path& dst)
 }
 void hot_insert(Path const& prevPath, Path& insert)
 {
-	Serial.println("Hot insert start;");
+	Serial.print("Hot insert start at ");
+	Serial.print(prevPath.index);
+	Serial.print(" :: ");
+	Serial.println(prevPath.size);
 	for(unsigned int i = prevPath.index; i < prevPath.size; ++i) {
 		insert.add_checkPoint(prevPath.checkPoints[i]);
 	}
@@ -103,23 +106,25 @@ void Arc::print() const
 
 CheckPoint::CheckPoint(mt::Vec2 targPos_, mt::Vec2 targHeading_,
 								float targVel_, bool backward_, 
-								float maxVel_, unsigned int delay_before_)
+								float maxVel_, unsigned int delay_before_, int id_)
 	: targPos(targPos_)
 	, targHeading(mt::normalize(targHeading_))
 	, targVel(targVel_)
 	, maxVel(maxVel_)
 	, delay_before(delay_before_)
 	, backward(backward_)
+	, id(id_)
 {
 	
 }
-CheckPoint CheckPoint::make_turn(mt::Vec2 targHeading_, unsigned int delay_before, mt::Vec2 targPos_)
+CheckPoint CheckPoint::make_turn(mt::Vec2 targHeading_, unsigned int delay_before, int id_, mt::Vec2 targPos_)
 {	
 	CheckPoint out;
 	out.targHeading = mt::normalize(targHeading_);
 	out.turn_only = true;
 	out.delay_before = 0;
 	out.targPos = targPos_;
+	out.id = id_;
 	return out;
 }
 void Path::add_checkPoint(CheckPoint checkPoint)
@@ -168,7 +173,7 @@ void Path::add_turn(float turnAngle_rad)
 				break;
 			}		
 		}
-		CheckPoint turnCheckPoint = CheckPoint::make_turn(mt::rotate(checkPoints[size-1].targHeading, turnAngle_rad), 0, last_pos);
+		CheckPoint turnCheckPoint = CheckPoint::make_turn(mt::rotate(checkPoints[size-1].targHeading, turnAngle_rad), 0, -1, last_pos);
 		add_checkPoint(turnCheckPoint);
 	}
 }

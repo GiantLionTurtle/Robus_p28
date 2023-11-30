@@ -121,7 +121,7 @@ void Robot::dumpObjective_helper(SensorState const& currSensState, Iteration_tim
 	// Serial.print(drvb.drvMode);
 	// Serial.print(" :: ");
 	// Serial.println(drvb.finish);
-	if(drvb.drvMode == Drivebase::followPath && drvb.finish && dumpObjective.step == DumpObjective::Done)
+	if((drvb.drvMode == Drivebase::followPath && drvb.finish || bin.is_full()) && dumpObjective.step == DumpObjective::Done)
 	{
 		dumpObjective.step = DumpObjective::Start;
 		// Serial.println("Staaaaaart");
@@ -135,16 +135,16 @@ void Robot::dumpObjective_helper(SensorState const& currSensState, Iteration_tim
 	if(dumpObjective.step == DumpObjective::GetToLine && (drvb.drvMode == Drivebase::followPath && (drvb.finish || total(currSensState.lineDetector)>2))) {
 		drvb.path.reset();
 		drvb.path.add_checkPoint(Paths::CheckPoint(drvb.pos, drvb.heading));
-		drvb.path.add_line(kLineSensorToCenter);
-		drvb.path.add_turn(mt::to_radians(30));
+		drvb.path.add_line(kLineSensorToCenter+0.01);
 		drvb.path.add_turn(mt::to_radians(60));
+		drvb.path.add_turn(mt::to_radians(60));
+
 		drvb.set_path(it_time);
 		Serial.println("Done get to line!");
 		dumpObjective.step++;
 		alignToLineTimer = it_time.time_ms;
 	}
-	if(dumpObjective.step == DumpObjective::AlignToLine && ((drvb.finish 
-			|| currSensState.lineDetector) && drvb.path.index > 2 && alignToLineTimer+500 < it_time.time_ms)) {
+	if(dumpObjective.step == DumpObjective::AlignToLine && (drvb.path.index > 1 && total(currSensState.lineDetector) > 2)) {
 		Serial.print("Done align! ");
 		Serial.print(total(currSensState.lineDetector));
 		Serial.print(" :: ");
@@ -152,14 +152,16 @@ void Robot::dumpObjective_helper(SensorState const& currSensState, Iteration_tim
 		dumpObjective.step++;
 		drvb.setDriveMode(Drivebase::followLine);
 		alignToLineTimer = 0;
+		getToDumpTimer = it_time.time_ms;
 	}
-	if(dumpObjective.step == DumpObjective::GetToDump && drvb.finish) {
+	if(dumpObjective.step == DumpObjective::GetToDump && drvb.finish && cnvr.over()) {
 		drvb.pos = Field::kDumps[drop_zone];
 		drvb.heading = Field::kDumpHeading[drop_zone];
 		Paths::gen_drop(drvb.pos, drvb.heading, drop_zone, drvb.path);
 		
 		drvb.set_path(it_time);
 		dumpObjective.step++;
+		getToDumpTimer = 0;
 	}
 	if(dumpObjective.step == DumpObjective::DoDump && drvb.finish) {
 		// Serial.println("Finish dump! ");
@@ -185,8 +187,6 @@ void Robot::huntLogic(SensorState sensState, Iteration_time it_time)
 			if(headingMemory == mt::Vec2(0.0f)) {
 				headingMemory = drvb.heading;
 				posMemory = drvb.pos;
-			} else {
-				drvb.path.index = 3; // It takes three checkpoints to get back to path
 			}
 			drvb.setDriveMode(Drivebase::followCam);
 		}
@@ -217,10 +217,15 @@ void Robot::huntLogic(SensorState sensState, Iteration_time it_time)
 		if(mt::magnitude2(heading) < kPathFollower_headingEpsilon2) {
 			heading = drvb.heading;
 		}
-		path.add_checkPoint(Paths::CheckPoint::make_turn(back_heading));
-		path.add_checkPoint(Paths::CheckPoint(position, back_heading, 0.0, backward));
-		path.add_checkPoint(Paths::CheckPoint::make_turn(heading));
-\
+		path.add_checkPoint(Paths::CheckPoint(drvb.pos, drvb.heading, 0.0, false, 0.4, 0, 5));
+		path.add_checkPoint(Paths::CheckPoint::make_turn(back_heading, 0, 5));
+		path.add_checkPoint(Paths::CheckPoint(position, back_heading, 0.0, backward, 0.4, 0, 5));
+		path.add_checkPoint(Paths::CheckPoint::make_turn(heading, 0, 5));
+
+		// Erase any back to hunt path
+		for(; drvb.path.current().id == 5; ++drvb.path.index) {
+
+		}
 
 		Paths::hot_insert(drvb.path, path);
 		Paths::deep_copy(path, drvb.path);

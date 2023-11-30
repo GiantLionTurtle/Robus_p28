@@ -71,7 +71,7 @@ void Camera::blockOffset(int targcolor, mt::Vec2& offset, bool& in_claw, int& co
 		// Serial.println(block.m_y);
 		// Serial.print(",  ");
 		// Serial.println(block_size);
-		if(block_size < biggest_block_size || block.m_y < 70 || block.m_x < 20 || block.m_x > 270)
+		if(block_size < biggest_block_size || block.m_y < 70 || block.m_x < 15 || block.m_x > 270)
 			continue;
 		target_ind = i;
 		biggest_block_size = block_size;

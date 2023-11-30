@@ -29,7 +29,7 @@ void Bin::close()
 bool Bin::is_full()
 {
     for(int i = 0; i < 4; i++){
-        if(nb_of_blocks [i] > kBinCapacity){
+        if(nb_of_blocks [i] > 8){
             return true;
         }
     }

@@ -60,7 +60,7 @@ void Drivebase::update_followLine(SensorState currentSensState, SensorState prev
 	float dir = 0;
 	for(int i = 0; i < 8; i++) {
 		if(is_active(line, i)) {
-			dir+=i-3.5;
+			dir += (i-3.5) * abs(3.5-i);
 		}
 	}
 	if(line == 0) {
@@ -79,7 +79,7 @@ void Drivebase::update_followCam(SensorState currentSensState, SensorState prevS
 	mt::Vec2 motorVels;
 	mt::Vec2 offset = currentSensState.block_offset;
 	
-	if(mt::magnitude2(offset) < Tracking::kAlignedEnough_magPx2 || currentSensState.block_in_claw) {
+	if(/*mt::magnitude2(offset) < Tracking::kAlignedEnough_magPx2 || */currentSensState.block_in_claw) {
 		motorVels = 0.0f;
 	} else {
 		float motorDelta = offset.x * kFollowCamVelCoef;
@@ -146,6 +146,8 @@ void Drivebase::setDriveMode(Drivemodes mode)
 void Drivebase::set_path(Iteration_time it_time)
 {
 	if(!path.finished()) {
+		Serial.print("Path size: ");
+		Serial.println(path.size);
 		setDriveMode(Drivemodes::followPath);
 		waitUntil_ms = it_time.time_ms + path.current().delay_before;
 	}
@@ -291,7 +293,7 @@ float ticks_to_dist(int32_t ticks, float rad)
 }
 mt::Vec2 ticks_to_dist(mt::i32Vec2 Ticks)
 {
-	return { ticks_to_dist(Ticks.left), ticks_to_dist(Ticks.right, kWheelRadius-0.0002) };
+	return { ticks_to_dist(Ticks.left), ticks_to_dist(Ticks.right, kWheelRadius-0.00015) };
 }
 int32_t dist_to_ticks(float dist)
 {

@@ -76,6 +76,7 @@ struct Robot {
 	int foundBlockColor { -1 };
 	time_t trapReleaseTimer { 0 };
 	time_t alignToLineTimer { 0 };
+	time_t getToDumpTimer { 0 };
 	bool inHunt { false };
 	// bool blockAlignedConveyorUp { false };
 	bool waitInstruct {false};

@@ -22,7 +22,7 @@ namespace p28 {
 
     void LEDOn(int r, int g, int b){
         for(int i = 0; i < LED_COUNT; i++){
-            strip.setPixelColor(i, strip.Color(r, g, b));
+            strip.setPixelColor(i, strip.Color(r, b, g));
             strip.show();
         }
     }
@@ -38,18 +38,18 @@ namespace p28 {
                 break;
             case KGreen:
                 r = 0;
-                g = 0;
-                b = 50;
-                break;
-            case kBlue:
-                r = 0;
                 g = 50;
                 b = 0;
                 break;
-            case kYellow:
-                r = 50;
+            case kBlue:
+                r = 0;
                 g = 0;
                 b = 50;
+                break;
+            case kYellow:
+                r = 50;
+                g = 50;
+                b = 0;
                 break;
             case kAllColors:
                 r = 0;

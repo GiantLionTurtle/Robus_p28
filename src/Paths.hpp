@@ -27,12 +27,13 @@ struct CheckPoint {
 	unsigned int delay_before { 0 };
 	bool turn_only { false };
 	bool backward { false };
+	int id;
 
 	CheckPoint() = default;
 	CheckPoint(mt::Vec2 targPos_, mt::Vec2 targHeading_, 
-					float targVel_ = 0.0, bool backward_ = false, float maxVel_ = kMaxVel, unsigned int delay_before_ = 0);
+					float targVel_ = 0.0, bool backward_ = false, float maxVel_ = kMaxVel, unsigned int delay_before_ = 0, int id_ = -1);
 
-	static CheckPoint make_turn(mt::Vec2 targHeading_, unsigned int delay_before = 0, mt::Vec2 targPos_ = {0.0});
+	static CheckPoint make_turn(mt::Vec2 targHeading_, unsigned int delay_before = 0, int id_ = -1, mt::Vec2 targPos_ = {0.0});
 };
 
 struct Path {
