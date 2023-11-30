@@ -36,7 +36,7 @@ namespace p28 {
     {
         return line & 1<<index;
     }
-    int total(char line)
+    int total_activ(char line)
     {
         int sum = 0;
         for(int i = 0; i < 8; ++i) {

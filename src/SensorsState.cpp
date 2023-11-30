@@ -12,8 +12,6 @@ static Camera camera;
 
 void SensorState::init()
 {
-	// init_color_sensor();
-	// init_detector();
 	camera.init();
 }
 
@@ -45,6 +43,7 @@ SensorState get_sensors(SensorState prevSensState, int targetColor)
 	newSensorState.block_in_claw = prevSensState.block_in_claw;
 	newSensorState.block_offset = prevSensState.block_offset;
 	camera.blockOffset(targetColor, newSensorState.block_offset, newSensorState.block_in_claw, newSensorState.block_color);
+
 	// Encoders must be placed last to minimize unacounted for delays
 	newSensorState.encoders_ticks = { ENCODER_Read(LEFT), ENCODER_Read(RIGHT) };
 	return newSensorState;

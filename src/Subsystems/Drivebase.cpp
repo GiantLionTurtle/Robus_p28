@@ -293,7 +293,7 @@ float ticks_to_dist(int32_t ticks, float rad)
 }
 mt::Vec2 ticks_to_dist(mt::i32Vec2 Ticks)
 {
-	return { ticks_to_dist(Ticks.left), ticks_to_dist(Ticks.right, kWheelRadius-0.00015) };
+	return { ticks_to_dist(Ticks.left), ticks_to_dist(Ticks.right, kWheelRadius-kRightWheelSquish) };
 }
 int32_t dist_to_ticks(float dist)
 {

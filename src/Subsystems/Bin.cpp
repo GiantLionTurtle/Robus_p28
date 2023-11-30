@@ -40,11 +40,11 @@ HardwareState Bin::aggregate(HardwareState hardwareSate)
 {
     if(color_selected < 3) {
         for(int i = 3; i >= color_selected; --i) {
-            hardwareSate.bin_select_angles [i] = kcolor_selected_angle_open;
+            hardwareSate.bin_select_angles [i] = kBinSelect_openAngle;
         }
     }
     if(open_trap) {
-        hardwareSate.trapAngle = kopen_trap_angle;
+        hardwareSate.trapAngle = kBinTrap_openAngle;
     }
    
     return hardwareSate;

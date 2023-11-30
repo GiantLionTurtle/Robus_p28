@@ -9,81 +9,38 @@
 #include "Subsystems/Bin.hpp"
 #include "Subsystems/Conveyor.hpp"
 
-/*
-	How the Robot should work
-
-	It contains a representation of all subsistems.
-	
-	1. It generates a new copy of itself using sensor data, gamestate data and time
-*/
-
 namespace p28 {
-
-struct Objective {
-	enum Doneness : char { Todo, Start, UnderWay, Done };
-
-	Doneness donneness;
-	time_t start_ms;
-
-	bool todo() const { return donneness == Doneness::Todo; }
-	bool start() const { return donneness == Doneness::Start; }
-	bool underway() const { return donneness == Doneness::UnderWay; }
-	bool done() const { return donneness == Doneness::Done; }
-
-	Objective advance(bool start_cond, bool end_cond, time_t time_ms) const
-	{
-		if(todo() && start_cond) {
-			return Objective { .donneness=Doneness::Start, .start_ms=time_ms };
-		}
-		if(start()) {
-			return Objective { .donneness=Doneness::UnderWay, .start_ms=start_ms };
-		}
-		if(underway() && end_cond) {
-			return Objective { .donneness=Doneness::Done, .start_ms=start_ms };
-		}
-		return *this;
-	}
-
-};
 
 struct DumpObjective {
 	enum Steps {
-		Start = 0,
-		GetToLine = 1,
-		AlignToLine = 2,
-		GetToDump = 3,
-		DoDump = 4,
-		Done = 5
+		Start,
+		GetToLine, 		// Paths toward a line on the ground
+		AlignToLine,	// Turn ccw to be aligned to line
+		GetToDump,		// Use path follower to get to zone
+		DoDump,			// Release blocs
+		Done
 	};
 	int step;
 };
 
-// Essentialy proprioception for the robot
 struct Robot {
-	
+	// Subsystems
 	Bin bin;
 	Drivebase drvb;
 	Conveyor cnvr;
+
+
 	mt::Vec2 headingMemory { 0.0 };
 	mt::Vec2 posMemory { 0.0 };
 
-	int nFrames_noLegos { 0 };
-	// Do not reset pos memory & heading memory
-	// if the path is not at least at this index
-	// (it is still trying to get back on path)
-	int backToPath_index { kMaxCheckPointForPath }; 
-	int drop_zone;
-	int foundBlockColor { -1 };
+	int nFrames_noLegos { 0 }; // Dont switch back to path for a few frames
 	time_t trapReleaseTimer { 0 };
-	time_t alignToLineTimer { 0 };
-	time_t getToDumpTimer { 0 };
-	bool inHunt { false };
-	// bool blockAlignedConveyorUp { false };
 	bool waitInstruct {false};
 
-	int nBlocksInCycle { 0 };
 
 	int targetColor { kRed };
+	int drop_zone;	// Drop zone is defined by targetColor
+
 	DumpObjective dumpObjective { DumpObjective::Done };
 
 	void init();
