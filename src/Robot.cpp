@@ -64,7 +64,7 @@ void Robot::set_target_color(int controller_color)
 	bin.set_bin_color(targetColor);
 	drop_zone = targetColor;
 	if(drop_zone == kAllColors) {
-		drop_zone = kRed;
+		drop_zone = KGreen;
 	}
 }
 
@@ -89,6 +89,7 @@ void Robot::gameLogic(SensorState const& currSensState,  SensorState const& prev
 
 void Robot::dumpObjective_helper(SensorState const& currSensState, Iteration_time it_time)
 {
+	bool line_activ = total_activ(currSensState.lineDetector) > 3;
 	if(((drvb.drvMode == Drivebase::followPath && drvb.finish) || bin.is_full()) && dumpObjective.step == DumpObjective::Done) {
 		dumpObjective.step = DumpObjective::Start;
 	}
@@ -100,7 +101,10 @@ void Robot::dumpObjective_helper(SensorState const& currSensState, Iteration_tim
 		dumpObjective.step++;
 	}
 	// Setup AlignToLine
-	if(dumpObjective.step == DumpObjective::GetToLine && (drvb.drvMode == Drivebase::followPath && (drvb.finish || total_activ(currSensState.lineDetector)>2))) {
+	// if(dumpObjective.step == DumpObjective::Done && line_activ) {
+	// 	dumpObjective.step = DumpObjective::GetToLine;
+	// }
+	if(dumpObjective.step == DumpObjective::GetToLine && line_activ) {
 		drvb.path.reset();
 		drvb.path.add_checkPoint(Paths::CheckPoint(drvb.pos, drvb.heading));
 		drvb.path.add_line(kLineSensorToCenter);
@@ -111,7 +115,7 @@ void Robot::dumpObjective_helper(SensorState const& currSensState, Iteration_tim
 		dumpObjective.step++;
 	}
 	// Setup GetToDump
-	if(dumpObjective.step == DumpObjective::AlignToLine && (drvb.path.index > 1 && total_activ(currSensState.lineDetector) > 2)) {
+	if(dumpObjective.step == DumpObjective::AlignToLine && (drvb.path.index > 1 && line_activ)) {
 		dumpObjective.step++;
 		drvb.setDriveMode(Drivebase::followLine);
 	}

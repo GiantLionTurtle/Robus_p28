@@ -4,7 +4,7 @@
 
 namespace p28 {
     static int PIN_IR[8] {A4, A5, A6, A7, A8, A9, A10, A11};
-    #define BLACK_TRESH 320
+    #define BLACK_TRESH 350
     #define BASIC_TRESH 900
 
 

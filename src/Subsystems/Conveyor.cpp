@@ -20,7 +20,7 @@ Step const sequence[Nsteps] = {
 	Step { .clawServo = kClaw_closeAngle, 	.armServo = kArm_downAngle, .conveyorSteps = 0, 						.stepTime = 600},
 	Step { .clawServo = kClaw_closeAngle, 	.armServo = kArm_upAngle, 	.conveyorSteps = 0, 						.stepTime = 600},
 	Step { .clawServo = kClaw_openAngle, 	.armServo = kArm_upAngle, 	.conveyorSteps = 0, 						.stepTime = 50},
-	Step { .clawServo = kClaw_openAngle, 	.armServo = kArm_upAngle, 	.conveyorSteps = 0, 						.stepTime = 250}, // Give the robot a chance to adjust itself (block still in claw zone)
+	Step { .clawServo = kClaw_openAngle, 	.armServo = kArm_upAngle, 	.conveyorSteps = 0, 						.stepTime = 800}, // Give the robot a chance to adjust itself (block still in claw zone)
 	Step { .clawServo = kClaw_openAngle, 	.armServo = kArm_upAngle, 	.conveyorSteps = kConveyor_stepsUntilUp,	.stepTime = 11600}, // #define delay 
 	Step { .clawServo = kClaw_openAngle, 	.armServo = kArm_upAngle,	.conveyorSteps = 0, 						.stepTime = 10000} // #define delay
 };

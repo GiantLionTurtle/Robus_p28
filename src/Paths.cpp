@@ -207,6 +207,10 @@ void gen_getToLine(mt::Vec2 currPos, mt::Vec2 currHeading, int target_color, Pat
 	Serial.print("Gen get to line ");
 	Serial.println(target_color);
 
+	if(target_color < 0 || target_color > 3) {
+		target_color = 0;
+	}
+
 	dst.reset();
 	dst.add_checkPoint(CheckPoint(currPos, currHeading));
 

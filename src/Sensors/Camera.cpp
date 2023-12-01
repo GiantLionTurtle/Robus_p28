@@ -16,7 +16,7 @@ namespace p28 {
 void Camera::init()
 {
 	pixy.init();
-	// pixy.setLamp(1, 1);
+	pixy.setLamp(1, 1);
 	pixy.setCameraBrightness(Tracking::kCameraBrightness);
 }
 
@@ -54,6 +54,9 @@ void Camera::blockOffset(int targcolor, mt::Vec2& offset, bool& in_claw, int& co
 	for(int i = 0; i < pixy.ccc.numBlocks; ++i) {
 		auto block = pixy.ccc.blocks[i];
 		int block_color = signature_to_color(block.m_signature);
+		if(block_color == KGreen)
+			continue;
+
 		// Serial.print("Block ");
 		// Serial.println(block_color);
 		if(block_color == -1 || (block_color != targcolor && targcolor != kAllColors))

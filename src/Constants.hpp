@@ -25,7 +25,7 @@ constexpr float kRightWheelSquish = 0.00015; // The robot is heavier on the righ
 // Code constants and constructs
 using time_t = long unsigned int;
 constexpr float kInfinity = 100000;
-constexpr unsigned int kMaxCheckPointForPath = 26;
+constexpr unsigned int kMaxCheckPointForPath = 22;
 
 //Color code for the controller
 constexpr int kRed = 0;
@@ -70,7 +70,7 @@ constexpr time_t kOpenTrapDelay_ms = 1200;
 
 constexpr int kBinSelect_openAngle = 65;
 constexpr int kBinSelect_closedAngle = 20;
-constexpr int kBinCapacity = 5;
+constexpr int kBinCapacity = 20;
 
 
 namespace Tracking {
